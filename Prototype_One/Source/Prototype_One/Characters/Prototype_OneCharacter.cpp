@@ -1,4 +1,6 @@
 #include "Prototype_OneCharacter.h"
+
+#include "DialogueNPC.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -7,7 +9,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Controllers/PrototypePlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+#include "Prototype_One/Widgets/PlayerHUD.h"
+#include "Blueprint/UserWidget.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -42,6 +47,32 @@ void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitInputMappingContext();
+	InitGUI();
+
+}
+
+void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (PlayerHud)
+	{
+		PlayerHud->RemoveFromParent();
+		PlayerHud = nullptr;
+	}
+}
+
+void APrototype_OneCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	InteractRaycast();
+
+}
+
+void APrototype_OneCharacter::InitInputMappingContext()
+{
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -54,6 +85,15 @@ void APrototype_OneCharacter::BeginPlay()
 	}
 }
 
+void APrototype_OneCharacter::InitGUI()
+{
+	if (!PlayerHud && PlayerHudPrefab)
+	{
+		PlayerHud = CreateWidget<UPlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PlayerHudPrefab);
+		PlayerHud->AddToViewport();
+	}
+}
+
 void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
@@ -62,6 +102,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Look);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryInteract);
 	}
 }
 
@@ -92,6 +133,54 @@ void APrototype_OneCharacter::Look(const FInputActionValue& Value)
 	//}
 }
 
+void APrototype_OneCharacter::TryInteract()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Try Interact") );
+	//DrawDebugLine(
+	//		GetWorld(),
+	//		FollowCamera->GetComponentLocation(),
+	//		LastHitResult.Location,
+	//		FColor(255, 0, 0),
+	//		true, -1, 0,
+	//		12.333
+	//	);
+	
+	if (auto* hitActor = LastHitResult.GetActor())
+	{
+		if (auto* npc = Cast<ADialogueNPC>(hitActor))
+		{
+			// Chat to NPC
+			UE_LOG(LogTemp, Warning, TEXT("Chat to NPC") );
+		}
+	}
+}
+
+void APrototype_OneCharacter::InteractRaycast()
+{
+	float mouseX;
+	float mouseY;
+	auto* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	controller->GetMousePosition(mouseX, mouseY);
+	FVector worldPos{};
+	FVector worldDir{};
+	UGameplayStatics::DeprojectScreenToWorld(controller, {mouseX, mouseY}, worldPos, worldDir);
+
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateInteractionText();
+		if (controller->GetHitResultUnderCursorByChannel(TraceTypeQuery1, true, LastHitResult))
+		{
+			if (auto* hitActor = LastHitResult.GetActor())
+			{
+				if (auto* npc = Cast<ADialogueNPC>(hitActor))
+				{
+					// Render GUI
+					//PlayerHud->UpdateInteractionText("LMouse", "To Talk With NPC");
+				}
+			}
+		}
+	}
+}
 
 
 

@@ -1,5 +1,5 @@
 #include "Prototype_OneGameMode.h"
-#include "Prototype_OneCharacter.h"
+#include "Characters/Prototype_OneCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 APrototype_OneGameMode::APrototype_OneGameMode()
