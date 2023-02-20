@@ -145,6 +145,7 @@ void APrototype_OneCharacter::ScrollZoom(const FInputActionValue& Value)
 		ZoomRatio = FMath::Clamp(ZoomRatio, 0, 1);
 		UE_LOG(LogTemp, Warning, TEXT("ZoomRatio (%f)" ), ZoomRatio );
 		CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
+		CameraBoom->SetRelativeRotation({FMath::Lerp(-50.0f, 0.0f,ZoomRatio / 2.0f),0.0f,0});
 	}
 }
 
