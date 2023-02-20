@@ -33,14 +33,14 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f;	
+	CameraBoom->TargetArmLength = 600.0f;	
 	CameraBoom->bUsePawnControlRotation = false;
+	CameraBoom->SetRelativeRotation({0,-50,0});
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetNotIncludingScale,USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
-	FollowCamera->SetRelativeLocation({-140, 0, 575});
-	FollowCamera->SetRelativeRotation({0,-50,0});
+
 }
 
 void APrototype_OneCharacter::BeginPlay()
@@ -49,7 +49,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	InitInputMappingContext();
 	InitGUI();
-
+	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -66,7 +66,7 @@ void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void APrototype_OneCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	Dt = DeltaSeconds;
 	InteractRaycast();
 
 }
@@ -103,6 +103,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Look);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryInteract);
+		EnhancedInputComponent->BindAction(ScrollZoomAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ScrollZoom);
 	}
 }
 
@@ -131,6 +132,20 @@ void APrototype_OneCharacter::Look(const FInputActionValue& Value)
 	//	AddControllerYawInput(LookAxisVector.X);
 	//	AddControllerPitchInput(LookAxisVector.Y);
 	//}
+}
+
+void APrototype_OneCharacter::ScrollZoom(const FInputActionValue& Value)
+{
+	auto MovementVector = Value.Get<float>();
+
+	UE_LOG(LogTemp, Warning, TEXT("Scrolled! (%s)" ), *FString::FromInt(MovementVector) );
+	if (Controller != nullptr)
+	{
+		ZoomRatio += MovementVector * Dt * 10;
+		ZoomRatio = FMath::Clamp(ZoomRatio, 0, 1);
+		UE_LOG(LogTemp, Warning, TEXT("ZoomRatio (%f)" ), ZoomRatio );
+		CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
+	}
 }
 
 void APrototype_OneCharacter::TryInteract()

@@ -22,6 +22,8 @@ private:
 	class UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* InteractAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+    class UInputAction* ScrollZoomAction;
 
 public:
 	APrototype_OneCharacter();
@@ -29,6 +31,7 @@ public:
 protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
 	void InteractRaycast();
 
@@ -54,6 +57,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	UPlayerHUD* PlayerHud;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int LargestZoomDistance{800};
+	float ZoomRatio = 0.0f;
+	float Dt{};
 	
 	// Prefabs
 protected:
