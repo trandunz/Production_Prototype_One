@@ -38,7 +38,7 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	CameraBoom->SetRelativeRotation({0,-50,0});
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetNotIncludingScale,USpringArmComponent::SocketName);
+	FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::KeepRelativeTransform,USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
 }
@@ -68,7 +68,7 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	Dt = DeltaSeconds;
 	InteractRaycast();
-
+	
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -152,21 +152,37 @@ void APrototype_OneCharacter::ScrollZoom(const FInputActionValue& Value)
 void APrototype_OneCharacter::TryInteract()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Try Interact") );
-	//DrawDebugLine(
-	//		GetWorld(),
-	//		FollowCamera->GetComponentLocation(),
-	//		LastHitResult.Location,
-	//		FColor(255, 0, 0),
-	//		true, -1, 0,
-	//		12.333
-	//	);
-	
-	if (auto* hitActor = LastHitResult.GetActor())
+	TArray<AActor*> nearbyActors;
+	TArray<AActor*> interactables;
+	float nearestActor{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(),nearbyActors);
+	for(auto* actor : nearbyActors)
 	{
-		if (auto* npc = Cast<ADialogueNPC>(hitActor))
+		if (actor)
 		{
-			// Chat to NPC
-			UE_LOG(LogTemp, Warning, TEXT("Chat to NPC") );
+			if (auto* interactable = Cast<IInteractInterface>(actor))
+			{
+				interactables.Add(actor);
+			}
+		}
+	}
+	if (auto* nearestNPC = UGameplayStatics::FindNearestActor(GetActorLocation(), interactables, nearestActor))
+	{
+		if (nearestActor <= 200)
+		{
+			if (auto* npc = Cast<IInteractInterface>(nearestNPC))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Chat to NPC") );
+				npc->Interact();
+				if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+				{
+					PlayerController->SetInputMode(FInputModeUIOnly{});
+				}
+				PlayerHud->ShowDialogueBox(true);
+				GetCharacterMovement()->Velocity = {};
+				GetCharacterMovement()->StopMovementImmediately();
+				GetCharacterMovement()->StopActiveMovement();
+			}
 		}
 	}
 }

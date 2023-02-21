@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Prototype_One/Interfaces/InteractInterface.h"
 #include "PrototypeEnemy.generated.h"
 
 UCLASS()

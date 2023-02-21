@@ -41,3 +41,8 @@ void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void ADialogueNPC::Interact()
+{
+	
+}
+

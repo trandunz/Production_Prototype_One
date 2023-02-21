@@ -62,6 +62,7 @@ public:
 	int LargestZoomDistance{800};
 	float ZoomRatio = 0.0f;
 	float Dt{};
+	bool IsTalking{};
 	
 	// Prefabs
 protected:
