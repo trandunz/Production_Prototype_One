@@ -51,6 +51,8 @@ void APrototype_OneCharacter::BeginPlay()
 	InitInputMappingContext();
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
+
+	EndSprint();
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -105,6 +107,8 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Look);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryInteract);
 		EnhancedInputComponent->BindAction(ScrollZoomAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ScrollZoom);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 	}
 }
 
@@ -122,6 +126,16 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection , MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void APrototype_OneCharacter::StartSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void APrototype_OneCharacter::EndSprint()
+{
+	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
 }
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
