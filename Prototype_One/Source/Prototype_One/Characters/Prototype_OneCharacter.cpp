@@ -14,6 +14,7 @@
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Prototype_One/Sword.h"
+#include "Prototype_One/Components/RPGEntityComponent.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -42,6 +43,7 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::KeepRelativeTransform,USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
 }
 
 void APrototype_OneCharacter::BeginPlay()
