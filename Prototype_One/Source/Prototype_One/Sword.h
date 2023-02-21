@@ -22,11 +22,13 @@ public:
 	virtual void Interact() override;
 
 protected:
-	bool IsEquiped{};
+
 public:
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
 	
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	class UStaticMeshComponent* Mesh;
+
+	bool IsEquiped{};
 };

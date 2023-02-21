@@ -13,6 +13,7 @@
 #include "DrawDebugHelpers.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Prototype_One/Sword.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -162,7 +163,10 @@ void APrototype_OneCharacter::TryInteract()
 		{
 			if (auto* interactable = Cast<IInteractInterface>(actor))
 			{
-				interactables.Add(actor);
+				if (CurrentlyHeldActor != actor)
+				{
+					interactables.Add(actor);
+				}
 			}
 		}
 	}
@@ -172,9 +176,7 @@ void APrototype_OneCharacter::TryInteract()
 		{
 			if (auto* npc = Cast<IInteractInterface>(nearestNPC))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Chat to NPC") );
 				npc->Interact();
-
 			}
 		}
 	}

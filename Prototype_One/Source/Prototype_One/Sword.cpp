@@ -46,7 +46,8 @@ void ASword::Interact()
 		IsEquiped = true;
 		if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
-			AttachToComponent(charatcer->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r"));
+			AttachToComponent(charatcer->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Sword_Socket"));
+			charatcer->CurrentlyHeldActor = this;
 		}
 	}
 	
