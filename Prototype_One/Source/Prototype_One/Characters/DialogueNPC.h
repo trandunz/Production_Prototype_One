@@ -17,7 +17,6 @@ protected:
 	virtual void BeginPlay() override;
 	
 	void UpdateInteractionOutline();
-	void UpdateInteractionText();
 public:	
 	virtual void Tick(float DeltaTime) override;
 	

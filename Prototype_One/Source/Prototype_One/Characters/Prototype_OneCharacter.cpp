@@ -174,14 +174,7 @@ void APrototype_OneCharacter::TryInteract()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Chat to NPC") );
 				npc->Interact();
-				if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-				{
-					PlayerController->SetInputMode(FInputModeUIOnly{});
-				}
-				PlayerHud->ShowDialogueBox(true);
-				GetCharacterMovement()->Velocity = {};
-				GetCharacterMovement()->StopMovementImmediately();
-				GetCharacterMovement()->StopActiveMovement();
+
 			}
 		}
 	}

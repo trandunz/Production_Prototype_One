@@ -1,7 +1,9 @@
 #include "DialogueNPC.h"
 
 #include "Prototype_OneCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Widgets/PlayerHUD.h"
 
 ADialogueNPC::ADialogueNPC()
 {
@@ -43,6 +45,13 @@ void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ADialogueNPC::Interact()
 {
-	
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetInputMode(FInputModeUIOnly{});
+	if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		charatcer->PlayerHud->ShowDialogueBox(true);
+		charatcer->GetCharacterMovement()->Velocity = {};
+		charatcer->GetCharacterMovement()->StopMovementImmediately();
+		charatcer->GetCharacterMovement()->StopActiveMovement();
+	}
 }
 
