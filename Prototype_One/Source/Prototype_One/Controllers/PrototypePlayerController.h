@@ -8,4 +8,6 @@ UCLASS()
 class PROTOTYPE_ONE_API APrototypePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+
 };
