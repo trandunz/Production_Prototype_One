@@ -23,6 +23,8 @@ public:
 
 	UFUNCTION()
 	void OnSeePawn(class APawn* _pawn);
+
+	void Attack();
 	
 	UPROPERTY(EditAnywhere)
 	class UPawnSensingComponent* PawnSensingComponent;
@@ -34,4 +36,7 @@ public:
 	class APawn* LastSeenPawn{};
 
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* AttackMontage;
 };

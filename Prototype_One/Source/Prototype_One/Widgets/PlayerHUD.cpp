@@ -26,3 +26,11 @@ void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message
 		InteractionText->SetText(FText::FromString(_interactionKey == "" ? "" : "Press " + _interactionKey + " " + _message));
 	}
 }
+
+void UPlayerHUD::UpdateHealthText(int _currentHealth)
+{
+	if (HealthText)
+	{
+		HealthText->SetText(FText::FromString(FString::FromInt(_currentHealth)));
+	}
+}

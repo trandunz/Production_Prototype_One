@@ -18,3 +18,17 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void URPGEntityComponent::TakeDamage(int _amount)
+{
+	if (CurrentHealth > 0)
+	{
+		CurrentHealth -= _amount;
+
+		if (CurrentHealth <= 0)
+		{
+			CurrentHealth = 0;
+			
+		}
+	}
+}
+

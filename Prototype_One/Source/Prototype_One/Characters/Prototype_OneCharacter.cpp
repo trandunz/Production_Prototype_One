@@ -73,7 +73,8 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	Dt = DeltaSeconds;
 	InteractRaycast();
-	
+	if (PlayerHud)
+		PlayerHud->UpdateHealthText(EntityComponent->CurrentHealth);
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()

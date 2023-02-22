@@ -7,6 +7,7 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prototype_One/Controllers/EnemyController.h"
+#include "Prototype_One/Components/RPGEntityComponent.h"
 
 APrototypeEnemy::APrototypeEnemy()
 {
@@ -48,5 +49,18 @@ void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 	//		aiInstance->MoveToLocation(character->GetOwner()->GetActorLocation());
 	//	}
 	//}
+}
+
+void APrototypeEnemy::Attack()
+{
+	if (AttackMontage)
+	{
+		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
+
+		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			player->EntityComponent->TakeDamage(34);
+		}
+	}
 }
 

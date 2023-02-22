@@ -11,11 +11,14 @@ class PROTOTYPE_ONE_API UPlayerHUD : public UUserWidget
 public:
 	virtual void NativeOnInitialized() override;
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
-
+	void UpdateHealthText(int _currentHealth);
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* InteractionText;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UDialogueWidget* DialogueWidget;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UTextBlock* HealthText;
 };
