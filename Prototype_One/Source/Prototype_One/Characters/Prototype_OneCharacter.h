@@ -47,6 +47,11 @@ protected:
 
 	void InitInputMappingContext();
 	void InitGUI();
+
+	void Ragdoll();
+
+public:
+	void TakeDamage(int _amount);
 	
 	// References
 public:

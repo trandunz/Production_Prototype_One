@@ -26,17 +26,21 @@ void ASword::Tick(float DeltaTime)
 
 void ASword::UpdateInteractionOutline()
 {
-	auto distanceToPlayer = (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation() - GetActorLocation()).Length();
-	if (distanceToPlayer <= InteractionRange && !IsEquiped)
+	if (auto* character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 	{
-		Mesh->SetRenderCustomDepth(true);
-		Mesh->CustomDepthStencilValue = 1;
+		auto distanceToPlayer = (character->GetActorLocation() - GetActorLocation()).Length();
+		if (distanceToPlayer <= InteractionRange && !IsEquiped)
+		{
+			Mesh->SetRenderCustomDepth(true);
+			Mesh->CustomDepthStencilValue = 1;
+		}
+		else
+		{
+			Mesh->SetRenderCustomDepth(false);
+			Mesh->CustomDepthStencilValue = 1;
+		}
 	}
-	else
-	{
-		Mesh->SetRenderCustomDepth(false);
-		Mesh->CustomDepthStencilValue = 1;
-	}
+	
 }
 
 void ASword::Interact()

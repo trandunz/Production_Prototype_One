@@ -6,8 +6,11 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Prototype_One/Prototype_OneGameMode.h"
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 APrototypeEnemy::APrototypeEnemy()
 {
@@ -17,6 +20,7 @@ APrototypeEnemy::APrototypeEnemy()
 	Stimulus = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
 	Stimulus->RegisterForSense(TSubclassOf<UAISense_Sight>());
 	Stimulus->RegisterWithPerceptionSystem();
+	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
 }
 
 void APrototypeEnemy::BeginPlay()
@@ -59,8 +63,44 @@ void APrototypeEnemy::Attack()
 
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
-			player->EntityComponent->TakeDamage(34);
+			player->TakeDamage(34);
 		}
 	}
+}
+
+void APrototypeEnemy::TakeDamage(int _amount)
+{
+	EntityComponent->TakeDamage(_amount);
+	if (EntityComponent->CurrentHealth <= 0)
+		Ragdoll();
+}
+
+void APrototypeEnemy::Ragdoll()
+{
+	SetReplicateMovement(false);
+
+	DetachFromControllerPendingDestroy();
+	
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	SetActorEnableCollision(true);
+	
+	GetMesh()->SetAllBodiesSimulatePhysics(true);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->WakeAllRigidBodies();
+	GetMesh()->bBlendPhysics = true;
+
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterComp)
+	{
+		CharacterComp->StopMovementImmediately();
+		CharacterComp->DisableMovement();
+		CharacterComp->SetComponentTickEnabled(false);
+	}
+
+	SetLifeSpan(10.0f);
 }
 

@@ -15,6 +15,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Controllers/PrototypePlayerController.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -73,8 +74,6 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	Dt = DeltaSeconds;
 	InteractRaycast();
-	if (PlayerHud)
-		PlayerHud->UpdateHealthText(EntityComponent->CurrentHealth);
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -223,6 +222,47 @@ void APrototype_OneCharacter::InteractRaycast()
 				}
 			}
 		}
+	}
+}
+
+void APrototype_OneCharacter::Ragdoll()
+{
+	SetReplicateMovement(false);
+
+	DetachFromControllerPendingDestroy();
+	
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	SetActorEnableCollision(true);
+	
+	GetMesh()->SetAllBodiesSimulatePhysics(true);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->WakeAllRigidBodies();
+	GetMesh()->bBlendPhysics = true;
+
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterComp)
+	{
+		CharacterComp->StopMovementImmediately();
+		CharacterComp->DisableMovement();
+		CharacterComp->SetComponentTickEnabled(false);
+	}
+
+	SetLifeSpan(10.0f);
+}
+
+void APrototype_OneCharacter::TakeDamage(int _amount)
+{
+	EntityComponent->TakeDamage(_amount);
+	if (EntityComponent->CurrentHealth <= 0)
+	{
+		Ragdoll();
+		
+		//Controller->SetIgnoreMoveInput(true);
+		//Controller->Possess(nullptr);
 	}
 }
 

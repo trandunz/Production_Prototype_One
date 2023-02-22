@@ -25,6 +25,9 @@ public:
 	void OnSeePawn(class APawn* _pawn);
 
 	void Attack();
+	void TakeDamage(int _amount);
+
+	void Ragdoll();
 	
 	UPROPERTY(EditAnywhere)
 	class UPawnSensingComponent* PawnSensingComponent;
@@ -39,4 +42,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditAnywhere)
+	class URPGEntityComponent* EntityComponent;
 };

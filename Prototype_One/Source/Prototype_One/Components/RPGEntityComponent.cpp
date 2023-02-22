@@ -3,6 +3,7 @@
 URPGEntityComponent::URPGEntityComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
 }
 
 void URPGEntityComponent::BeginPlay()

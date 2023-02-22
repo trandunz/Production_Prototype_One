@@ -19,17 +19,21 @@ void ADialogueNPC::BeginPlay()
 
 void ADialogueNPC::UpdateInteractionOutline()
 {
-	auto distanceToPlayer = (UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation() - GetActorLocation()).Length();
-	if (distanceToPlayer <= InteractionRange)
+	if (auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 	{
-		GetMesh()->SetRenderCustomDepth(true);
-		GetMesh()->CustomDepthStencilValue = 1;
+		auto distanceToPlayer = (player->GetActorLocation() - GetActorLocation()).Length();
+		if (distanceToPlayer <= InteractionRange)
+		{
+			GetMesh()->SetRenderCustomDepth(true);
+			GetMesh()->CustomDepthStencilValue = 1;
+		}
+		else
+		{
+			GetMesh()->SetRenderCustomDepth(false);
+			GetMesh()->CustomDepthStencilValue = 1;
+		}
 	}
-	else
-	{
-		GetMesh()->SetRenderCustomDepth(false);
-		GetMesh()->CustomDepthStencilValue = 1;
-	}
+	
 }
 
 void ADialogueNPC::Tick(float DeltaTime)
