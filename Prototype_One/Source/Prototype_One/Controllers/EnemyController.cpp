@@ -1,5 +1,7 @@
 #include "EnemyController.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -33,6 +35,23 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	{
 		if (BehaviorTree->BlackboardAsset)
 			Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	}
+}
+
+void AEnemyController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (auto* character = Cast<APrototypeEnemy>(GetCharacter()))
+	{
+		if (BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+		{
+			character->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
+		}
+		else
+		{
+			character->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+		}
 	}
 }
 

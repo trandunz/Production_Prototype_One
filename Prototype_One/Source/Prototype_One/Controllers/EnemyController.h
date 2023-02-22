@@ -17,7 +17,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
-
+	virtual void Tick(float DeltaSeconds) override;
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = true))
 	class UBehaviorTree* BehaviorTree;
@@ -29,8 +29,6 @@ private:
 	class UBlackboardComponent* BlackboardComponent;
 
 	class UAISenseConfig_Sight* SightConfig;
-
-
 
 	UFUNCTION()
 	void OnUpdated(AActor* actor, FAIStimulus const stimulus);
