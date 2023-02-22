@@ -21,4 +21,15 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION()
+	void OnSeePawn(class APawn* _pawn);
+	
+	UPROPERTY(EditAnywhere)
+	class UPawnSensingComponent* PawnSensingComponent;
+
+	UPROPERTY(EditAnywhere)
+	bool SeenPlayer{};
+
+	UPROPERTY(EditAnywhere)
+	class APawn* LastSeenPawn{};
 };
