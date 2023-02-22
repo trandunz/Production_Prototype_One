@@ -33,4 +33,6 @@ public:
 	int CurrentStamina{};
 	UPROPERTY(EditAnywhere)
 	int MaxStamina{100};
+	UPROPERTY(EditAnywhere)
+	int CurrentMoney{};
 };
