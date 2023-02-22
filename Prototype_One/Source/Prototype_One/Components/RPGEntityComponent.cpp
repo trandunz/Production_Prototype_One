@@ -32,3 +32,16 @@ void URPGEntityComponent::TakeDamage(int _amount)
 	}
 }
 
+void URPGEntityComponent::Heal(int _amount)
+{
+	if (CurrentHealth > 0)
+	{
+		CurrentHealth += _amount;
+
+		if (CurrentHealth >= MaxHealth)
+		{
+			CurrentHealth = MaxHealth;
+		}
+	}
+}
+

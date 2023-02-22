@@ -20,6 +20,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void TakeDamage(int _amount);
+	void Heal(int _amount);
 	
 	UPROPERTY(EditAnywhere)
 	int CurrentHealth{};
