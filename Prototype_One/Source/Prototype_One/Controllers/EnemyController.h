@@ -27,4 +27,12 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI", meta = (AllowPrivateAccess = true))
 	class UBlackboardComponent* BlackboardComponent;
+
+	class UAISenseConfig_Sight* SightConfig;
+
+
+
+	UFUNCTION()
+	void OnUpdated(AActor* actor, FAIStimulus const stimulus);
+	void SetupPerceptionSystem();
 };

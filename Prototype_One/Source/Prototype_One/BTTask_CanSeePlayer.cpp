@@ -6,6 +6,7 @@
 #include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTTask_CanSeePlayer::UBTTask_CanSeePlayer()
 {
@@ -15,30 +16,10 @@ UBTTask_CanSeePlayer::UBTTask_CanSeePlayer()
 EBTNodeResult::Type UBTTask_CanSeePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	auto* aiController = OwnerComp.GetAIOwner();
-	auto* aiPawn = aiController->GetPawn();
-
+	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	aiController->GetBlackboardComponent()->SetValueAsObject(BlackboardKey.SelectedKeyName, player);
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	auto* enemy = Cast<APrototypeEnemy>(aiPawn);
-	if (enemy->SeenPlayer)
-	{
-		auto* lastSeenPawn = Cast<APrototypeEnemy>(aiPawn)->LastSeenPawn;
-		if ((lastSeenPawn->GetActorLocation() - aiPawn->GetActorLocation()).Length() > 1500.0f)
-		{
-			enemy->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
-			return EBTNodeResult::Failed;
-		}
-		else
-		{
-			enemy->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
-			aiController->GetBlackboardComponent()->SetValueAsObject(BlackboardKey.SelectedKeyName, Cast<APrototypeEnemy>(aiPawn)->LastSeenPawn);
-			return EBTNodeResult::Succeeded;
-		}
-	}
-	else
-	{
-		enemy->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
-		return EBTNodeResult::Failed;
-	}
+	return EBTNodeResult::Succeeded;
 }
 
 FString UBTTask_CanSeePlayer::GetStaticDescription() const

@@ -32,4 +32,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class APawn* LastSeenPawn{};
+
+	class UAIPerceptionStimuliSourceComponent* Stimulus;
 };
