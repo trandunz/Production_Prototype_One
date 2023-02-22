@@ -3,6 +3,8 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Characters/PrototypeEnemy.h"
+#include "Characters/Prototype_OneCharacter.h"
 
 UBTTask_FindRandomLocation::UBTTask_FindRandomLocation()
 {
@@ -17,11 +19,16 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 
 	auto* aiController = OwnerComp.GetAIOwner();
 	auto* aiPawn = aiController->GetPawn();
+	
 	auto origin = aiPawn->GetActorLocation();
 	auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SearchRadius, location))
 	{
-		aiController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, location.Location);
+		if (!Cast<APrototypeEnemy>(aiPawn)->SeenPlayer)
+		{
+			aiController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, location.Location);
+		}
+		
 	}
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

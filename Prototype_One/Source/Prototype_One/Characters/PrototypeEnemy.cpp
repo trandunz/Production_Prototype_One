@@ -1,9 +1,14 @@
 #include "PrototypeEnemy.h"
 
+#include "Prototype_OneCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Perception/PawnSensingComponent.h"
+
 APrototypeEnemy::APrototypeEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("Pawn Sensing Component"));
+	PawnSensingComponent->OnSeePawn.AddDynamic(this, &APrototypeEnemy::OnSeePawn);
 }
 
 void APrototypeEnemy::BeginPlay()
@@ -22,5 +27,14 @@ void APrototypeEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void APrototypeEnemy::OnSeePawn(APawn* _pawn)
+{
+	LastSeenPawn = _pawn;
+	if (auto* character = Cast<APrototype_OneCharacter>(_pawn))
+	{
+		SeenPlayer = true;
+	}
 }
 

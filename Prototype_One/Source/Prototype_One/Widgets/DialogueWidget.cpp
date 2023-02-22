@@ -26,8 +26,9 @@ void UDialogueWidget::ShowDialogueBox(bool _show)
 	}
 	else
 	{
-		//DialogueText->SetText(FText{});
+		DialogueText->SetText(FText::FromString(DialogueLines[0]));
 		SetVisibility(ESlateVisibility::Hidden);
+		CurrentDialogueIndex = 0;
 		if (auto* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
 		{
 			playerController->SetInputMode(FInputModeGameAndUI{});
@@ -43,7 +44,6 @@ void UDialogueWidget::OnNextDialogueLine()
 	{
 		if (DialogueBackground->GetVisibility() == ESlateVisibility::Visible)
 		{
-			CurrentDialogueIndex = 0;
 			ShowDialogueBox(false);
 		}
 			
