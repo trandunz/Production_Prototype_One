@@ -252,6 +252,7 @@ void APrototype_OneCharacter::Ragdoll()
 	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	SetActorEnableCollision(true);
 	
 	GetMesh()->SetAllBodiesSimulatePhysics(true);
