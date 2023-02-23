@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Prototype_One/Interfaces/InteractInterface.h"
+#include "Prototype_One/EnemyDrop.h"
 #include "PrototypeEnemy.generated.h"
 
 UCLASS()
@@ -46,4 +47,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class URPGEntityComponent* EntityComponent;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AEnemyDrop> ItemDropPrefab;
 };

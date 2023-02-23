@@ -12,6 +12,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
 APrototypeEnemy::APrototypeEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -81,6 +82,14 @@ void APrototypeEnemy::Attack()
 
 void APrototypeEnemy::Ragdoll()
 {
+	if (ItemDropPrefab)
+	{
+		auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
+		itemDrop->SetActorLocation(GetActorLocation() + FVector{0,0,300});
+		itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+	}
+	
+	
 	SetReplicateMovement(false);
 
 	DetachFromControllerPendingDestroy();
