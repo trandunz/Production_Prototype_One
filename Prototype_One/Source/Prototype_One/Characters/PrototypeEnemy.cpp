@@ -40,6 +40,18 @@ void APrototypeEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 }
 
+void APrototypeEnemy::TakeDamage(int _amount)
+{
+	if (EntityComponent)
+	{
+		EntityComponent->TakeDamage(_amount);
+		if (EntityComponent->CurrentHealth <= 0)
+		{
+			Ragdoll();
+		}
+	}
+}
+
 void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 {
 	//LastSeenPawn = _pawn;
@@ -65,13 +77,6 @@ void APrototypeEnemy::Attack()
 			player->TakeDamage(34);
 		}
 	}
-}
-
-void APrototypeEnemy::TakeDamage(int _amount)
-{
-	EntityComponent->TakeDamage(_amount);
-	if (EntityComponent->CurrentHealth <= 0)
-		Ragdoll();
 }
 
 void APrototypeEnemy::Ragdoll()

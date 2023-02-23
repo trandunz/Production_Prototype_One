@@ -21,11 +21,12 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void TakeDamage(int _amount);
+	
 	UFUNCTION()
 	void OnSeePawn(class APawn* _pawn);
 
 	void Attack();
-	void TakeDamage(int _amount);
 
 	void Ragdoll();
 	

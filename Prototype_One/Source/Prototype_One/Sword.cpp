@@ -68,7 +68,7 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 {
 	if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
 	{
-		enemy->EntityComponent->TakeDamage(100);
+		enemy->TakeDamage(100);
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("Sword Hit!"));
