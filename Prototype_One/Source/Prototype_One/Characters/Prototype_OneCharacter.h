@@ -17,6 +17,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* JumpAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
@@ -34,6 +36,8 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void StartSprint();
 	void EndSprint();
+	void TryRoll();
+	void TryMelee();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
@@ -91,5 +95,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* RollAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* MeleeAnimation;
 };
 

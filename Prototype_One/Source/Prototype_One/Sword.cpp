@@ -1,5 +1,8 @@
 #include "Sword.h"
+
+#include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
+#include "Components/RPGEntityComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ASword::ASword()
@@ -15,6 +18,9 @@ void ASword::BeginPlay()
 {
 	Super::BeginPlay();
 	Mesh->SetRenderCustomDepth(true);
+
+	Mesh->SetCollisionProfileName("Trigger");
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnHit);
 }
 
 void ASword::Tick(float DeltaTime)
@@ -55,4 +61,15 @@ void ASword::Interact()
 		}
 	}
 	
+}
+
+void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
+	{
+		enemy->EntityComponent->TakeDamage(100);
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
+	}
+	//UE_LOG(LogTemp, Warning, TEXT("Sword Hit!"));
 }

@@ -1,28 +1,28 @@
-C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Private\RiderGameControl.cpp
+C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Private\RiderGameControl.cpp
 /I .
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Private
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Private
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_core_cpp\src\main
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_framework_cpp\src\main\util
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\src\rd_gen_cpp\src
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\ordered-map\include
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\optional\tl
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\variant\include
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\string-view-lite\include
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\include
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RD\thirdparty\CTPL\include
 /I Runtime
 /I Runtime\TraceLog\Public
 /I Runtime\Core\Public
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\Library
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\RdEditorProtocol
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\Library
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public\Model\RdEditorProtocol
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderLink\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\HeadMountedDisplay\UHT
 /I Runtime\HeadMountedDisplay\Public
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\AugmentedReality\UHT
@@ -293,18 +293,19 @@ C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\D
 /I ..\Intermediate\Build\Win64\UnrealEditor\Inc\ToolWidgets\UHT
 /I Developer\ToolWidgets\Public
 /I Runtime\Windows
-/I C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Public
-/I ThirdParty\mimalloc\include
-/I ThirdParty\LibTiff\Source\Win64
-/I ThirdParty\LibTiff\Source
-/I "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30133\INCLUDE"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\ucrt"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\shared"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\um"
-/I "C:\Program Files (x86)\Windows Kits\10\include\10.0.18362.0\winrt"
-/FI"C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\Definitions.h"
-/Fo"C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.obj"
-/sourceDependencies C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.dep.json
+/I C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Source\RiderGameControl\Public
+/external:W0
+/external:I ThirdParty\mimalloc\include
+/external:I ThirdParty\LibTiff\Source\Win64
+/external:I ThirdParty\LibTiff\Source
+/external:I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\INCLUDE"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\ucrt"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\shared"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\um"
+/external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22000.0\winrt"
+/FI"C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\Definitions.h"
+/Fo"C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.obj"
+/sourceDependencies C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderGameControl\RiderGameControl.cpp.dep.json
 /Zc:inline
 /nologo
 /Oi

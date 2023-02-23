@@ -102,9 +102,11 @@ void APrototype_OneCharacter::InitGUI()
 void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryRoll);
+		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryMelee);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Look);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryInteract);
@@ -138,6 +140,20 @@ void APrototype_OneCharacter::StartSprint()
 void APrototype_OneCharacter::EndSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
+}
+
+void APrototype_OneCharacter::TryRoll()
+{
+	if (RollAnimation)
+		GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
+	
+}
+
+void APrototype_OneCharacter::TryMelee()
+{
+	if (MeleeAnimation)
+		GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
+	
 }
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)

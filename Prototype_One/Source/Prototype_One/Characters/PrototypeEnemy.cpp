@@ -32,7 +32,6 @@ void APrototypeEnemy::BeginPlay()
 void APrototypeEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APrototypeEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
