@@ -1,5 +1,6 @@
 #include "PlayerHUD.h"
 
+#include "DebugMenu.h"
 #include "GameplayTask.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
@@ -13,18 +14,12 @@ void UPlayerHUD::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	
+	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		UpdateHealthText(player->EntityComponent->CurrentHealth);
-		UpdateMoneyText(player->EntityComponent->CurrentMoney);
-	}
 }
 
 void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message)
@@ -40,21 +35,14 @@ void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message
 	}
 }
 
-void UPlayerHUD::UpdateHealthText(int _currentHealth)
-{
-	if (HealthText)
-	{
-		HealthText->SetText(FText::FromString(FString::FromInt(_currentHealth) + "HP"));
-	}
-}
 
-void UPlayerHUD::UpdateMoneyText(int _currentMoney)
+void UPlayerHUD::ToggleDebugMenu()
 {
-	if (MoneyText)
+	if (DebugMenu)
 	{
-		if (_currentMoney == 69)
-			MoneyText->SetText(FText::FromString("$" + FString::FromInt(_currentMoney) + " (Nice)"));
+		if (DebugMenu->GetVisibility() == ESlateVisibility::Hidden)
+			DebugMenu->SetVisibility(ESlateVisibility::Visible);
 		else
-			MoneyText->SetText(FText::FromString("$" + FString::FromInt(_currentMoney)));
+			DebugMenu->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

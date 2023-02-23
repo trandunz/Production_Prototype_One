@@ -28,6 +28,8 @@ private:
     class UInputAction* ScrollZoomAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SprintAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ToggleDebugAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -41,6 +43,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
+	void ToggleDebugMenu();
 	void InteractRaycast();
 
 protected:

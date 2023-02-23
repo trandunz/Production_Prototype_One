@@ -113,6 +113,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(ScrollZoomAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ScrollZoom);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
+		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
 	}
 }
 
@@ -211,6 +212,14 @@ void APrototype_OneCharacter::TryInteract()
 				npc->Interact();
 			}
 		}
+	}
+}
+
+void APrototype_OneCharacter::ToggleDebugMenu()
+{
+	if (PlayerHud)
+	{
+		PlayerHud->ToggleDebugMenu();
 	}
 }
 

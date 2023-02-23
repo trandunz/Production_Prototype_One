@@ -1,0 +1,31 @@
+#include "DebugMenu.h"
+
+#include "Components/Button.h"
+#include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
+
+void UDebugMenu::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	bHasScriptImplementedTick = true;
+	CloseButton->OnPressed.AddDynamic(this, &UDebugMenu::OnCloseMenu);
+}
+
+void UDebugMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		PlayerHealthText->SetText(FText::FromString("Health: " + FString::FromInt(player->EntityComponent->CurrentHealth)));
+		PlayerMoneyText->SetText(FText::FromString("Money: " + FString::FromInt(player->EntityComponent->CurrentMoney)));
+		PlayerManaText->SetText(FText::FromString("Mana: " + FString::FromInt(player->EntityComponent->CurrentMana)));
+		PlayerStaminaText->SetText(FText::FromString("Stamina: " + FString::FromInt(player->EntityComponent->CurrentStamina)));
+	}
+}
+
+void UDebugMenu::OnCloseMenu()
+{
+	SetVisibility(ESlateVisibility::Hidden);
+}

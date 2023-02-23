@@ -12,8 +12,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
-	void UpdateHealthText(int _currentHealth);
-	void UpdateMoneyText(int _currentMoney);
+	void ToggleDebugMenu();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* InteractionText;
@@ -22,8 +21,5 @@ public:
 	class UDialogueWidget* DialogueWidget;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* HealthText;
-
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* MoneyText;
+	class UDebugMenu* DebugMenu;
 };
