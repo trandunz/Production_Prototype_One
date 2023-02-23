@@ -1,10 +1,15 @@
 #include "DebugMenu.h"
 
+#include "ToolBuilderUtil.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+#include "Perception/PawnSensingComponent.h"
 
 void UDebugMenu::NativeOnInitialized()
 {
@@ -22,6 +27,13 @@ void UDebugMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		PlayerMoneyText->SetText(FText::FromString("Money: " + FString::FromInt(player->EntityComponent->CurrentMoney)));
 		PlayerManaText->SetText(FText::FromString("Mana: " + FString::FromInt(player->EntityComponent->CurrentMana)));
 		PlayerStaminaText->SetText(FText::FromString("Stamina: " + FString::FromInt(player->EntityComponent->CurrentStamina)));
+	}
+
+	TArray<AActor*> objects;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(),objects);
+	for(auto* enemy : objects)
+	{
+		Cast<APrototypeEnemy>(enemy)->PawnSensingComponent->See
 	}
 }
 
