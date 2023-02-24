@@ -78,7 +78,6 @@ public:
 protected:
     // fields
     FString pathName_;
-    FString guid_;
     
 
 private:
@@ -87,16 +86,15 @@ private:
 
 public:
     // primary ctor
-    BlueprintReference(FString pathName_, FString guid_);
+    explicit BlueprintReference(FString pathName_);
     
     // deconstruct trait
     #ifdef __cpp_structured_bindings
     template <size_t I>
     decltype(auto) get() const
     {
-        if constexpr (I < 0 || I >= 2) static_assert (I < 0 || I >= 2, "I < 0 || I >= 2");
+        if constexpr (I < 0 || I >= 1) static_assert (I < 0 || I >= 1, "I < 0 || I >= 1");
         else if constexpr (I==0)  return static_cast<const FString&>(get_pathName());
-        else if constexpr (I==1)  return static_cast<const FString&>(get_guid());
     }
     #endif
     
@@ -126,7 +124,6 @@ public:
     
     // getters
     FString const & get_pathName() const;
-    FString const & get_guid() const;
     
     // intern
 
@@ -174,7 +171,7 @@ struct hash<JetBrains::EditorPlugin::BlueprintReference> {
 namespace std {
 
 template <>
-class tuple_size<JetBrains::EditorPlugin::BlueprintReference> : public integral_constant<size_t, 2> {};
+class tuple_size<JetBrains::EditorPlugin::BlueprintReference> : public integral_constant<size_t, 1> {};
 
 template <size_t I>
 class tuple_element<I, JetBrains::EditorPlugin::BlueprintReference> {

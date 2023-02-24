@@ -54,6 +54,10 @@ void APrototype_OneCharacter::BeginPlay()
 	InitInputMappingContext();
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth);
+	}
 
 	EndSprint();
 }
@@ -347,6 +351,10 @@ void APrototype_OneCharacter::Ragdoll()
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
 	EntityComponent->TakeDamage(_amount);
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth);
+	}
 	if (EntityComponent->CurrentHealth <= 0)
 	{
 		Ragdoll();

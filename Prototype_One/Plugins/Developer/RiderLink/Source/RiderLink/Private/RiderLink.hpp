@@ -12,8 +12,6 @@
 
 #include "RdEditorModel/RdEditorModel.Generated.h"
 
-class ProtocolFactory;
-
 namespace rd
 {
 	class Protocol;
@@ -49,7 +47,6 @@ private:
 	rd::LifetimeDefinition ModuleLifetimeDef{rd::Lifetime::Eternal()};
 	rd::SingleThreadScheduler Scheduler{ModuleLifetimeDef.lifetime, "MainScheduler"};
 	TUniquePtr<rd::LifetimeDefinition> WireLifetimeDef;
-	TUniquePtr<ProtocolFactory> ProtocolFactory;
 	TUniquePtr<rd::Protocol> Protocol;
 	rd::RdProperty<bool> RdIsModelAlive;
 	TUniquePtr<JetBrains::EditorPlugin::RdEditorModel> EditorModel;

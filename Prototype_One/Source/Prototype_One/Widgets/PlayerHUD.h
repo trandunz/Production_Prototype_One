@@ -11,6 +11,7 @@ class PROTOTYPE_ONE_API UPlayerHUD : public UUserWidget
 public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	void UpdateHealth(int _health);
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
 	void ToggleDebugMenu();
 	
@@ -22,4 +23,7 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UDebugMenu* DebugMenu;
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UProgressBar* HealthBar;
 };

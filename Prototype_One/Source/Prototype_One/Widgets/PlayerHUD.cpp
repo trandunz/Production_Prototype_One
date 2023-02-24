@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
@@ -20,6 +21,14 @@ void UPlayerHUD::NativeOnInitialized()
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+}
+
+void UPlayerHUD::UpdateHealth(int _health)
+{
+	if (HealthBar)
+	{
+		HealthBar->SetPercent(static_cast<float>(_health) / 100.0f);
+	}
 }
 
 void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message)
