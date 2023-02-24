@@ -29,11 +29,12 @@ class PROTOTYPE_ONE_API UDialogueWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category= AI, meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess))
 	bool EnableAIParaphrasing{};
 	static FString RandomHelloMessage;
-	FString API_KEY = "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";
-	
+
+	UPROPERTY(EditAnywhere)
+	FString API_KEY;
 private:
 	static void OnOpenAIResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
 	void SendOpenAIRequest(const FString& _input);
