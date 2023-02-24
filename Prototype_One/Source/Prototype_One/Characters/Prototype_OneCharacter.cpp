@@ -244,9 +244,37 @@ void APrototype_OneCharacter::TryInteract()
 	{
 		if (nearestActor <= 200)
 		{
-			if (auto* npc = Cast<IInteractInterface>(nearestNPC))
+			
+			if (auto* interactable = Cast<IInteractInterface>(nearestNPC))
 			{
-				npc->Interact();
+				if (Cast<ASword>(nearestNPC))
+				{
+					if (!CurrentlyHeldActor)
+					{
+						interactable->Interact();
+						CurrentlyHeldActor = nearestNPC;
+						return;
+					}
+					else
+					{
+						CurrentlyHeldActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+						CurrentlyHeldActor->SetActorLocation(GetActorLocation() + GetActorForwardVector() * 10);
+						if (auto* sword = Cast<ASword>(CurrentlyHeldActor))
+						{
+							sword->IsEquiped = false;
+						}
+						CurrentlyHeldActor = nullptr;
+						CurrentlyHeldActor = nearestNPC;
+						interactable->Interact();
+						
+						return;
+					}
+				}
+				else
+				{
+					interactable->Interact();
+					return;
+				}
 			}
 		}
 	}
