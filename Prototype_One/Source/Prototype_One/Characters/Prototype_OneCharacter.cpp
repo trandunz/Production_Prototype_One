@@ -44,7 +44,9 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::KeepRelativeTransform,USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	// Components
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
+	PlayerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("Player Inventory"));
 }
 
 void APrototype_OneCharacter::BeginPlay()

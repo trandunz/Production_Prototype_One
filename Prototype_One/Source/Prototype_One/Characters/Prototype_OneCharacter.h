@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Prototype_One/Components/PlayerInventory.h"
 #include "Prototype_OneCharacter.generated.h"
 
 class UPlayerHUD;
@@ -91,6 +92,10 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     class URPGEntityComponent* EntityComponent;
+
+	/* Component to handle all held items */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPlayerInventory* PlayerInventory;
 	
 	// Prefabs
 protected:
