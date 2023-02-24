@@ -171,13 +171,11 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 void APrototype_OneCharacter::StartSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	EntityComponent->IsStaminaDraining = true;
 }
 
 void APrototype_OneCharacter::EndSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
-	EntityComponent->IsStaminaDraining = false;
 }
 
 void APrototype_OneCharacter::TryRoll()
