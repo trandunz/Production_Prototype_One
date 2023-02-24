@@ -23,11 +23,27 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 }
 
-void UPlayerHUD::UpdateHealth(int _health)
+void UPlayerHUD::UpdateHealth(int _health, int _maxHealth)
 {
 	if (HealthBar)
 	{
-		HealthBar->SetPercent(static_cast<float>(_health) / 100.0f);
+		HealthBar->SetPercent(static_cast<float>(_health) / static_cast<float>(_maxHealth));
+	}
+}
+
+void UPlayerHUD::UpdateMana(int _mana, int _maxMana)
+{
+	if (ManaBar)
+	{
+		ManaBar->SetPercent(static_cast<float>(_mana) / static_cast<float>(_maxMana));
+	}
+}
+
+void UPlayerHUD::UpdateStamina(int _stamina, int _maxStamina)
+{
+	if (StaminaBar)
+	{
+		StaminaBar->SetPercent(static_cast<float>(_stamina) / static_cast<float>(_maxStamina));
 	}
 }
 

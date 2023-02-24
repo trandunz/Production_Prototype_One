@@ -56,7 +56,9 @@ void APrototype_OneCharacter::BeginPlay()
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth);
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+		PlayerHud->UpdateMana(EntityComponent->CurrentMana, EntityComponent->MaxMana);
+		PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
 	}
 
 	EndSprint();
@@ -353,7 +355,7 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 	EntityComponent->TakeDamage(_amount);
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth);
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
 	}
 	if (EntityComponent->CurrentHealth <= 0)
 	{
