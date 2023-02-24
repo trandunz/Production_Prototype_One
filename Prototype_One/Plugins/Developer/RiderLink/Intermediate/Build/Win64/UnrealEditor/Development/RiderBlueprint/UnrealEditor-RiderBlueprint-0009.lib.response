@@ -6,6 +6,6 @@
 /NAME:"UnrealEditor-RiderBlueprint-0009.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\Module.RiderBlueprint.cpp.obj"
-"C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\Default.rc2.res"
-/OUT:"C:\Users\trand\Documents\GitHub\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\UnrealEditor-RiderBlueprint-0009.lib"
+"C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\Module.RiderBlueprint.cpp.obj"
+"C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\Default.rc2.res"
+/OUT:"C:\MDS_Prototype1\Production_Prototype_One\Prototype_One\Plugins\Developer\RiderLink\Intermediate\Build\Win64\UnrealEditor\Development\RiderBlueprint\UnrealEditor-RiderBlueprint-0009.lib"

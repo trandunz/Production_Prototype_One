@@ -74,6 +74,16 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	Dt = DeltaSeconds;
 	InteractRaycast();
+
+	// Timer for dodging
+	if (dodgeMovementCurrentTime > 0)
+		dodgeMovementCurrentTime -= DeltaSeconds;
+
+	// Timer for combat
+	if (combatMovementCurrentTime > 0)
+		combatMovementCurrentTime -= DeltaSeconds;
+	
+	
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -121,15 +131,34 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
+	if (dodgeMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		if (Controller != nullptr)
+		{
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		
-		AddMovementInput(ForwardDirection , MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+			AddMovementInput(ForwardDirection , MovementVector.Y);
+			AddMovementInput(RightDirection, MovementVector.X);
+		}
+	}
+	else // Rolling code
+	{
+		if (dodgeMovementCurrentTime > 0)
+		{
+			if (Controller != nullptr)
+			{
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation(0, Rotation.Yaw, 0);
+				const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+				const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			
+				AddMovementInput(ForwardDirection, 1);
+				//AddMovementInput(RightDirection, GetActorForwardVector().X);
+			}
+		}
 	}
 }
 
@@ -145,16 +174,24 @@ void APrototype_OneCharacter::EndSprint()
 
 void APrototype_OneCharacter::TryRoll()
 {
-	if (RollAnimation)
-		GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
-	
+	if (dodgeMovementCurrentTime <= 0)
+	{
+		if (RollAnimation)
+		{
+			GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
+			dodgeMovementCurrentTime = dodgeMovementMaxTime;
+		}
+	}
 }
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (MeleeAnimation)
-		GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
-	
+	if (combatMovementCurrentTime <= 0)
+	{
+		if (MeleeAnimation)
+			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
+		combatMovementCurrentTime = combatMovementMaxTime;
+	}
 }
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
