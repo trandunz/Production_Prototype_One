@@ -61,7 +61,6 @@ void ASword::Interact()
 			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
 			AttachToComponent(charatcer->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Sword_Socket"));
 			charatcer->CurrentlyHeldActor = this;
-			
 		}
 	}
 	
