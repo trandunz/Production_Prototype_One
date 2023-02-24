@@ -257,11 +257,10 @@ void APrototype_OneCharacter::TryInteract()
 					}
 					else
 					{
-						CurrentlyHeldActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 						CurrentlyHeldActor->SetActorLocation(GetActorLocation() + GetActorForwardVector() * 10);
 						if (auto* sword = Cast<ASword>(CurrentlyHeldActor))
 						{
-							sword->IsEquiped = false;
+							sword->Unequip();
 						}
 						CurrentlyHeldActor = nullptr;
 						CurrentlyHeldActor = nearestNPC;
