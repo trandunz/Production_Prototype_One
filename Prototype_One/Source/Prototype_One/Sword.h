@@ -23,7 +23,8 @@ public:
 	void Unequip();
 
 protected:
-
+	
+	
 public:
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
