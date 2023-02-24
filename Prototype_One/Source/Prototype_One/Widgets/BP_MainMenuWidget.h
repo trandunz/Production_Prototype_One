@@ -11,18 +11,4 @@ class PROTOTYPE_ONE_API UBP_MainMenuWidget : public UUserWidget
 
 public:
 	virtual void NativeOnInitialized() override;
-
-	UFUNCTION()
-	void PlayGame();
-	UFUNCTION()
-	void OpenOptionsMenu();
-	UFUNCTION()
-	void QuitGame();
-	
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* PlayButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* OptionsButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* QuitButton;
 };
