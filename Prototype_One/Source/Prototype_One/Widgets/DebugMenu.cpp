@@ -1,10 +1,15 @@
 #include "DebugMenu.h"
 
+#include "ToolBuilderUtil.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+#include "Perception/PawnSensingComponent.h"
 
 void UDebugMenu::NativeOnInitialized()
 {
