@@ -15,6 +15,7 @@ public:
 	void UpdateMana(int _mana, int _maxMana);
 	void UpdateStamina(int _stamina, int _maxStamina);
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
+	void UpdateSneakStatus(bool _seen);
 	void ToggleDebugMenu();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -34,4 +35,15 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* StaminaBar;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* Crosshair;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* Crosshair_Overlay;
+
+	UPROPERTY(EditAnywhere)
+	class UTexture2D* SeenImage;
+	UPROPERTY(EditAnywhere)
+	class UTexture2D* HiddenImage;
 };

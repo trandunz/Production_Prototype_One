@@ -55,16 +55,6 @@ void APrototypeEnemy::TakeDamage(int _amount)
 
 void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 {
-	//LastSeenPawn = _pawn;
-	//
-	//if (auto* character = Cast<APrototype_OneCharacter>(_pawn))
-	//{
-	//	if (auto * aiInstance =
-	//	Cast<AEnemyController>(Controller))
-	//	{
-	//		aiInstance->MoveToLocation(character->GetOwner()->GetActorLocation());
-	//	}
-	//}
 }
 
 void APrototypeEnemy::Attack()

@@ -30,6 +30,12 @@ private:
 
 	class UAISenseConfig_Sight* SightConfig;
 
+	float DetectionTimer{};
+	UPROPERTY(EditAnywhere)
+	float DetectionTime{2.0f};
+	float Dt{};
+	bool CanSeePlayer{};
+	
 	UFUNCTION()
 	void OnUpdated(AActor* actor, FAIStimulus const stimulus);
 	void SetupPerceptionSystem();

@@ -1,5 +1,6 @@
 #include "EnemyController.h"
 
+#include "../../../../../../../../../Program Files/Microsoft Visual Studio/2022/Professional/VC/Tools/MSVC/14.29.30133/INCLUDE/stdbool.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -7,6 +8,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Widgets/PlayerHUD.h"
 
 AEnemyController::AEnemyController()
 {
@@ -41,9 +43,23 @@ void AEnemyController::OnPossess(APawn* InPawn)
 void AEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
+	Dt = DeltaSeconds;
 	if (auto* character = Cast<APrototypeEnemy>(GetCharacter()))
 	{
+		if (CanSeePlayer && DetectionTimer > 0 && !BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+		{
+			DetectionTimer -= DeltaSeconds;
+		}
+		else if (CanSeePlayer && DetectionTimer <= 0 && !BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+		{
+			BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), true);
+		}
+		else if (!CanSeePlayer && DetectionTimer < DetectionTime)
+		{
+			BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), false);
+			DetectionTimer += DeltaSeconds;
+		}
+		
 		if (BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
 		{
 			character->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
@@ -53,14 +69,23 @@ void AEnemyController::Tick(float DeltaSeconds)
 			character->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		}
 	}
+
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		if (player->PlayerHud)
+		{
+			player->PlayerHud->UpdateSneakStatus(BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")));
+		}
+	}
 }
 
 void AEnemyController::OnUpdated(AActor* actor, FAIStimulus const stimulus)
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(actor))
 	{
+		CanSeePlayer = stimulus.WasSuccessfullySensed();
 		UE_LOG(LogTemp, Warning, TEXT("Player Seen!") );
-		BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), stimulus.WasSuccessfullySensed());
+		
 	}
 }
 
@@ -70,9 +95,9 @@ void AEnemyController::SetupPerceptionSystem()
 	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
 	SightConfig->SightRadius = 1500.0f;
 	SightConfig->LoseSightRadius = SightConfig->SightRadius + 500.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 55.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 65.0f;
 	SightConfig->SetMaxAge(5.0f);
-	SightConfig->AutoSuccessRangeFromLastSeenLocation = 900.0f;
+	SightConfig->AutoSuccessRangeFromLastSeenLocation = 500.0f;
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;

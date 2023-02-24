@@ -60,6 +60,20 @@ void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message
 	}
 }
 
+void UPlayerHUD::UpdateSneakStatus(bool _seen)
+{
+	if (_seen && SeenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(SeenImage);
+	}
+	else if (HiddenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(HiddenImage);
+	}
+}
+
 
 void UPlayerHUD::ToggleDebugMenu()
 {

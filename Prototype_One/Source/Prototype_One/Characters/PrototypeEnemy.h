@@ -44,6 +44,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* AttackMontage;
+	
+
 
 	UPROPERTY(EditAnywhere)
 	class URPGEntityComponent* EntityComponent;
