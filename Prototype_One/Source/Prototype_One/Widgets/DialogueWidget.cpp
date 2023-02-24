@@ -42,7 +42,7 @@ void UDialogueWidget::OnOpenAIResponseReceived(FHttpRequestPtr Request, FHttpRes
 				if (Matches.Num() > 0)
 				{
 					RandomHelloMessage = Matches[rand() % Matches.Num()];
-					UE_LOG(LogTemp, Warning, TEXT("%s"), *RandomHelloMessage );
+					UE_LOG(LogTemp, Warning, TEXT(" %s " ), *RandomHelloMessage );
 				}
 			}
 		}
@@ -100,7 +100,6 @@ void UDialogueWidget::NativeOnInitialized()
 	Dialogue_NextLine->OnPressed.AddDynamic(this, &UDialogueWidget::OnNextDialogueLine);
 	RandomHelloMessage = DialogueLines[0];
 	ShowDialogueBox(false);
-	
 	if (EnableAIParaphrasing)
 		SendOpenAIRequest("Paraphrase: '" + RandomHelloMessage + "' with 5 results");
 }
@@ -122,7 +121,6 @@ void UDialogueWidget::ShowDialogueBox(bool _show)
 	{
 		if (EnableAIParaphrasing)
 			SendOpenAIRequest("Paraphrase: '" + RandomHelloMessage + "' with 5 results");
-		
 		DialogueText->SetText(FText::FromString(RandomHelloMessage));
 		SetVisibility(ESlateVisibility::Hidden);
 		CurrentDialogueIndex = 0;
