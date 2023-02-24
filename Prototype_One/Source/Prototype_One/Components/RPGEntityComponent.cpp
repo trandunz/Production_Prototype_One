@@ -18,6 +18,8 @@ void URPGEntityComponent::BeginPlay()
 void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	StaminaRegenDrain(DeltaTime);
 }
 
 void URPGEntityComponent::TakeDamage(int _amount)
@@ -42,6 +44,37 @@ void URPGEntityComponent::Heal(int _amount)
 		if (CurrentHealth >= MaxHealth)
 		{
 			CurrentHealth = MaxHealth;
+		}
+	}
+}
+
+void URPGEntityComponent::StaminaRegenDrain(float dt)
+{
+	if (IsStaminaDraining == true && CurrentStamina > 0) // Stamina drain
+	{
+		if (CurrentStaminaTime > 0)
+		{
+			CurrentStaminaTime -= dt;
+		}
+		else
+		{
+			CurrentStaminaTime = MaxStaminaDrainTime; // Reset stamina timer
+			CurrentStamina -= StaminaDrain;
+		}
+	}
+	else
+	{
+		if (CurrentStamina < MaxStamina)
+		{
+			if (CurrentStaminaTime > 0)
+			{
+				CurrentStaminaTime -= dt;
+			}
+			else
+			{
+				CurrentStaminaTime = MaxStaminaRegenTime; // Reset stamina timer
+				CurrentStamina += StaminaRegen;
+			}
 		}
 	}
 }
