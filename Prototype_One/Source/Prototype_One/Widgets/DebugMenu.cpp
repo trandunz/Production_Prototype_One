@@ -28,13 +28,6 @@ void UDebugMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		PlayerManaText->SetText(FText::FromString("Mana: " + FString::FromInt(player->EntityComponent->CurrentMana)));
 		PlayerStaminaText->SetText(FText::FromString("Stamina: " + FString::FromInt(player->EntityComponent->CurrentStamina)));
 	}
-
-	TArray<AActor*> objects;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(),objects);
-	for(auto* enemy : objects)
-	{
-		Cast<APrototypeEnemy>(enemy)->PawnSensingComponent->See
-	}
 }
 
 void UDebugMenu::OnCloseMenu()
