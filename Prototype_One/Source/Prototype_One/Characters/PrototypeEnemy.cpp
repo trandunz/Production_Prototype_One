@@ -91,6 +91,7 @@ void APrototypeEnemy::TakeDamage(int _amount)
 
 void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 {
+	
 }
 
 void APrototypeEnemy::Attack()

@@ -49,6 +49,9 @@ public:
 	UAnimMontage* AttackMontage;
 	
 	UPROPERTY(EditAnywhere)
+    UAnimMontage* RoarMontage;
+	
+	UPROPERTY(EditAnywhere)
 	UWidgetComponent* HealthBarWidget;
 
 	UPROPERTY(EditAnywhere)
