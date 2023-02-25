@@ -5,6 +5,8 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+
+
 #include "EnemyController.generated.h"
 
 UCLASS()
@@ -16,6 +18,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaSeconds) override;
 private:
@@ -30,6 +33,8 @@ private:
 
 	class UAISenseConfig_Sight* SightConfig;
 
+
+	
 	float DetectionTimer{};
 	UPROPERTY(EditAnywhere)
 	float DetectionTime{2.0f};
