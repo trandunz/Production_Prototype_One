@@ -55,6 +55,18 @@ void APrototypeEnemy::Tick(float DeltaTime)
 		if (auto* widget = Cast<UHealthBarWidget>(HealthBarWidget->GetWidget()))
 		{
 			widget->SetHealthPercent(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+
+			if (auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+			{
+				if ((player->GetActorLocation() - GetActorLocation()).Length() < 1000.0f)
+				{
+						widget->SetVisibility(ESlateVisibility::Visible);
+					}
+				else
+				{
+					widget->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
 		}
 	}
 }
