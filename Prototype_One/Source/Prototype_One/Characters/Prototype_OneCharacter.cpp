@@ -192,6 +192,10 @@ void APrototype_OneCharacter::TryRoll()
 		if (RollAnimation)
 		{
 			EntityComponent->CurrentStamina -= 10.0f;
+			if (PlayerHud)
+			{
+				PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+			}
 			GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
 			dodgeMovementCurrentTime = dodgeMovementMaxTime;
 		}
@@ -203,6 +207,10 @@ void APrototype_OneCharacter::TryMelee()
 	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > 20.0f)
 	{
 		EntityComponent->CurrentStamina -= 20.0f;
+		if (PlayerHud)
+		{
+			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+		}
 		if (MeleeAnimation)
 			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
 		combatMovementCurrentTime = combatMovementMaxTime;
