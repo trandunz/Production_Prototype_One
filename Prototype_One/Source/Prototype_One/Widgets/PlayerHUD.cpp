@@ -65,14 +65,19 @@ void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message
 	}
 }
 
-void UPlayerHUD::UpdateSneakStatus(bool _seen)
+void UPlayerHUD::UpdateSneakStatus(int _seen)
 {
-	if (_seen && SeenImage)
+	if (_seen == 0 && SeenImage)
 	{
 		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
 		Crosshair_Overlay->SetBrushFromTexture(SeenImage);
 	}
-	else if (HiddenImage)
+	else if (_seen == 1 && HiddenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(HalfHiddenImage);
+	}
+	else if (_seen == 2 && HiddenImage)
 	{
 		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
 		Crosshair_Overlay->SetBrushFromTexture(HiddenImage);

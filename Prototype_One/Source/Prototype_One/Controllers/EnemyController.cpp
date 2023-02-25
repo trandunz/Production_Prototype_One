@@ -8,13 +8,15 @@
 #include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
+#include "Components/WidgetComponent.h"
+#include "Prototype_One/Components/RPGEntityComponent.h"
 
 AEnemyController::AEnemyController()
 {
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior Tree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard Component"));
 	SetupPerceptionSystem();
-	
+
 }
 
 void AEnemyController::BeginPlay()
@@ -26,7 +28,11 @@ void AEnemyController::BeginPlay()
 		RunBehaviorTree(BehaviorTree);
 		BehaviorTreeComponent->StartTree(*BehaviorTree);
 	}
+
+
 }
+
+
 
 void AEnemyController::OnPossess(APawn* InPawn)
 {
@@ -67,13 +73,28 @@ void AEnemyController::Tick(float DeltaSeconds)
 		{
 			character->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		}
+
+
+
 	}
 
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		if (player->PlayerHud)
 		{
-			player->PlayerHud->UpdateSneakStatus(BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")));
+			int seen = BlackboardComponent->GetValueAsBool(FName("CanSeePlayer"));
+			if (CanSeePlayer && !seen)
+			{
+				player->PlayerHud->UpdateSneakStatus(1);
+			}
+			else if (seen)
+			{
+				player->PlayerHud->UpdateSneakStatus(0);
+			}
+			else if (!seen && !CanSeePlayer)
+			{
+				player->PlayerHud->UpdateSneakStatus(2);
+			}
 		}
 	}
 }

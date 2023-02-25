@@ -15,7 +15,7 @@ public:
 	void UpdateMana(int _mana, int _maxMana);
 	void UpdateStamina(int _stamina, int _maxStamina);
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
-	void UpdateSneakStatus(bool _seen);
+	void UpdateSneakStatus(int _seen);
 	void ToggleDebugMenu();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -46,4 +46,6 @@ public:
 	class UTexture2D* SeenImage;
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* HiddenImage;
+	UPROPERTY(EditAnywhere)
+	class UTexture2D* HalfHiddenImage;
 };
