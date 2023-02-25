@@ -89,7 +89,9 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	if (combatMovementCurrentTime > 0)
 		combatMovementCurrentTime -= DeltaSeconds;
 	
-	
+	if (EntityComponent->CurrentStamina <= 0)
+		EndSprint();
+		
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -170,8 +172,11 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 
 void APrototype_OneCharacter::StartSprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	EntityComponent->IsStaminaDraining = true;
+	if (EntityComponent->CurrentStamina > 10.0f)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		EntityComponent->IsStaminaDraining = true;
+	}
 }
 
 void APrototype_OneCharacter::EndSprint()
@@ -182,10 +187,11 @@ void APrototype_OneCharacter::EndSprint()
 
 void APrototype_OneCharacter::TryRoll()
 {
-	if (dodgeMovementCurrentTime <= 0)
+	if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > 10.0f)
 	{
 		if (RollAnimation)
 		{
+			EntityComponent->CurrentStamina -= 10.0f;
 			GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
 			dodgeMovementCurrentTime = dodgeMovementMaxTime;
 		}
@@ -194,8 +200,9 @@ void APrototype_OneCharacter::TryRoll()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > 20.0f)
 	{
+		EntityComponent->CurrentStamina -= 20.0f;
 		if (MeleeAnimation)
 			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
 		combatMovementCurrentTime = combatMovementMaxTime;

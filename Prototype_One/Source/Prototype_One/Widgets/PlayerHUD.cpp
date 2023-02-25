@@ -21,6 +21,11 @@ void UPlayerHUD::NativeOnInitialized()
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))
+	{
+		UpdateStamina(player->EntityComponent->CurrentStamina, player->EntityComponent->MaxStamina);
+	}
 }
 
 void UPlayerHUD::UpdateHealth(int _health, int _maxHealth)

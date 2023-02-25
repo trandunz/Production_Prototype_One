@@ -20,6 +20,7 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	StaminaRegenDrain(DeltaTime);
+	
 }
 
 void URPGEntityComponent::TakeDamage(int _amount)
