@@ -47,6 +47,12 @@ public:
 	float MaxStaminaDrainTime{1};
 	UPROPERTY(EditAnywhere)
 	float MaxStaminaRegenTime{1};
+	UPROPERTY(EditAnywhere)
+	float MinimumStaminaToSprint{10.0f};
+	UPROPERTY(EditAnywhere)
+	float StaminaDamageDodge{10.0f};
+	UPROPERTY(EditAnywhere)
+	float StaminaDamageAttack{20.0f};
 	UPROPERTY(VisibleAnywhere)
 	float CurrentStaminaTime{};
 	UPROPERTY(VisibleAnywhere)

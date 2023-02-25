@@ -138,7 +138,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
+	
 	if (dodgeMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
 	{
 		if (Controller != nullptr)
@@ -163,8 +163,8 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 				const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 				const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 			
-				AddMovementInput(ForwardDirection, 1);
-				//AddMovementInput(RightDirection, GetActorForwardVector().X);
+				AddMovementInput(ForwardDirection , MovementVector.Y);
+				AddMovementInput(RightDirection, MovementVector.X);
 			}
 		}
 	}
@@ -172,10 +172,13 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 
 void APrototype_OneCharacter::StartSprint()
 {
-	if (EntityComponent->CurrentStamina > 10.0f)
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-		EntityComponent->IsStaminaDraining = true;
+		if (EntityComponent->CurrentStamina > EntityComponent->MinimumStaminaToSprint)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+			EntityComponent->IsStaminaDraining = true;
+		}
 	}
 }
 
@@ -187,11 +190,11 @@ void APrototype_OneCharacter::EndSprint()
 
 void APrototype_OneCharacter::TryRoll()
 {
-	if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > 10.0f)
+	if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
 	{
 		if (RollAnimation)
 		{
-			EntityComponent->CurrentStamina -= 10.0f;
+			EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
 			if (PlayerHud)
 			{
 				PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
@@ -204,9 +207,9 @@ void APrototype_OneCharacter::TryRoll()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > 20.0f)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageAttack)
 	{
-		EntityComponent->CurrentStamina -= 20.0f;
+		EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageAttack;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
