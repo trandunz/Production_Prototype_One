@@ -30,25 +30,54 @@ void UPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-bool UPlayerInventory::Pickup(FItemDetails NewItemDetails, int32 Amount)
+int32 UPlayerInventory::Pickup(FItemDetails NewItemDetails, int32 Amount)
 {
 	for (FInventorySlot Slot : Items)
 	{
+		// Check if already have similar item
 		if(Slot.Info.Type == NewItemDetails.Type)
 		{
+			// Add to stack if enough room
 			if (Slot.Amount + Amount <= NewItemDetails.MaximumStackSize)
 			{
 				Slot.Amount = Slot.Amount + Amount;				
 			}
+			else // Fill current stack and create a new stack if possible
+			{
+				if (Slot.Amount <= NewItemDetails.MaximumStackSize)
+				{
+					Amount -= NewItemDetails.MaximumStackSize - Slot.Amount;
+					if (Items.Num() == MaximumSlots)
+					{
+						return Amount;
+					}
+					else
+					{
+						FInventorySlot NewSlot;
+						NewSlot.Amount = Amount;
+						NewSlot.Info = NewItemDetails;
+						Items.Push(NewSlot);
+						return 0;
+					}
+				}
+			}
+		} // If inventory full, return all items
+		else if(Items.Num() == MaximumSlots)
+		{
+			return Amount;
+		}
+		else // Add items to new slot
+		{
+			if (Amount > NewItemDetails.MaximumStackSize)
+			{
+				
+			}
 		}
 	}
 	
-	if (Items.Num() == MaximumSlots)
-	{
-		return false;
-	}
+
 	
-	return true;
+	return 0;
 }
 
 void UPlayerInventory::CalculateWeight()

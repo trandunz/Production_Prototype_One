@@ -35,8 +35,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/* Attempts to pickup an item, returns true if there was enough space in inventory */
-	bool Pickup(FItemDetails ItemDetails, int32 Amount);
+	/* Attempts to pickup an amount of items, returns amount not added if there wasn't enough
+	 * space in inventory */
+	int32 Pickup(FItemDetails ItemDetails, int32 Amount);
 
 	/* Sum all items held in inventory */
 	void CalculateWeight();
