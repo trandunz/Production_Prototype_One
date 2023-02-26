@@ -57,6 +57,15 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FString> DialogueLines{};
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Bye;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Quest;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Shop;
 
 	int CurrentDialogueIndex{};
 };
