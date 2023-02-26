@@ -45,6 +45,13 @@ public:
 	void ShowDialogueBox(bool);
 	UFUNCTION()
 	void OnNextDialogueLine();
+
+	UFUNCTION()
+	void OnBye();
+	UFUNCTION()
+	void OnQuestMenu();
+	UFUNCTION()
+	void OnShopMenu();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* DialogueBackground;
@@ -66,6 +73,9 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Shop;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UShopWidget* ShopWidget;
 
 	int CurrentDialogueIndex{};
 };
