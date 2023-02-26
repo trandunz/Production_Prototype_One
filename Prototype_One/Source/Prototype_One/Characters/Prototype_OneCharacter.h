@@ -83,28 +83,39 @@ public:
 	float Dt{};
 	bool IsTalking{};
 
+	// Stamina/sprint related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int JogSpeed{400};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int SprintSpeed{800};
 
+	// Dodge roll related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float dodgeMovementMaxTime{0.5f};
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float dodgeMovementCurrentTime{};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool IsDodging{false};
+	bool HasStartedDodge{false};
+	FVector2D DodgeMovementVector;
+	FVector DodgeForwardDirection;
+	FVector DodgeRightDirection; 
 	
+	// Stats 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     class URPGEntityComponent* EntityComponent;
 
 	// Combat related variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float combatMovementMaxTime{0.5f};
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float combatMovementCurrentTime{};
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool IsAttacking{false};
+
+	UPROPERTY(VisibleAnywhere)
+	int ValuablesCount{1};
+
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;

@@ -1,5 +1,6 @@
 #include "EnemyController.h"
 
+#include "BehaviorTree/Tasks/BTTask_MoveTo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -10,6 +11,8 @@
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Components/WidgetComponent.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+
+class UBTTask_MoveTo;
 
 AEnemyController::AEnemyController()
 {
@@ -105,6 +108,19 @@ void AEnemyController::OnUpdated(AActor* actor, FAIStimulus const stimulus)
 	{
 		CanSeePlayer = stimulus.WasSuccessfullySensed();
 		UE_LOG(LogTemp, Warning, TEXT("Player Seen!") );
+
+		if (CanSeePlayer)
+		{
+			if (auto* character = Cast<APrototypeEnemy>(GetCharacter()))
+			{
+				if (character->RoarMontage)
+				{
+					character->GetCharacterMovement()->StopActiveMovement();
+					character->GetCharacterMovement()->StopMovementImmediately();
+					character->GetMesh()->GetAnimInstance()->Montage_Play(character->RoarMontage, 2.0f);
+				}
+			}
+		}
 		
 	}
 }

@@ -1,10 +1,12 @@
 #include "DialogueWidget.h"
 
 #include "HttpModule.h"
+#include "ShopWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+
 
 FString UDialogueWidget::RandomHelloMessage{"Hi there traveller!"};
 
@@ -98,17 +100,32 @@ void UDialogueWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	Dialogue_NextLine->OnPressed.AddDynamic(this, &UDialogueWidget::OnNextDialogueLine);
+	Bye->OnPressed.AddDynamic(this, &UDialogueWidget::OnBye);
+	Quest->OnPressed.AddDynamic(this, &UDialogueWidget::OnQuestMenu);
+	Shop->OnPressed.AddDynamic(this, &UDialogueWidget::OnShopMenu);
+	ShopWidget->SetVisibility(ESlateVisibility::Hidden);
+	
 	RandomHelloMessage = DialogueLines[0];
 	ShowDialogueBox(false);
 	if (EnableAIParaphrasing)
 		SendOpenAIRequest("Paraphrase: '" + RandomHelloMessage + "' with 5 results");
+
+	
 }
 
 void UDialogueWidget::ShowDialogueBox(bool _show)
 {
 	if (_show)
 	{
+		ShopWidget->SetVisibility(ESlateVisibility::Hidden);
 		DialogueText->SetText(FText::FromString(RandomHelloMessage));
+		Dialogue_NextLine->SetIsEnabled(true);
+		Bye->SetIsEnabled(false);
+		Bye->SetVisibility(ESlateVisibility::Hidden);
+		Quest->SetIsEnabled(false);
+		Quest->SetVisibility(ESlateVisibility::Hidden);
+		Shop->SetIsEnabled(false);
+		Shop->SetVisibility(ESlateVisibility::Hidden);
 		SetVisibility(ESlateVisibility::Visible);
 		CurrentDialogueIndex = 0;
 		if (auto* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
@@ -135,7 +152,7 @@ void UDialogueWidget::ShowDialogueBox(bool _show)
 void UDialogueWidget::OnNextDialogueLine()
 {
 	CurrentDialogueIndex++;
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("Next Dialogue Queue Please") );
 	if (CurrentDialogueIndex >= DialogueLines.Num())
 	{
@@ -147,6 +164,51 @@ void UDialogueWidget::OnNextDialogueLine()
 	}
 	else if (CurrentDialogueIndex < DialogueLines.Num())
 	{
+		TArray<FString> matches{};
+		ApplyRegex(DialogueLines[CurrentDialogueIndex], "\\?", matches);
+		if (matches.Num() > 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Regex Passed!") );
+			Dialogue_NextLine->SetIsEnabled(false);
+			Bye->SetIsEnabled(true);
+			Bye->SetVisibility(ESlateVisibility::Visible);
+			Quest->SetIsEnabled(true);
+			Quest->SetVisibility(ESlateVisibility::Visible);
+			Shop->SetIsEnabled(true);
+			Shop->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			Dialogue_NextLine->SetIsEnabled(true);
+			Bye->SetIsEnabled(false);
+			Bye->SetVisibility(ESlateVisibility::Hidden);
+			Quest->SetIsEnabled(false);
+			Quest->SetVisibility(ESlateVisibility::Hidden);
+			Shop->SetIsEnabled(false);
+			Shop->SetVisibility(ESlateVisibility::Hidden);
+		}
 		DialogueText->SetText(FText::FromString(DialogueLines[CurrentDialogueIndex]));
 	}
+}
+
+void UDialogueWidget::OnBye()
+{
+	OnNextDialogueLine();
+}
+
+
+void UDialogueWidget::OnQuestMenu()
+{
+	if (DialogueLines.Num() <= 2)
+	{
+		DialogueLines.Add("There was once an old tale.");
+		DialogueLines.Add("some say bandits roam too the south...");
+	}
+	
+	OnNextDialogueLine();
+}
+
+void UDialogueWidget::OnShopMenu()
+{
+	ShopWidget->SetVisibility(ESlateVisibility::Visible);
 }
