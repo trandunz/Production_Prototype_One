@@ -1,5 +1,6 @@
 #include "Prototype_OneCharacter.h"
 
+#include "AITypes.h"
 #include "DialogueNPC.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -84,14 +85,23 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	// Timer for dodging
 	if (dodgeMovementCurrentTime > 0)
 		dodgeMovementCurrentTime -= DeltaSeconds;
-
+	if (dodgeMovementCurrentTime <= 0)
+		IsDodging = false;
+	// Dodging
+	if (IsDodging == true)
+	{
+		GetCharacterMovement()->Velocity.Set(DodgeMovementVector.Y * 1000.0f, DodgeMovementVector.X * 1000.0f, GetCharacterMovement()->Velocity.Z);
+	}
+	
 	// Timer for combat
 	if (combatMovementCurrentTime > 0)
 		combatMovementCurrentTime -= DeltaSeconds;
-	
+	if (combatMovementCurrentTime <= 0)
+		IsAttacking = false;
+
+	// Sprint related
 	if (EntityComponent->CurrentStamina <= 0)
 		EndSprint();
-		
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -150,21 +160,33 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 		
 			AddMovementInput(ForwardDirection , MovementVector.Y);
 			AddMovementInput(RightDirection, MovementVector.X);
+			
+			//UE_LOG(LogTemp, Log, TEXT("Movement Vector: %s"), *MovementVector.ToString());
 		}
 	}
 	else // Rolling code
 	{
-		if (dodgeMovementCurrentTime > 0)
+		if (IsDodging == true)
 		{
-			if (Controller != nullptr)
+			if (HasStartedDodge == true)
 			{
-				const FRotator Rotation = Controller->GetControlRotation();
-				const FRotator YawRotation(0, Rotation.Yaw, 0);
-				const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-				const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			
-				AddMovementInput(ForwardDirection , MovementVector.Y);
-				AddMovementInput(RightDirection, MovementVector.X);
+				DodgeMovementVector = Value.Get<FVector2D>();
+				DodgeMovementVector.Normalize();
+				
+				if (Controller != nullptr)
+				{
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation(0, Rotation.Yaw, 0);
+					DodgeForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+					DodgeRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					
+					AddMovementInput(DodgeForwardDirection , DodgeMovementVector.Y);
+					AddMovementInput(DodgeRightDirection, DodgeMovementVector.X);
+					
+					HasStartedDodge = false;
+					
+					UE_LOG(LogTemp, Log, TEXT("Dodge Movement Vecotr: %s"), *DodgeMovementVector.ToString());
+				}
 			}
 		}
 	}
@@ -190,17 +212,22 @@ void APrototype_OneCharacter::EndSprint()
 
 void APrototype_OneCharacter::TryRoll()
 {
-	if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (RollAnimation)
+		if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
 		{
-			EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
-			if (PlayerHud)
+			if (RollAnimation)
 			{
-				PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+				IsDodging = true;
+				HasStartedDodge = true;
+				EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
+				if (PlayerHud)
+				{
+					PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+				}
+				GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
+				dodgeMovementCurrentTime = dodgeMovementMaxTime;
 			}
-			GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
-			dodgeMovementCurrentTime = dodgeMovementMaxTime;
 		}
 	}
 }
@@ -209,6 +236,7 @@ void APrototype_OneCharacter::TryMelee()
 {
 	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageAttack)
 	{
+		IsAttacking = true;
 		EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageAttack;
 		if (PlayerHud)
 		{
