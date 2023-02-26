@@ -113,6 +113,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking{false};
 
+	UPROPERTY(VisibleAnywhere)
+	int ValuablesCount{1};
+
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;

@@ -45,6 +45,7 @@ void AEnemyDrop::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(OtherActor))
 	{
+		player->ValuablesCount++;
 		Destroy();
 	}
 }
