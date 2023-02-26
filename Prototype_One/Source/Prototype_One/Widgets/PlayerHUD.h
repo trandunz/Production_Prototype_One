@@ -42,6 +42,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* Crosshair_Overlay;
 
+
+
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* SeenImage;
 	UPROPERTY(EditAnywhere)
