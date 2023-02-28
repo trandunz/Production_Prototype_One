@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/InteractInterface.h"
 #include "Bag.generated.h"
 
 UCLASS()
-class PROTOTYPE_ONE_API ABag : public AActor
+class PROTOTYPE_ONE_API ABag : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 	
@@ -17,11 +18,14 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	virtual void Interact() override;
+
+	void UpdateInteractionOutline();
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	int CurrentWeight{4};
 
 	UPROPERTY(EditAnywhere)
@@ -34,5 +38,11 @@ public:
 	bool IsOpen{};
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UStaticMeshComponent> OpenMesh;
+	UStaticMesh* OpenMesh;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* ClosedMesh;
+
+	UPROPERTY(EditAnywhere, Category=Interaction)
+	float InteractionRange{200.0f};
 };

@@ -21,7 +21,19 @@ void ABag::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorScale3D(FVector{1,1,1} * 0.5f * CurrentWeight);
+	UpdateInteractionOutline();
+	
+	if (IsOpen && OpenMesh)
+	{
+		Mesh->SetStaticMesh(OpenMesh);
+	}
+	else if (ClosedMesh)
+	{
+		Mesh->SetStaticMesh(ClosedMesh);
+	}
+
+	
+	SetActorScale3D(FVector{1,1,1} * FMath::Clamp(0.25f * CurrentWeight, 0.5f, 99999));
 
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
@@ -56,5 +68,29 @@ void ABag::Tick(float DeltaTime)
 			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), player->GetActorLocation() + player->GetActorUpVector() * z  - player->GetActorRightVector() * 100.0f - player->GetActorForwardVector() * 100.0f, DeltaTime));
 		}
 	}
+}
+
+void ABag::Interact()
+{
+	IsOpen = !IsOpen;
+}
+
+void ABag::UpdateInteractionOutline()
+{
+	if (auto* character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		auto distanceToPlayer = (character->GetActorLocation() - GetActorLocation()).Length();
+		if (distanceToPlayer <= InteractionRange)
+		{
+			Mesh->SetRenderCustomDepth(true);
+			Mesh->CustomDepthStencilValue = 1;
+		}
+		else
+		{
+			Mesh->SetRenderCustomDepth(false);
+			Mesh->CustomDepthStencilValue = 1;
+		}
+	}
+	
 }
 
