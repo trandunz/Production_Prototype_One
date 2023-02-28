@@ -14,6 +14,7 @@
 #include "DrawDebugHelpers.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"
@@ -108,6 +109,8 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	UpdateFadeActors();
 	SetShowMeshes();
 	SetHiddenMeshes();
+
+	
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -148,6 +151,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
 	}
 }
 
@@ -253,6 +257,54 @@ void APrototype_OneCharacter::TryMelee()
 		combatMovementCurrentTime = combatMovementMaxTime;
 	}
 }
+
+void APrototype_OneCharacter::StartAim()
+{
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+    FVector2D MousePosition;
+    PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+    
+    FVector WorldLocation;
+    FVector WorldDirection;
+    PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
+    FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), WorldLocation);
+    Controller->SetControlRotation(FRotator{Controller->GetControlRotation().Pitch, LookAtRotation.Yaw, Controller->GetControlRotation().Roll});
+    
+	//// FHitResult will hold all data returned by our line collision query
+	//FHitResult Hit;
+	//ETraceTypeQuery Query{};
+	//FHitResult EndHit;
+//
+	//// We set up a line trace from our current location to a point 1000cm ahead of us
+	//FVector TraceStart = FollowCamera->GetComponentLocation();
+	//FVector TraceEnd;
+//
+	//if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(Query, false, EndHit))
+	//{
+	//	TraceEnd = EndHit.Location;
+	//}
+//
+	//// You can use FCollisionQueryParams to further configure the query
+	//// Here we add ourselves to the ignored list so we won't block the trace
+	//FCollisionQueryParams QueryParams;
+	//QueryParams.AddIgnoredActor(this);
+//
+	//if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	//{
+	//	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
+	//}
+//
+	//Controller->SetControlRotation(FRotator{Controller->GetControlRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, Controller->GetControlRotation().Roll});
+	////GetMesh()->SetWorldRotation(FRotator{GetMesh()->GetComponentRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetMesh()->GetComponentRotation().Roll});
+}
+
+//void APrototype_OneCharacter::EndAim()
+//
+//	
+//
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
 {

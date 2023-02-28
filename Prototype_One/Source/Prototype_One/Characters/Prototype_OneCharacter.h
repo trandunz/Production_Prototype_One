@@ -31,6 +31,8 @@ private:
 	class UInputAction* SprintAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ToggleDebugAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AimAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -41,6 +43,8 @@ protected:
 	void EndSprint();
 	void TryDash(); 
 	void TryMelee();
+	void StartAim();
+	//void EndAim();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
@@ -106,9 +110,14 @@ public:
 	float DashDistance{5000.0f};
 	FVector2D DashMovementVector;
 	FVector DashForwardDirection;
-	FVector DashRightDirection; 
+	FVector DashRightDirection;
+
+	// Aiming related - player looking towards mouse position
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool IsAiming{false};
 
 	// Inventory
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UPlayerInventory* PlayerInventory;
 	
 	// Stats 
