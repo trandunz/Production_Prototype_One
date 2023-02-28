@@ -33,5 +33,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsOpen{};
 
-	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UStaticMeshComponent> OpenMesh;
 };

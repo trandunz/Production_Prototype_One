@@ -15,7 +15,6 @@ ABag::ABag()
 void ABag::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ABag::Tick(float DeltaTime)

@@ -56,7 +56,7 @@ void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitInputMappingContext();
+	
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
@@ -66,6 +66,8 @@ void APrototype_OneCharacter::BeginPlay()
 	}
 
 	EndSprint();
+
+	InitInputMappingContext();
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -121,9 +123,6 @@ void APrototype_OneCharacter::InitInputMappingContext()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-
-		PlayerController->SetInputMode(FInputModeGameAndUI{});
-		PlayerController->bShowMouseCursor = true;
 	}
 }
 
@@ -260,18 +259,7 @@ void APrototype_OneCharacter::TryMelee()
 
 void APrototype_OneCharacter::StartAim()
 {
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
-	
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-    FVector2D MousePosition;
-    PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
-    
-    FVector WorldLocation;
-    FVector WorldDirection;
-    PlayerController->DeprojectScreenPositionToWorld(MousePosition.X, MousePosition.Y, WorldLocation, WorldDirection);
-    FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), WorldLocation);
-    Controller->SetControlRotation(FRotator{Controller->GetControlRotation().Pitch, LookAtRotation.Yaw, Controller->GetControlRotation().Roll});
+	LookAtCursor();
     
 	//// FHitResult will hold all data returned by our line collision query
 	//FHitResult Hit;
@@ -524,6 +512,34 @@ void APrototype_OneCharacter::SetHiddenMeshes()
 				return;
 			}
 		}
+	}
+}
+
+void APrototype_OneCharacter::LookAtCursor()
+{
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	InputMode.SetHideCursorDuringCapture(false);
+	Cast<APrototypePlayerController>(Controller)->SetInputMode(InputMode);
+
+	// Show the mouse cursor
+	Cast<APrototypePlayerController>(Controller)->bShowMouseCursor = true;
+	
+	float mouseX;
+	float mouseY;
+	auto* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	controller->GetMousePosition(mouseX, mouseY);
+	FVector worldPos{};
+	FVector worldDir{};
+	UGameplayStatics::DeprojectScreenToWorld(controller, {mouseX, mouseY}, worldPos, worldDir);
+
+	FHitResult Hit;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	
+	if (GetWorld()->LineTraceSingleByChannel(Hit, worldPos, worldPos + worldDir * 10000, ECC_Visibility, QueryParams))
+	{
+		SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetActorRotation().Roll});
 	}
 }
 

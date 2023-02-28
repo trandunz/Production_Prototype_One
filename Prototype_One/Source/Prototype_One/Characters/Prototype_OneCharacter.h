@@ -66,6 +66,7 @@ protected:
 	void SetShowMeshes();
 	void SetHiddenMeshes();
 
+	void LookAtCursor();
 public:
 	void TakeDamage(int _amount);
 	
