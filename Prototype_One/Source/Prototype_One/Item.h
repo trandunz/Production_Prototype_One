@@ -10,21 +10,15 @@
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
-	AnimalSkin,
-	Meat,
-	HealthPotion,
-	ManaPotion,
-	Herb
+	Pebble,
+	Stick,
+	Carrot,
+	Antler,
+	Mask,
+	Crown,
+	Potion,
 };
 
-/* Enum for different rarities */
-UENUM(BlueprintType)
-enum class ERarity : uint8
-{
-	Common,
-	Rare,
-	Unique	
-};
 
 /* Struct for holding details for items (type, rarity, value)*/
 USTRUCT(BlueprintType)
@@ -34,9 +28,6 @@ struct FItemDetails
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EItemType Type;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ERarity Rarity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Value;

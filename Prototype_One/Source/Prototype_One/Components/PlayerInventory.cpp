@@ -30,60 +30,71 @@ void UPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-int32 UPlayerInventory::Pickup(FItemDetails NewItemDetails, int32 Amount)
+void UPlayerInventory::Sell(FInventorySlot Slot)
 {
-	for (FInventorySlot Slot : Items)
+	// Increase coins by value of item in slot * amount
+	Coins += Slot.Info.Value * Slot.Amount;
+
+	// Remove Slot from Items
+	Items.Remove(Slot);
+
+	// Refresh weight
+	CalculateWeight();
+}
+
+void UPlayerInventory::SortByType(FInventorySlot Slot)
+{
+	Algo::Sort(Items, [](const FInventorySlot& InA, const FInventorySlot& InB)
+	{
+		return FInventorySlot::CompareAscending(InA, InB);
+	}
+	);
+}
+
+void UPlayerInventory::Drop(FInventorySlot Slot)
+{
+	Items.Remove(Slot);
+	CalculateWeight();
+}
+
+void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
+{
+	
+	for (FInventorySlot& Slot : Items)
 	{
 		// Check if already have similar item
-		if(Slot.Info.Type == NewItemDetails.Type)
+		if(Slot.Info.Type == PickedUpItemInfo.Type)
 		{
 			// Add to stack if enough room
-			if (Slot.Amount + Amount <= NewItemDetails.MaximumStackSize)
+			if (Slot.Amount < PickedUpItemInfo.MaximumStackSize)
 			{
-				Slot.Amount = Slot.Amount + Amount;				
+				Slot.Amount += 1;	
 			}
-			else // Fill current stack and create a new stack if possible
+			else // Add items to new slot
 			{
-				if (Slot.Amount <= NewItemDetails.MaximumStackSize)
-				{
-					Amount -= NewItemDetails.MaximumStackSize - Slot.Amount;
-					if (Items.Num() == MaximumSlots)
-					{
-						return Amount;
-					}
-					else
-					{
-						FInventorySlot NewSlot;
-						NewSlot.Amount = Amount;
-						NewSlot.Info = NewItemDetails;
-						Items.Push(NewSlot);
-						return 0;
-					}
-				}
+				FInventorySlot NewSlot;
+				NewSlot.Amount = 1;
+				NewSlot.Info = PickedUpItemInfo;
+				Items.Add(NewSlot);
 			}
-		} // If inventory full, return all items
-		else if(Items.Num() == MaximumSlots)
-		{
-			return Amount;
-		}
+		} 
 		else // Add items to new slot
 		{
-			if (Amount > NewItemDetails.MaximumStackSize)
-			{
-				
-			}
+			FInventorySlot NewSlot;
+			NewSlot.Amount = 1;
+			NewSlot.Info = PickedUpItemInfo;
+			Items.Add(NewSlot);
 		}
 	}
-	
 
-	
-	return 0;
+	// Refresh the weight of the Inventory
+	CalculateWeight();
 }
 
 void UPlayerInventory::CalculateWeight()
 {
 	CurrentWeight = 0.0f;
-	for (FInventorySlot Slot : Items)
+	for (const FInventorySlot Slot : Items)
 	{
 		CurrentWeight += Slot.Amount * Slot.Info.Weight;
 	}
