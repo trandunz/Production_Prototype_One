@@ -30,9 +30,9 @@ public:
 
 	// Mana
 	UPROPERTY(VisibleAnywhere)
-	int CurrentMana{};
+	int CurrentCarryWeight{};
 	UPROPERTY(EditAnywhere)
-	int MaxMana{100};
+	int MaxCarryWeight{100};
 
 	// Stamina
 	UPROPERTY(VisibleAnywhere)
