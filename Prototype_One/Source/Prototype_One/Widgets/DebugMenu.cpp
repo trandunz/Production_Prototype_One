@@ -24,7 +24,6 @@ void UDebugMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		PlayerHealthText->SetText(FText::FromString("Health: " + FString::FromInt(player->EntityComponent->CurrentHealth)));
 		PlayerMoneyText->SetText(FText::FromString("Money: " + FString::FromInt(player->EntityComponent->CurrentMoney)));
-		PlayerManaText->SetText(FText::FromString("Mana: " + FString::FromInt(player->EntityComponent->CurrentMana)));
 		PlayerStaminaText->SetText(FText::FromString("Stamina: " + FString::FromInt(player->EntityComponent->CurrentStamina)));
 	}
 }

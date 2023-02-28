@@ -10,9 +10,7 @@ void URPGEntityComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
-	CurrentMana = MaxMana;
 	CurrentStamina = MaxStamina;
-	CurrentMoney = 69; // Nice
 }
 
 void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -45,6 +43,37 @@ void URPGEntityComponent::Heal(int _amount)
 		{
 			CurrentHealth = MaxHealth;
 		}
+	}
+}
+
+void URPGEntityComponent::UpgradeHealth()
+{
+	if (CurrentMoney >= UpgradeCost * HealthCurrentLevel)
+	{
+		CurrentHealth += UpgradeAmount;
+		CurrentMoney -= UpgradeCost * HealthCurrentLevel;
+		HealthCurrentLevel++;
+	}
+}
+
+void URPGEntityComponent::UpgradeStamina()
+{
+	if (CurrentMoney >= UpgradeCost * StaminaCurrentLevel)
+	{
+		CurrentStamina += UpgradeAmount;
+		UpgradeAmount += 20.0;
+		CurrentMoney -= UpgradeCost * StaminaCurrentLevel;
+		StaminaCurrentLevel++;
+	}
+}
+
+void URPGEntityComponent::UpgradeCarryWeight()
+{
+	if (CurrentMoney >= UpgradeCost * CarryWightCurrentLevel)
+	{
+		CurrentCarryWeight += UpgradeAmount;
+		CurrentMoney -= UpgradeCost * CarryWightCurrentLevel;
+		CarryWightCurrentLevel++;
 	}
 }
 
