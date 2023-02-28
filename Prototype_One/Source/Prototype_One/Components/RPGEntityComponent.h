@@ -64,7 +64,7 @@ public:
 	
 	// Currency
 	UPROPERTY(EditAnywhere)
-	int CurrentMoney{};
+	int CurrentMoney{200};
 
 	UPROPERTY(EditAnywhere)
 	int UpgradeCost{100};

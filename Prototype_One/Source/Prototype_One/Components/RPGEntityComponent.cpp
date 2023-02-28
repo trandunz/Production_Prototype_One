@@ -11,7 +11,6 @@ void URPGEntityComponent::BeginPlay()
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
 	CurrentStamina = MaxStamina;
-	CurrentMoney = 69; // Nice
 }
 
 void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

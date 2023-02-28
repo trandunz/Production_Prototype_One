@@ -44,5 +44,15 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* UpgradeCarryWeight;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* HealthIcon;
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* StaminaIcon;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* CarryWeightIcon;
+	
 	
 };

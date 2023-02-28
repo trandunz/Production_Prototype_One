@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Styling/SlateBrush.h"
 
 void UShopWidget::NativeOnInitialized()
 {
