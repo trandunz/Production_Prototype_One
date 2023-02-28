@@ -15,6 +15,7 @@
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Prototype_One/Sword.h"
+#include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
@@ -102,6 +103,10 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	// Sprint related
 	if (EntityComponent->CurrentStamina <= 0)
 		EndSprint();
+
+	UpdateFadeActors();
+	SetShowMeshes();
+	SetHiddenMeshes();
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -396,6 +401,77 @@ void APrototype_OneCharacter::Ragdoll()
 	}
 
 	SetLifeSpan(10.0f);
+}
+
+void APrototype_OneCharacter::UpdateFadeActors()
+{
+	CameraHitMeshes.Reset();
+	TArray<FHitResult> OutHits;
+	FCollisionShape capsule = FCollisionShape::MakeCapsule(GetCapsuleComponent()->GetScaledCapsuleRadius() - 1.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 1.0f);
+	if (GetWorld()->SweepMultiByChannel(OutHits, FollowCamera->GetComponentLocation(), GetActorLocation(), FQuat::Identity, ECC_WorldStatic, capsule))
+	{
+		
+		for(auto& object : OutHits)
+		{
+			TArray<UActorComponent*> meshes{};
+			meshes = object.GetActor()->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+			for(auto& mesh : meshes)
+			{
+				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
+					CameraHitMeshes.AddUnique(staticMesh);
+				}
+			}
+		}
+	}
+	
+}
+
+void APrototype_OneCharacter::SetShowMeshes()
+{
+	TArray<UActorComponent*> fadeComponents{};
+	TArray<UStaticMeshComponent*> meshesToBeRemoved;
+	for(auto& hiddenMesh : HiddenMeshes)
+	{
+		if (!CameraHitMeshes.Contains(hiddenMesh))
+		{
+			fadeComponents = hiddenMesh->GetAttachmentRootActor()->GetComponentsByClass(UFadeComponent::StaticClass());
+			for(auto& component : fadeComponents)
+			{
+				if (auto* fadeComponent = Cast<UFadeComponent>(component))
+				{
+					fadeComponent->ToggleHideMesh(false);
+					meshesToBeRemoved.AddUnique(hiddenMesh);
+					return;
+				}
+			}
+		}
+	}
+
+	for(auto* mesh : meshesToBeRemoved)
+	{
+		HiddenMeshes.Remove(mesh);
+	}
+	
+}
+
+void APrototype_OneCharacter::SetHiddenMeshes()
+{
+	TArray<UActorComponent*> fadeComponents{};
+	for(auto& hitMesh : CameraHitMeshes)
+	{
+		fadeComponents = hitMesh->GetAttachmentRootActor()->GetComponentsByClass(UFadeComponent::StaticClass());
+		for(auto& component : fadeComponents)
+		{
+			if (auto* fadeComponent = Cast<UFadeComponent>(component))
+			{
+				fadeComponent->ToggleHideMesh(true);
+				HiddenMeshes.AddUnique(hitMesh);
+				return;
+			}
+		}
+	}
 }
 
 void APrototype_OneCharacter::TakeDamage(int _amount)

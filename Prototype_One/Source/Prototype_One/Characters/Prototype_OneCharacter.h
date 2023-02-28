@@ -57,6 +57,10 @@ protected:
 
 	void Ragdoll();
 
+	void UpdateFadeActors();
+	void SetShowMeshes();
+	void SetHiddenMeshes();
+
 public:
 	void TakeDamage(int _amount);
 	
@@ -115,6 +119,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	int ValuablesCount{1};
+
+	UPROPERTY(EditAnywhere, Category=Camera)
+	TArray<class UStaticMeshComponent*> CameraHitMeshes;
+	UPROPERTY(EditAnywhere, Category=Camera)
+	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
 	// Prefabs
 protected:
