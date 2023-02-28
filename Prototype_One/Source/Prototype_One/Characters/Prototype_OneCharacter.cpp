@@ -47,6 +47,7 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
+
 }
 
 void APrototype_OneCharacter::BeginPlay()
@@ -83,14 +84,14 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	InteractRaycast();
 
 	// Timer for dodging
-	if (dodgeMovementCurrentTime > 0)
-		dodgeMovementCurrentTime -= DeltaSeconds;
-	if (dodgeMovementCurrentTime <= 0)
-		IsDodging = false;
+	if (DashMovementCurrentTime > 0)
+		DashMovementCurrentTime -= DeltaSeconds;
+	if (DashMovementCurrentTime <= 0)
+		IsDashing = false;
 	// Dodging
-	if (IsDodging == true)
+	if (IsDashing == true)
 	{
-		GetCharacterMovement()->Velocity.Set(DodgeMovementVector.Y * 1000.0f, DodgeMovementVector.X * 1000.0f, GetCharacterMovement()->Velocity.Z);
+		GetCharacterMovement()->Velocity.Set(DashMovementVector.Y * DashDistance, DashMovementVector.X * DashDistance, GetCharacterMovement()->Velocity.Z);
 	}
 	
 	// Timer for combat
@@ -135,7 +136,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryRoll);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryDash);
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryMelee);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -153,7 +154,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
-	if (dodgeMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
+	if (DashMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
 	{
 		if (Controller != nullptr)
 		{
@@ -170,26 +171,26 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 	}
 	else // Rolling code
 	{
-		if (IsDodging == true)
+		if (IsDashing == true)
 		{
-			if (HasStartedDodge == true)
+			if (HasStartedDash == true)
 			{
-				DodgeMovementVector = Value.Get<FVector2D>();
-				DodgeMovementVector.Normalize();
+				DashMovementVector = Value.Get<FVector2D>();
+				DashMovementVector.Normalize();
 				
 				if (Controller != nullptr)
 				{
 					const FRotator Rotation = Controller->GetControlRotation();
 					const FRotator YawRotation(0, Rotation.Yaw, 0);
-					DodgeForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-					DodgeRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					DashForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+					DashRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 					
-					AddMovementInput(DodgeForwardDirection , DodgeMovementVector.Y);
-					AddMovementInput(DodgeRightDirection, DodgeMovementVector.X);
+					AddMovementInput(DashForwardDirection , DashMovementVector.Y);
+					AddMovementInput(DashRightDirection, DashMovementVector.X);
 					
-					HasStartedDodge = false;
+					HasStartedDash = false;
 					
-					UE_LOG(LogTemp, Log, TEXT("Dodge Movement Vecotr: %s"), *DodgeMovementVector.ToString());
+					UE_LOG(LogTemp, Log, TEXT("Dash Movement Vecotr: %s"), *DashMovementVector.ToString());
 				}
 			}
 		}
@@ -214,34 +215,34 @@ void APrototype_OneCharacter::EndSprint()
 	EntityComponent->IsStaminaDraining = false;
 }
 
-void APrototype_OneCharacter::TryRoll()
+void APrototype_OneCharacter::TryDash()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
+		if (DashMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->DashStaminaCost)
 		{
-			if (RollAnimation)
-			{
-				IsDodging = true;
-				HasStartedDodge = true;
-				EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
+			//if (DashAnimation)
+			//{
+				IsDashing = true;
+				HasStartedDash = true;
+				EntityComponent->CurrentStamina -= EntityComponent->DashStaminaCost;
 				if (PlayerHud)
 				{
 					PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
 				}
-				GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
-				dodgeMovementCurrentTime = dodgeMovementMaxTime;
-			}
+				//GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
+				DashMovementCurrentTime = DashMovementMaxTime;
+			//}
 		}
 	}
 }
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageAttack)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->AttackStaminaCost)
 	{
 		IsAttacking = true;
-		EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageAttack;
+		EntityComponent->CurrentStamina -= EntityComponent->AttackStaminaCost;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);

@@ -54,9 +54,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float MinimumStaminaToSprint{10.0f};
 	UPROPERTY(EditAnywhere)
-	float StaminaDamageDodge{10.0f};
+	float DashStaminaCost{10.0f};
 	UPROPERTY(EditAnywhere)
-	float StaminaDamageAttack{20.0f};
+	float AttackStaminaCost{20.0f};
 	UPROPERTY(VisibleAnywhere)
 	float CurrentStaminaTime{};
 	UPROPERTY(VisibleAnywhere)

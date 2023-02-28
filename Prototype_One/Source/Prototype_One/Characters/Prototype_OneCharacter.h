@@ -38,7 +38,7 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void StartSprint();
 	void EndSprint();
-	void TryRoll();
+	void TryDash(); 
 	void TryMelee();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
@@ -93,17 +93,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int SprintSpeed{800};
 
-	// Dodge roll related
+	// Dash related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float dodgeMovementMaxTime{0.5f};
+	float DashMovementMaxTime{0.5f};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float dodgeMovementCurrentTime{};
+	float DashMovementCurrentTime{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	bool IsDodging{false};
-	bool HasStartedDodge{false};
-	FVector2D DodgeMovementVector;
-	FVector DodgeForwardDirection;
-	FVector DodgeRightDirection; 
+	bool IsDashing{false};
+	bool HasStartedDash{false};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DashDistance{5000.0f};
+	FVector2D DashMovementVector;
+	FVector DashForwardDirection;
+	FVector DashRightDirection; 
 	
 	// Stats 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -117,6 +119,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking{false};
 
+	// Related to disappearing objects
 	UPROPERTY(VisibleAnywhere)
 	int ValuablesCount{1};
 
@@ -125,6 +128,7 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
+
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;
@@ -132,8 +136,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* RollAnimation;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	//UAnimMontage* DashAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MeleeAnimation;
