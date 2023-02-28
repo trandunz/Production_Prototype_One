@@ -2,19 +2,56 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
+#include "JsonUtilities.h"
+#include "Dom/JsonObject.h"
 #include "DialogueWidget.generated.h"
+
+USTRUCT()
+struct FOpenAIResponse
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	FString id;
+
+	UPROPERTY()
+	TArray<FString> choices;
+};
+
+
 
 UCLASS()
 class PROTOTYPE_ONE_API UDialogueWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess))
+	bool EnableAIParaphrasing{};
+	static FString RandomHelloMessage;
+
+	UPROPERTY(EditAnywhere)
+	FString API_KEY;
+private:
+	static void OnOpenAIResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+	void SendOpenAIRequest(const FString& _input);
+	static void ApplyRegex(const FString& InputString, const FString& RegexString, TArray<FString>& OutMatches);
 public:
 	virtual void NativeOnInitialized() override;
 	
 	void ShowDialogueBox(bool);
 	UFUNCTION()
 	void OnNextDialogueLine();
+
+	UFUNCTION()
+	void OnBye();
+	UFUNCTION()
+	void OnQuestMenu();
+	UFUNCTION()
+	void OnShopMenu();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* DialogueBackground;
@@ -27,6 +64,18 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FString> DialogueLines{};
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Bye;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Quest;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* Shop;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UShopWidget* ShopWidget;
 
 	int CurrentDialogueIndex{};
 };

@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "Prototype_One/Components/PlayerInventory.h"
 #include "Prototype_OneCharacter.generated.h"
 
 class UPlayerHUD;
@@ -58,6 +57,10 @@ protected:
 
 	void Ragdoll();
 
+	void UpdateFadeActors();
+	void SetShowMeshes();
+	void SetHiddenMeshes();
+
 public:
 	void TakeDamage(int _amount);
 	
@@ -84,19 +87,44 @@ public:
 	float Dt{};
 	bool IsTalking{};
 
+	// Stamina/sprint related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int JogSpeed{400};
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int SprintSpeed{800};
+
+	// Dodge roll related
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float dodgeMovementMaxTime{0.5f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float dodgeMovementCurrentTime{};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool IsDodging{false};
+	bool HasStartedDodge{false};
+	FVector2D DodgeMovementVector;
+	FVector DodgeForwardDirection;
+	FVector DodgeRightDirection; 
 	
+	// Stats 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
     class URPGEntityComponent* EntityComponent;
 
-	/* Component to handle all held items */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UPlayerInventory* PlayerInventory;
-	
+	// Combat related variables
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float combatMovementMaxTime{0.5f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float combatMovementCurrentTime{};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	bool IsAttacking{false};
+
+	UPROPERTY(VisibleAnywhere)
+	int ValuablesCount{1};
+
+	UPROPERTY(EditAnywhere, Category=Camera)
+	TArray<class UStaticMeshComponent*> CameraHitMeshes;
+	UPROPERTY(EditAnywhere, Category=Camera)
+	TArray<class UStaticMeshComponent*> HiddenMeshes;
+
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;
@@ -107,7 +135,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* RollAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MeleeAnimation;
 };
 

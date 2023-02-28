@@ -2,6 +2,7 @@
 
 #include "NavigationSystem.h"
 #include "Prototype_OneCharacter.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -13,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 
+
 APrototypeEnemy::APrototypeEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,17 +24,51 @@ APrototypeEnemy::APrototypeEnemy()
 	Stimulus->RegisterForSense(TSubclassOf<UAISense_Sight>());
 	Stimulus->RegisterWithPerceptionSystem();
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widgeet Info"));
+	HealthBarWidget->SetupAttachment(RootComponent);
 }
 
 void APrototypeEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void APrototypeEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->UnregisterComponent();
+		HealthBarWidget->DestroyComponent();
+		HealthBarWidget->RemoveFromRoot();
+		HealthBarWidget = nullptr;
+	}
 }
 
 void APrototypeEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (HealthBarWidget)
+	{
+		if (auto* widget = Cast<UHealthBarWidget>(HealthBarWidget->GetWidget()))
+		{
+			widget->SetHealthPercent(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+
+			if (auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+			{
+				if ((player->GetActorLocation() - GetActorLocation()).Length() < 1000.0f)
+				{
+						widget->SetVisibility(ESlateVisibility::Visible);
+					}
+				else
+				{
+					widget->SetVisibility(ESlateVisibility::Hidden);
+				}
+			}
+		}
+	}
 }
 
 void APrototypeEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -55,16 +91,7 @@ void APrototypeEnemy::TakeDamage(int _amount)
 
 void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 {
-	//LastSeenPawn = _pawn;
-	//
-	//if (auto* character = Cast<APrototype_OneCharacter>(_pawn))
-	//{
-	//	if (auto * aiInstance =
-	//	Cast<AEnemyController>(Controller))
-	//	{
-	//		aiInstance->MoveToLocation(character->GetOwner()->GetActorLocation());
-	//	}
-	//}
+	
 }
 
 void APrototypeEnemy::Attack()
@@ -82,6 +109,13 @@ void APrototypeEnemy::Attack()
 
 void APrototypeEnemy::Ragdoll()
 {
+	if (HealthBarWidget)
+	{
+		HealthBarWidget->UnregisterComponent();
+		HealthBarWidget->DestroyComponent();
+		HealthBarWidget->RemoveFromRoot();
+		HealthBarWidget = nullptr;
+	}
 	if (ItemDropPrefab)
 	{
 		auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);

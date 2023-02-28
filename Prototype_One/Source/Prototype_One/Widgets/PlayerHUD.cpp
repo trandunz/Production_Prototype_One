@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
@@ -20,6 +21,35 @@ void UPlayerHUD::NativeOnInitialized()
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))
+	{
+		UpdateStamina(player->EntityComponent->CurrentStamina, player->EntityComponent->MaxStamina);
+	}
+}
+
+void UPlayerHUD::UpdateHealth(int _health, int _maxHealth)
+{
+	if (HealthBar)
+	{
+		HealthBar->SetPercent(static_cast<float>(_health) / static_cast<float>(_maxHealth));
+	}
+}
+
+void UPlayerHUD::UpdateMana(int _mana, int _maxMana)
+{
+	if (ManaBar)
+	{
+		ManaBar->SetPercent(static_cast<float>(_mana) / static_cast<float>(_maxMana));
+	}
+}
+
+void UPlayerHUD::UpdateStamina(int _stamina, int _maxStamina)
+{
+	if (StaminaBar)
+	{
+		StaminaBar->SetPercent(static_cast<float>(_stamina) / static_cast<float>(_maxStamina));
+	}
 }
 
 void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message)
@@ -32,6 +62,25 @@ void UPlayerHUD::UpdateInteractionText(FString _interactionKey, FString _message
 		controller->GetMousePosition(mouseX, mouseY);
 		
 		InteractionText->SetText(FText::FromString(_interactionKey == "" ? "" : "Press " + _interactionKey + " " + _message));
+	}
+}
+
+void UPlayerHUD::UpdateSneakStatus(int _seen)
+{
+	if (_seen == 0 && SeenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(SeenImage);
+	}
+	else if (_seen == 1 && HiddenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(HalfHiddenImage);
+	}
+	else if (_seen == 2 && HiddenImage)
+	{
+		Crosshair_Overlay->SetVisibility(ESlateVisibility::Visible);
+		Crosshair_Overlay->SetBrushFromTexture(HiddenImage);
 	}
 }
 

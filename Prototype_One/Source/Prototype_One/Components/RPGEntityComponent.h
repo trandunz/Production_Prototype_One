@@ -22,18 +22,47 @@ public:
 	void TakeDamage(int _amount);
 	void Heal(int _amount);
 	
-	UPROPERTY(EditAnywhere)
+	// Health
+	UPROPERTY(VisibleAnywhere)
 	int CurrentHealth{};
 	UPROPERTY(EditAnywhere)
 	int MaxHealth{100};
+
+	// Mana
+	UPROPERTY(VisibleAnywhere)
+	int CurrentCarryWeight{};
 	UPROPERTY(EditAnywhere)
-	int CurrentMana{};
-	UPROPERTY(EditAnywhere)
-	int MaxMana{100};
-	UPROPERTY(EditAnywhere)
+	int MaxCarryWeight{100};
+
+	// Stamina
+	UPROPERTY(VisibleAnywhere)
 	int CurrentStamina{};
 	UPROPERTY(EditAnywhere)
 	int MaxStamina{100};
 	UPROPERTY(EditAnywhere)
+	int StaminaRegen{1};
+	UPROPERTY(EditAnywhere)
+	int StaminaDrain{1};
+	UPROPERTY(EditAnywhere)
+	float MaxStaminaDrainTime{1};
+	UPROPERTY(EditAnywhere)
+	float MaxStaminaRegenTime{1};
+	UPROPERTY(EditAnywhere)
+	float MinimumStaminaToSprint{10.0f};
+	UPROPERTY(EditAnywhere)
+	float StaminaDamageDodge{10.0f};
+	UPROPERTY(EditAnywhere)
+	float StaminaDamageAttack{20.0f};
+	UPROPERTY(VisibleAnywhere)
+	float CurrentStaminaTime{};
+	UPROPERTY(VisibleAnywhere)
+	bool IsStaminaDraining{false};
+	
+	// Currency
+	UPROPERTY(EditAnywhere)
 	int CurrentMoney{};
+
+private:
+
+	void StaminaRegenDrain(float dt);
 };

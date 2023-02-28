@@ -1,5 +1,6 @@
 #include "Prototype_OneCharacter.h"
 
+#include "AITypes.h"
 #include "DialogueNPC.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -14,6 +15,7 @@
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Prototype_One/Sword.h"
+#include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
@@ -56,6 +58,12 @@ void APrototype_OneCharacter::BeginPlay()
 	InitInputMappingContext();
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+		PlayerHud->UpdateMana(EntityComponent->CurrentMana, EntityComponent->MaxMana);
+		PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+	}
 
 	EndSprint();
 }
@@ -76,6 +84,31 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	Dt = DeltaSeconds;
 	InteractRaycast();
+
+	// Timer for dodging
+	if (dodgeMovementCurrentTime > 0)
+		dodgeMovementCurrentTime -= DeltaSeconds;
+	if (dodgeMovementCurrentTime <= 0)
+		IsDodging = false;
+	// Dodging
+	if (IsDodging == true)
+	{
+		GetCharacterMovement()->Velocity.Set(DodgeMovementVector.Y * 1000.0f, DodgeMovementVector.X * 1000.0f, GetCharacterMovement()->Velocity.Z);
+	}
+	
+	// Timer for combat
+	if (combatMovementCurrentTime > 0)
+		combatMovementCurrentTime -= DeltaSeconds;
+	if (combatMovementCurrentTime <= 0)
+		IsAttacking = false;
+
+	// Sprint related
+	if (EntityComponent->CurrentStamina <= 0)
+		EndSprint();
+
+	UpdateFadeActors();
+	SetShowMeshes();
+	SetHiddenMeshes();
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -122,41 +155,104 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
-	if (Controller != nullptr)
+	
+	if (dodgeMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
 	{
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		if (Controller != nullptr)
+		{
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+			const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		
-		AddMovementInput(ForwardDirection , MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+			AddMovementInput(ForwardDirection , MovementVector.Y);
+			AddMovementInput(RightDirection, MovementVector.X);
+			
+			//UE_LOG(LogTemp, Log, TEXT("Movement Vector: %s"), *MovementVector.ToString());
+		}
+	}
+	else // Rolling code
+	{
+		if (IsDodging == true)
+		{
+			if (HasStartedDodge == true)
+			{
+				DodgeMovementVector = Value.Get<FVector2D>();
+				DodgeMovementVector.Normalize();
+				
+				if (Controller != nullptr)
+				{
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation(0, Rotation.Yaw, 0);
+					DodgeForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+					DodgeRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					
+					AddMovementInput(DodgeForwardDirection , DodgeMovementVector.Y);
+					AddMovementInput(DodgeRightDirection, DodgeMovementVector.X);
+					
+					HasStartedDodge = false;
+					
+					UE_LOG(LogTemp, Log, TEXT("Dodge Movement Vecotr: %s"), *DodgeMovementVector.ToString());
+				}
+			}
+		}
 	}
 }
 
 void APrototype_OneCharacter::StartSprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+	{
+		if (EntityComponent->CurrentStamina > EntityComponent->MinimumStaminaToSprint)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+			EntityComponent->IsStaminaDraining = true;
+		}
+	}
 }
 
 void APrototype_OneCharacter::EndSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
+	EntityComponent->IsStaminaDraining = false;
 }
 
 void APrototype_OneCharacter::TryRoll()
 {
-	if (RollAnimation)
-		GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
-	
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+	{
+		if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
+		{
+			if (RollAnimation)
+			{
+				IsDodging = true;
+				HasStartedDodge = true;
+				EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
+				if (PlayerHud)
+				{
+					PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+				}
+				GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
+				dodgeMovementCurrentTime = dodgeMovementMaxTime;
+			}
+		}
+	}
 }
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (MeleeAnimation)
-		GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
-	
+	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageAttack)
+	{
+		IsAttacking = true;
+		EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageAttack;
+		if (PlayerHud)
+		{
+			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+		}
+		if (MeleeAnimation)
+			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
+		combatMovementCurrentTime = combatMovementMaxTime;
+	}
 }
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
@@ -209,9 +305,36 @@ void APrototype_OneCharacter::TryInteract()
 	{
 		if (nearestActor <= 200)
 		{
-			if (auto* npc = Cast<IInteractInterface>(nearestNPC))
+			
+			if (auto* interactable = Cast<IInteractInterface>(nearestNPC))
 			{
-				npc->Interact();
+				if (Cast<ASword>(nearestNPC))
+				{
+					if (!CurrentlyHeldActor)
+					{
+						interactable->Interact();
+						CurrentlyHeldActor = nearestNPC;
+						return;
+					}
+					else
+					{
+						CurrentlyHeldActor->SetActorLocation(GetActorLocation() + GetActorForwardVector() * 10);
+						if (auto* sword = Cast<ASword>(CurrentlyHeldActor))
+						{
+							sword->Unequip();
+						}
+						CurrentlyHeldActor = nullptr;
+						CurrentlyHeldActor = nearestNPC;
+						interactable->Interact();
+						
+						return;
+					}
+				}
+				else
+				{
+					interactable->Interact();
+					return;
+				}
 			}
 		}
 	}
@@ -282,9 +405,84 @@ void APrototype_OneCharacter::Ragdoll()
 	SetLifeSpan(10.0f);
 }
 
+void APrototype_OneCharacter::UpdateFadeActors()
+{
+	CameraHitMeshes.Reset();
+	TArray<FHitResult> OutHits;
+	FCollisionShape capsule = FCollisionShape::MakeCapsule(GetCapsuleComponent()->GetScaledCapsuleRadius() - 1.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 1.0f);
+	if (GetWorld()->SweepMultiByChannel(OutHits, FollowCamera->GetComponentLocation(), GetActorLocation(), FQuat::Identity, ECC_WorldStatic, capsule))
+	{
+		
+		for(auto& object : OutHits)
+		{
+			TArray<UActorComponent*> meshes{};
+			meshes = object.GetActor()->GetComponentsByClass(UStaticMeshComponent::StaticClass());
+			for(auto& mesh : meshes)
+			{
+				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
+					CameraHitMeshes.AddUnique(staticMesh);
+				}
+			}
+		}
+	}
+	
+}
+
+void APrototype_OneCharacter::SetShowMeshes()
+{
+	TArray<UActorComponent*> fadeComponents{};
+	TArray<UStaticMeshComponent*> meshesToBeRemoved;
+	for(auto& hiddenMesh : HiddenMeshes)
+	{
+		if (!CameraHitMeshes.Contains(hiddenMesh))
+		{
+			fadeComponents = hiddenMesh->GetAttachmentRootActor()->GetComponentsByClass(UFadeComponent::StaticClass());
+			for(auto& component : fadeComponents)
+			{
+				if (auto* fadeComponent = Cast<UFadeComponent>(component))
+				{
+					fadeComponent->ToggleHideMesh(false);
+					meshesToBeRemoved.AddUnique(hiddenMesh);
+					return;
+				}
+			}
+		}
+	}
+
+	for(auto* mesh : meshesToBeRemoved)
+	{
+		HiddenMeshes.Remove(mesh);
+	}
+	
+}
+
+void APrototype_OneCharacter::SetHiddenMeshes()
+{
+	TArray<UActorComponent*> fadeComponents{};
+	for(auto& hitMesh : CameraHitMeshes)
+	{
+		fadeComponents = hitMesh->GetAttachmentRootActor()->GetComponentsByClass(UFadeComponent::StaticClass());
+		for(auto& component : fadeComponents)
+		{
+			if (auto* fadeComponent = Cast<UFadeComponent>(component))
+			{
+				fadeComponent->ToggleHideMesh(true);
+				HiddenMeshes.AddUnique(hitMesh);
+				return;
+			}
+		}
+	}
+}
+
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
 	EntityComponent->TakeDamage(_amount);
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+	}
 	if (EntityComponent->CurrentHealth <= 0)
 	{
 		Ragdoll();
