@@ -5,6 +5,7 @@
 #include "InputActionValue.h"
 #include "Prototype_OneCharacter.generated.h"
 
+class UPlayerInventory;
 class UPlayerHUD;
 UCLASS(config=Game)
 class APrototype_OneCharacter : public ACharacter
@@ -106,6 +107,9 @@ public:
 	FVector2D DashMovementVector;
 	FVector DashForwardDirection;
 	FVector DashRightDirection; 
+
+	// Inventory
+	UPlayerInventory* PlayerInventory;
 	
 	// Stats 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))

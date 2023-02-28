@@ -16,6 +16,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
+#include "Prototype_One/Components/PlayerInventory.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
@@ -47,7 +48,7 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
-
+	PlayerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("Inventory"));
 }
 
 void APrototype_OneCharacter::BeginPlay()

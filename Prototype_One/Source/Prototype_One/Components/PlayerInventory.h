@@ -16,13 +16,13 @@ struct FInventorySlot
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FItemDetails Info;
-
 	
 	// Static function used to sort Items array
 	static bool CompareAscending(const FInventorySlot& InA, const FInventorySlot& InB)
 	{
 		return InA.Info.Type < InB.Info.Type;
 	}
+	
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,12 +47,12 @@ public:
 	void Pickup(FItemDetails PickedUpItemInfo);
 
 	/* Sells the slot passed in */
-	void Sell(FInventorySlot Slot);
+	void Sell(const int32 SlotIndex);
 
 	/* Sorts the Items in the inventory by type */
-	void SortByType(FInventorySlot Slot);
+	void SortByType();
 
-	void Drop(FInventorySlot Slot);
+	void Drop(const int32 SlotIndex);
 
 	TArray<FInventorySlot> GetItems() { return Items; }
 private:

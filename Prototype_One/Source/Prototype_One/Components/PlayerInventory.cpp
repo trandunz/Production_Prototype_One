@@ -30,19 +30,19 @@ void UPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-void UPlayerInventory::Sell(FInventorySlot Slot)
+void UPlayerInventory::Sell(const int32 SlotIndex)
 {
 	// Increase coins by value of item in slot * amount
-	Coins += Slot.Info.Value * Slot.Amount;
+	Coins += Items[SlotIndex].Info.Value * Items[SlotIndex].Amount;
 
 	// Remove Slot from Items
-	Items.Remove(Slot);
+	Items.RemoveAt(SlotIndex);
 
 	// Refresh weight
 	CalculateWeight();
 }
 
-void UPlayerInventory::SortByType(FInventorySlot Slot)
+void UPlayerInventory::SortByType()
 {
 	Algo::Sort(Items, [](const FInventorySlot& InA, const FInventorySlot& InB)
 	{
@@ -51,9 +51,9 @@ void UPlayerInventory::SortByType(FInventorySlot Slot)
 	);
 }
 
-void UPlayerInventory::Drop(FInventorySlot Slot)
+void UPlayerInventory::Drop(const int32 SlotIndex)
 {
-	Items.Remove(Slot);
+	Items.RemoveAt(SlotIndex);
 	CalculateWeight();
 }
 
