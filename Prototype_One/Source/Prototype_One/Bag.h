@@ -21,5 +21,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
-	
+	UPROPERTY(VisibleAnywhere)
+	int CurrentWeight{4};
+
+	UPROPERTY(EditAnywhere)
+	int WeightThreshold{5};
+
+	UPROPERTY(EditAnywhere)
+	int StoppingThreshold{10};
 };
