@@ -29,4 +29,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	int StoppingThreshold{10};
+
+	UPROPERTY(EditAnywhere)
+	bool IsOpen{};
+
+	
 };
