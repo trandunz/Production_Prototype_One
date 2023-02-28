@@ -21,6 +21,10 @@ public:
 
 	void TakeDamage(int _amount);
 	void Heal(int _amount);
+
+	void UpgradeHealth();
+	void UpgradeStamina();
+	void UpgradeCarryWeight();
 	
 	// Health
 	UPROPERTY(VisibleAnywhere)
@@ -62,6 +66,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	int CurrentMoney{};
 
+	UPROPERTY(EditAnywhere)
+	int UpgradeCost{100};
+	
+	UPROPERTY(VisibleAnywhere)
+	int HealthCurrentLevel{0};
+	UPROPERTY(VisibleAnywhere)
+	int StaminaCurrentLevel{0};
+	UPROPERTY(VisibleAnywhere)
+	int CarryWightCurrentLevel{0};
+
+	UPROPERTY(VisibleAnywhere)
+	float UpgradeAmount{20.0f};
 private:
 
 	void StaminaRegenDrain(float dt);

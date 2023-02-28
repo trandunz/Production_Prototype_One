@@ -12,6 +12,9 @@ void UShopWidget::NativeOnInitialized()
 
 	Sell->OnPressed.AddDynamic(this, &UShopWidget::SellAnyItems);
 	GoBack->OnPressed.AddDynamic(this, &UShopWidget::Back);
+	UpgradeHealth->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeHealth);
+	UpgradeStamina->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeStamina);
+	UpgradeCarryWeight->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeCarryWeight);
 }
 
 void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -30,6 +33,33 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		}
 		
 		Money->SetText(FText::FromString(FString::FromInt(player->EntityComponent->CurrentMoney)));
+
+		if (player->EntityComponent->CurrentMoney >= player->EntityComponent->UpgradeCost * player->EntityComponent->HealthCurrentLevel)
+		{
+			UpgradeHealth->SetIsEnabled(true);
+		}
+		else
+		{
+			UpgradeHealth->SetIsEnabled(false);
+		}
+
+		if (player->EntityComponent->CurrentMoney >= player->EntityComponent->UpgradeCost * player->EntityComponent->StaminaCurrentLevel)
+		{
+			UpgradeStamina->SetIsEnabled(true);
+		}
+		else
+		{
+			UpgradeStamina->SetIsEnabled(false);
+		}
+
+		if (player->EntityComponent->CurrentMoney >= player->EntityComponent->UpgradeCost * player->EntityComponent->CarryWightCurrentLevel)
+		{
+			UpgradeCarryWeight->SetIsEnabled(true);
+		}
+		else
+		{
+			UpgradeCarryWeight->SetIsEnabled(false);
+		}
 	}
 	
 }
@@ -52,4 +82,28 @@ void UShopWidget::SellAnyItems()
 void UShopWidget::Back()
 {
 	SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UShopWidget::OnUpgradeHealth()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->EntityComponent->UpgradeHealth();
+	}
+}
+
+void UShopWidget::OnUpgradeStamina()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->EntityComponent->UpgradeStamina();
+	}
+}
+
+void UShopWidget::OnUpgradeCarryWeight()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->EntityComponent->UpgradeCarryWeight();
+	}
 }

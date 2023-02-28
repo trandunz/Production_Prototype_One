@@ -59,7 +59,6 @@ void APrototype_OneCharacter::BeginPlay()
 	if (PlayerHud)
 	{
 		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
-		PlayerHud->UpdateMana(EntityComponent->CurrentMana, EntityComponent->MaxMana);
 		PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
 	}
 
