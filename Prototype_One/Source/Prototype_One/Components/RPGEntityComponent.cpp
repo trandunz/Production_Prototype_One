@@ -67,7 +67,7 @@ void URPGEntityComponent::UpgradeHealth()
 {
 	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.HealthCurrentLevel)
 	{
-		Properties.CurrentHealth += Properties.UpgradeAmount;
+		Properties.MaxHealth += Properties.UpgradeAmount;
 		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.HealthCurrentLevel;
 		Properties.HealthCurrentLevel++;
 	}
@@ -77,7 +77,7 @@ void URPGEntityComponent::UpgradeStamina()
 {
 	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.StaminaCurrentLevel)
 	{
-		Properties.CurrentStamina += Properties.UpgradeAmount;
+		Properties.MaxStamina += Properties.UpgradeAmount;
 		Properties.UpgradeAmount += 20.0;
 		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.StaminaCurrentLevel;
 		Properties.StaminaCurrentLevel++;
@@ -86,11 +86,11 @@ void URPGEntityComponent::UpgradeStamina()
 
 void URPGEntityComponent::UpgradeCarryWeight()
 {
-	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.CarryWightCurrentLevel)
+	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.CarryWeightCurrentLevel)
 	{
-		Properties.CurrentCarryWeight += Properties.UpgradeAmount;
-		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.CarryWightCurrentLevel;
-		Properties.CarryWightCurrentLevel++;
+		Properties.MaxCarryWeight += Properties.UpgradeAmount;
+		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.CarryWeightCurrentLevel;
+		Properties.CarryWeightCurrentLevel++;
 	}
 }
 

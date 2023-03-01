@@ -74,7 +74,7 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			Mesh->SetSimulatePhysics(false);
 			Mesh->SetCanEverAffectNavigation(true);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWightCurrentLevel) * 100090, 0, 999999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel) * 100090, 0, 999999));
 			
 		}
 		else if (Player->ValuablesCount >= WeightThreshold && IsBiengPulled)
@@ -87,7 +87,7 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCanEverAffectNavigation(true);
 			Mesh->SetLinearDamping(1.0f);
 			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWightCurrentLevel), 0, 99999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel), 0, 99999));
 			FVector targetLocation = GetActorLocation();
 			targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * Player->ValuablesCount).X;
 			targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * Player->ValuablesCount).Y;
@@ -103,7 +103,7 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCanEverAffectNavigation(true);
 			Mesh->SetLinearDamping(100.0f);
 			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWightCurrentLevel) * 99999, 0, 99999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel) * 99999, 0, 99999));
 		}
 		else
 		{

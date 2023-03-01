@@ -137,9 +137,9 @@ public:
 	bool IsAttacking{false};
 
 	// Player Death/Respawn
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
-	float TimeBeforeRespawn{5.0f};
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	float TimeBeforeRespawn{1.0f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	float RespawnTimer{};
 	
 	// Inventory

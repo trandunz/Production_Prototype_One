@@ -59,7 +59,7 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			UpgradeStamina->SetIsEnabled(false);
 		}
 
-		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.CarryWightCurrentLevel)
+		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.CarryWeightCurrentLevel)
 		{
 			UpgradeCarryWeight->SetIsEnabled(true);
 		}
