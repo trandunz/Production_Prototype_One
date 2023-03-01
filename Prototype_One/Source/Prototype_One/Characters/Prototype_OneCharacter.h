@@ -72,6 +72,9 @@ protected:
 	void TryOpenBag();
 public:
 	void TakeDamage(int _amount);
+	void RecoverHealth(int _amount);
+	void RecoverMana(int _amount);
+	void UseMana(int _amount);
 	
 	// References
 public:

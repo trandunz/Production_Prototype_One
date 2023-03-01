@@ -15,6 +15,8 @@ enum class EPotionType : uint8
 	Mana UMETA(DisplayName = "Mana"),
 };
 
+class APrototype_OneCharacter;
+
 class PROTOTYPE_ONE_API Potion
 {
 public:

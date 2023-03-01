@@ -617,5 +617,14 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 	}
 }
 
+void APrototype_OneCharacter::RecoverHealth(int _amount)
+{
+	EntityComponent->Heal(_amount);
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+	}
+}
+
 
 
