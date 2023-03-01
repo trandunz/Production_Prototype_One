@@ -5,23 +5,29 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Controllers/PrototypePlayerController.h"
 #include "Styling/SlateBrush.h"
 
 void UShopWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-
+	
 	Sell->OnPressed.AddDynamic(this, &UShopWidget::SellAnyItems);
 	GoBack->OnPressed.AddDynamic(this, &UShopWidget::Back);
 	UpgradeHealth->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeHealth);
 	UpgradeStamina->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeStamina);
 	UpgradeCarryWeight->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeCarryWeight);
+
+	BuyHealthPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyHealthPotion);
+	BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
+
+
 }
 
 void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
+	
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		if (player->ValuablesCount > 0)
@@ -106,5 +112,21 @@ void UShopWidget::OnUpgradeCarryWeight()
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		player->EntityComponent->UpgradeCarryWeight();
+	}
+}
+
+void UShopWidget::OnBuyStaminaPotion()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		// buy Stamina potion
+	}
+}
+
+void UShopWidget::OnBuyHealthPotion()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		// buy health potion
 	}
 }

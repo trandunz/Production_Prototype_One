@@ -70,11 +70,11 @@ public:
 	int UpgradeCost{100};
 	
 	UPROPERTY(VisibleAnywhere)
-	int HealthCurrentLevel{0};
+	int HealthCurrentLevel{1};
 	UPROPERTY(VisibleAnywhere)
-	int StaminaCurrentLevel{0};
+	int StaminaCurrentLevel{1};
 	UPROPERTY(VisibleAnywhere)
-	int CarryWightCurrentLevel{0};
+	int CarryWightCurrentLevel{1};
 
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
