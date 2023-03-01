@@ -27,6 +27,7 @@ void URPGEntityComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 		{
 			gamemode->SavedPlayerData->SavedProperties = Properties;
 		}
+		gamemode->SaveGame();
 	}
 }
 

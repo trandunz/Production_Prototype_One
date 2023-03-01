@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Prototype_OneGameMode.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
@@ -89,6 +90,18 @@ void UShopWidget::SellAnyItems()
 void UShopWidget::Back()
 {
 	SetVisibility(ESlateVisibility::Hidden);
+
+	if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+	{
+		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			if (gamemode->SavedPlayerData)
+			{
+				gamemode->SavedPlayerData->SavedProperties = player->EntityComponent->Properties;
+			}
+		}
+		gamemode->SaveGame();
+	}
 }
 
 void UShopWidget::OnUpgradeHealth()

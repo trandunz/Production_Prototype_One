@@ -11,6 +11,7 @@ APrototype_OneGameMode::APrototype_OneGameMode()
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
+
 	}
 }
 
@@ -53,6 +54,6 @@ void APrototype_OneGameMode::BeginPlay()
 void APrototype_OneGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-
+	
 	SaveGame();
 }

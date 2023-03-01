@@ -72,6 +72,7 @@ public:
 	URPGEntityComponent();
 
 protected:
+	
 	virtual void BeginPlay() override;
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
