@@ -12,7 +12,7 @@ struct FInventorySlot
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Amount;
+	int32 Amount = 0;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FItemDetails Info;
@@ -22,7 +22,6 @@ struct FInventorySlot
 	{
 		return InA.Info.Type < InB.Info.Type;
 	}
-	
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -42,22 +41,33 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	/* Attempts to pickup an amount of items, returns amount not added if there wasn't enough
-	 * space in inventory */
+	/* Adds an item with the item details passed in */
+	UFUNCTION(BlueprintCallable)
 	void Pickup(FItemDetails PickedUpItemInfo);
 
 	/* Sells the slot passed in */
+	UFUNCTION(BlueprintCallable)
 	void Sell(const int32 SlotIndex);
 
 	/* Sorts the Items in the inventory by type */
+	UFUNCTION(BlueprintCallable)
 	void SortByType();
 
+	UFUNCTION(BlueprintCallable)
 	void Drop(const int32 SlotIndex);
 
+	UFUNCTION(BlueprintPure)
 	TArray<FInventorySlot> GetItems() { return Items; }
+	
+	UFUNCTION(BlueprintPure)
+	int32 GetCoins() { return Coins; }
+
+	UFUNCTION(BlueprintCallable)
+	void PrintInventory();
 private:
 	/* Sum all items held in inventory */
 	void CalculateWeight();
+	void AddNewSlot(FItemDetails ItemInfoToAdd);
 
 public:
 	TArray<FInventorySlot> Items;

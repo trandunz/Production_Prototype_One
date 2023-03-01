@@ -37,6 +37,9 @@ struct FItemDetails
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Weight;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UTexture2D* IconTexture;
 };
 
 UCLASS()
@@ -55,4 +58,9 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FItemDetails ItemDetails;
+
 };

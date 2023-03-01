@@ -1,6 +1,10 @@
 
 #include "PlayerInventory.h"
 
+#include <string>
+
+#include "Kismet/KismetSystemLibrary.h"
+
 // Sets default values for this component's properties
 UPlayerInventory::UPlayerInventory()
 {
@@ -59,36 +63,38 @@ void UPlayerInventory::Drop(const int32 SlotIndex)
 
 void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 {
-	
-	for (FInventorySlot& Slot : Items)
+	if (Items.IsEmpty())
 	{
-		// Check if already have similar item
-		if(Slot.Info.Type == PickedUpItemInfo.Type)
+		AddNewSlot(PickedUpItemInfo);
+		return;
+	}
+	
+	// Try add item to incomplete stack
+	for (int SlotIdx = 0; SlotIdx < Items.Num(); SlotIdx++)
+	{
+		if (Items[SlotIdx].Info.Type == PickedUpItemInfo.Type)
 		{
 			// Add to stack if enough room
-			if (Slot.Amount < PickedUpItemInfo.MaximumStackSize)
+			if (Items[SlotIdx].Amount < PickedUpItemInfo.MaximumStackSize)
 			{
-				Slot.Amount += 1;	
+				Items[SlotIdx].Amount += 1;
+				
+				// Refresh the weight of the Inventory
+				CalculateWeight();
+				return;
 			}
-			else // Add items to new slot
-			{
-				FInventorySlot NewSlot;
-				NewSlot.Amount = 1;
-				NewSlot.Info = PickedUpItemInfo;
-				Items.Add(NewSlot);
-			}
-		} 
-		else // Add items to new slot
-		{
-			FInventorySlot NewSlot;
-			NewSlot.Amount = 1;
-			NewSlot.Info = PickedUpItemInfo;
-			Items.Add(NewSlot);
 		}
 	}
+	
+	AddNewSlot(PickedUpItemInfo);
+}
 
-	// Refresh the weight of the Inventory
-	CalculateWeight();
+void UPlayerInventory::PrintInventory()
+{
+	for (FInventorySlot Slot : Items)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(),FString::FromInt(Slot.Amount), true, true);
+	}
 }
 
 void UPlayerInventory::CalculateWeight()
@@ -98,5 +104,17 @@ void UPlayerInventory::CalculateWeight()
 	{
 		CurrentWeight += Slot.Amount * Slot.Info.Weight;
 	}
+}
+
+void UPlayerInventory::AddNewSlot(FItemDetails ItemInfoToAdd)
+{
+	// Add items to new slot					
+	FInventorySlot NewSlot;
+	NewSlot.Amount = 1;
+	NewSlot.Info = ItemInfoToAdd;
+	Items.Add(NewSlot);
+	
+	// Refresh the weight of the Inventory
+	CalculateWeight();
 }
 
