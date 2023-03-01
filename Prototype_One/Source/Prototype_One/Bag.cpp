@@ -41,14 +41,13 @@ void ABag::Tick(float DeltaTime)
 		else if (SpawnTimer <= 0)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
-			SpawnTimer = rand() % 3;
-			Player->ValuablesCount--;
+			SpawnTimer = rand() % 3 + 1;
 			if (RabbitPrefab)
 			{
 				FNavLocation location{};
 				auto origin = GetActorLocation();
 				auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-				if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 1000.0f, location))
+				if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
 				{
 					auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
 					rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
