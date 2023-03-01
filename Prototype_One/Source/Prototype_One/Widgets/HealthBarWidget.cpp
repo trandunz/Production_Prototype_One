@@ -4,5 +4,5 @@
 
 void UHealthBarWidget::SetHealthPercent(int _health, int _maxHealth)
 {
-	HealthBar->SetPercent(_health /_maxHealth);
+	HealthBar->SetPercent((float)_health /(float)_maxHealth);
 }

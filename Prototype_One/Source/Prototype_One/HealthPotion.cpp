@@ -2,6 +2,8 @@
 
 
 #include "HealthPotion.h"
+#include "Prototype_OneCharacter.generated.h"
+#include "GameplayStatics.generated.h"
 
 HealthPotion::HealthPotion()
 {

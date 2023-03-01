@@ -3,7 +3,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Prototype_One/Sword.h"
 #include "Prototype_OneCharacter.generated.h"
+
 
 class UPlayerInventory;
 class UPlayerHUD;
@@ -31,6 +33,10 @@ private:
 	class UInputAction* SprintAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ToggleDebugAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AimAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* OpenBagAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -41,6 +47,8 @@ protected:
 	void EndSprint();
 	void TryDash(); 
 	void TryMelee();
+	void StartAim();
+	//void EndAim();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
@@ -62,8 +70,13 @@ protected:
 	void SetShowMeshes();
 	void SetHiddenMeshes();
 
+	void LookAtCursor();
+	void TryOpenBag();
 public:
 	void TakeDamage(int _amount);
+	void RecoverHealth(int _amount);
+	void RecoverMana(int _amount);
+	void UseMana(int _amount);
 	
 	// References
 public:
@@ -106,9 +119,14 @@ public:
 	float DashDistance{5000.0f};
 	FVector2D DashMovementVector;
 	FVector DashForwardDirection;
-	FVector DashRightDirection; 
+	FVector DashRightDirection;
+
+	// Aiming related - player looking towards mouse position
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool IsAiming{false};
 
 	// Inventory
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	UPlayerInventory* PlayerInventory;
 	
 	// Stats 
@@ -132,13 +150,16 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
-
+	
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<ASword> SwordPrefab;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	//UAnimMontage* DashAnimation;

@@ -26,6 +26,9 @@ protected:
 	
 	
 public:
+	UPROPERTY(EditAnywhere)
+	float Damage{50.0f};
+	
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
 	

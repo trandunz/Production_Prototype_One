@@ -12,12 +12,17 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PrototypeEnemy.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Prototype_One/Bag.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
@@ -54,8 +59,6 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitInputMappingContext();
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
@@ -65,6 +68,17 @@ void APrototype_OneCharacter::BeginPlay()
 	}
 
 	EndSprint();
+
+	InitInputMappingContext();
+
+	// Spawning sword in hand
+	if (SwordPrefab)
+	{
+		if (auto* newSword = GetWorld()->SpawnActor(SwordPrefab))
+		{
+			Cast<ASword>(newSword)->Interact();
+		}
+	}
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -108,6 +122,48 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	UpdateFadeActors();
 	SetShowMeshes();
 	SetHiddenMeshes();
+
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateSneakStatus(2);
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(), actors);
+		bool seen{};
+		bool anyCanSeePlayer{};
+		for(auto enemyActor : actors)
+		{
+			if (auto* enemy = Cast<APrototypeEnemy>(enemyActor))
+			{
+				if (auto* enemyController = Cast<AEnemyController>(enemy->Controller))
+				{
+					
+					if (enemyController->CanSeePlayer)
+					{
+						anyCanSeePlayer = true;
+					}
+					if (enemyController->BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+					{
+						seen = true;
+					}
+					
+					
+				}
+			}
+		}
+		
+		if (anyCanSeePlayer && !seen)
+		{
+			PlayerHud->UpdateSneakStatus(1);
+		}
+		else if (seen)
+		{
+			PlayerHud->UpdateSneakStatus(0);
+		}
+		else if (!seen && !anyCanSeePlayer)
+		{
+			PlayerHud->UpdateSneakStatus(2);
+		}
+	}
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -118,9 +174,6 @@ void APrototype_OneCharacter::InitInputMappingContext()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-
-		PlayerController->SetInputMode(FInputModeGameAndUI{});
-		PlayerController->bShowMouseCursor = true;
 	}
 }
 
@@ -148,6 +201,8 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
+		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
 	}
 }
 
@@ -253,6 +308,43 @@ void APrototype_OneCharacter::TryMelee()
 		combatMovementCurrentTime = combatMovementMaxTime;
 	}
 }
+
+void APrototype_OneCharacter::StartAim()
+{
+	LookAtCursor();
+    
+	//// FHitResult will hold all data returned by our line collision query
+	//FHitResult Hit;
+	//ETraceTypeQuery Query{};
+	//FHitResult EndHit;
+//
+	//// We set up a line trace from our current location to a point 1000cm ahead of us
+	//FVector TraceStart = FollowCamera->GetComponentLocation();
+	//FVector TraceEnd;
+//
+	//if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(Query, false, EndHit))
+	//{
+	//	TraceEnd = EndHit.Location;
+	//}
+//
+	//// You can use FCollisionQueryParams to further configure the query
+	//// Here we add ourselves to the ignored list so we won't block the trace
+	//FCollisionQueryParams QueryParams;
+	//QueryParams.AddIgnoredActor(this);
+//
+	//if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+	//{
+	//	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
+	//}
+//
+	//Controller->SetControlRotation(FRotator{Controller->GetControlRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, Controller->GetControlRotation().Roll});
+	////GetMesh()->SetWorldRotation(FRotator{GetMesh()->GetComponentRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetMesh()->GetComponentRotation().Roll});
+}
+
+//void APrototype_OneCharacter::EndAim()
+//
+//	
+//
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
 {
@@ -420,7 +512,7 @@ void APrototype_OneCharacter::UpdateFadeActors()
 			{
 				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
+					//UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
 					CameraHitMeshes.AddUnique(staticMesh);
 				}
 			}
@@ -475,6 +567,47 @@ void APrototype_OneCharacter::SetHiddenMeshes()
 	}
 }
 
+void APrototype_OneCharacter::LookAtCursor()
+{
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	InputMode.SetHideCursorDuringCapture(false);
+	Cast<APrototypePlayerController>(Controller)->SetInputMode(InputMode);
+
+	// Show the mouse cursor
+	Cast<APrototypePlayerController>(Controller)->bShowMouseCursor = true;
+	
+	float mouseX;
+	float mouseY;
+	auto* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	controller->GetMousePosition(mouseX, mouseY);
+	FVector worldPos{};
+	FVector worldDir{};
+	UGameplayStatics::DeprojectScreenToWorld(controller, {mouseX, mouseY}, worldPos, worldDir);
+
+	FHitResult Hit;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	
+	if (GetWorld()->LineTraceSingleByChannel(Hit, worldPos, worldPos + worldDir * 10000, ECC_Visibility, QueryParams))
+	{
+		SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetActorRotation().Roll});
+	}
+}
+
+void APrototype_OneCharacter::TryOpenBag()
+{
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			bag->IsOpen = !bag->IsOpen;
+		}
+	}
+}
+
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
 	EntityComponent->TakeDamage(_amount);
@@ -488,6 +621,15 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 		
 		//Controller->SetIgnoreMoveInput(true);
 		//Controller->Possess(nullptr);
+	}
+}
+
+void APrototype_OneCharacter::RecoverHealth(int _amount)
+{
+	EntityComponent->Heal(_amount);
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
 	}
 }
 

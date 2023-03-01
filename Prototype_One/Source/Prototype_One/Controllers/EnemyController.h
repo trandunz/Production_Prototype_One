@@ -15,13 +15,13 @@ class PROTOTYPE_ONE_API AEnemyController : public AAIController
 	GENERATED_BODY()
 public:
 	AEnemyController();
-
+	bool CanSeePlayer{};
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaSeconds) override;
-private:
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="AI", meta = (AllowPrivateAccess = true))
 	class UBehaviorTree* BehaviorTree;
 
@@ -39,7 +39,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float DetectionTime{2.0f};
 	float Dt{};
-	bool CanSeePlayer{};
 	
 	UFUNCTION()
 	void OnUpdated(AActor* actor, FAIStimulus const stimulus);

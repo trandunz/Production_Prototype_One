@@ -12,6 +12,7 @@
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 
 
@@ -81,9 +82,18 @@ void APrototypeEnemy::TakeDamage(int _amount)
 {
 	if (EntityComponent)
 	{
+		if (auto* constoller = Cast<AEnemyController>(Controller))
+		{
+			constoller->CanSeePlayer = true;
+			constoller->BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), true);
+		}
 		EntityComponent->TakeDamage(_amount);
+		UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
+		UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->CurrentHealth));
 		if (EntityComponent->CurrentHealth <= 0)
 		{
+			
+			UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
 			Ragdoll();
 		}
 	}
@@ -119,7 +129,11 @@ void APrototypeEnemy::Ragdoll()
 	if (ItemDropPrefab)
 	{
 		auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-		itemDrop->SetActorLocation(GetActorLocation() + FVector{0,0,300});
+		itemDrop->SetActorLocation(GetActorLocation() + FVector{-150,0,300});
+		itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+
+		itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
+		itemDrop->SetActorLocation(GetActorLocation() + FVector{150,0,300});
 		itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
 	}
 	
