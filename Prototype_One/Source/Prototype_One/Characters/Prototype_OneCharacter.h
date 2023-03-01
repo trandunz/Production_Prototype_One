@@ -142,7 +142,7 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
-
+	
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;

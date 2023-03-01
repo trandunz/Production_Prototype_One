@@ -7,6 +7,9 @@
 #include "Characters/Prototype_OneCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include <Prototype_One/Bag.h>
+
+#include "Controllers/EnemyController.h"
 
 UBTTask_CanSeePlayer::UBTTask_CanSeePlayer()
 {
@@ -18,8 +21,25 @@ EBTNodeResult::Type UBTTask_CanSeePlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 	auto* aiController = OwnerComp.GetAIOwner();
 	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	aiController->GetBlackboardComponent()->SetValueAsObject(BlackboardKey.SelectedKeyName, player);
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-	return EBTNodeResult::Succeeded;
+
+	
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			if (bag->IsOpen)
+			{
+				Cast<AEnemyController>(aiController)->CanSeePlayer = true;
+				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				return EBTNodeResult::Succeeded;
+			}
+		}
+	}
+	Cast<AEnemyController>(aiController)->CanSeePlayer = true;
+	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+	return EBTNodeResult::Failed;
 }
 
 FString UBTTask_CanSeePlayer::GetStaticDescription() const

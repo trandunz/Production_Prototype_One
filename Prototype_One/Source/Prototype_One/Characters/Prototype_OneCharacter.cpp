@@ -12,13 +12,16 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PrototypeEnemy.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
@@ -112,7 +115,37 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	SetShowMeshes();
 	SetHiddenMeshes();
 
-	
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateSneakStatus(2);
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(), actors);
+		for(auto enemyActor : actors)
+		{
+			if (auto* enemy = Cast<APrototypeEnemy>(enemyActor))
+			{
+				if (auto* enemyController = Cast<AEnemyController>(enemy->Controller))
+				{
+					int seen = enemyController->BlackboardComponent->GetValueAsBool(FName("CanSeePlayer"));
+					if (enemyController->CanSeePlayer && !seen)
+					{
+						PlayerHud->UpdateSneakStatus(1);
+					}
+					else if (seen)
+					{
+						PlayerHud->UpdateSneakStatus(0);
+					}
+					else if (!seen && !enemyController->CanSeePlayer)
+					{
+						PlayerHud->UpdateSneakStatus(2);
+					}
+				}
+				
+			}
+		}
+		
+		
+	}
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -460,7 +493,7 @@ void APrototype_OneCharacter::UpdateFadeActors()
 			{
 				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
+					//UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
 					CameraHitMeshes.AddUnique(staticMesh);
 				}
 			}

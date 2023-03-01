@@ -5,6 +5,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Bag.generated.h"
 
+class APrototype_OneCharacter;
 UCLASS()
 class PROTOTYPE_ONE_API ABag : public AActor, public IInteractInterface
 {
@@ -26,9 +27,6 @@ public:
 	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere)
-	int CurrentWeight{4};
-
-	UPROPERTY(EditAnywhere)
 	int WeightThreshold{5};
 
 	UPROPERTY(EditAnywhere)
@@ -43,6 +41,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* ClosedMesh;
 
+	UPROPERTY(EditAnywhere)
+	bool IsBiengPulled{};
+
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
+
+	UPROPERTY(EditAnywhere, Category=EnemySpawning)
+	TSubclassOf<AActor> RabbitPrefab;
+
+	UPROPERTY(EditAnywhere, Category=EnemySpawning)
+	TSubclassOf<AActor> MaskedPrefab;
+
+	UPROPERTY(EditAnywhere, Category=EnemySpawning)
+	TSubclassOf<AActor> KingPrefab;
+protected:
+	float SpawnTimer{};
+
+	APrototype_OneCharacter* Player;
 };
