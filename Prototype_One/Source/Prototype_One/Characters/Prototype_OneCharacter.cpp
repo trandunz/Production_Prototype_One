@@ -17,6 +17,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Bag.h"
+#include "Prototype_One/Prototype_OneGameMode.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"
@@ -79,6 +80,9 @@ void APrototype_OneCharacter::BeginPlay()
 			Cast<ASword>(newSword)->Interact();
 		}
 	}
+
+	// Respawn
+	RespawnTimer = TimeBeforeRespawn;
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -606,6 +610,28 @@ void APrototype_OneCharacter::RecoverHealth(int _amount)
 	if (PlayerHud)
 	{
 		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
+	}
+}
+
+void APrototype_OneCharacter::PlayerRespawn()
+{
+	if (EntityComponent->Properties.CurrentHealth <= 0)
+	{
+		RespawnTimer -= Dt; // Start timer before player is respawned - allows time for ragdoll, then fade to black
+
+		if (RespawnTimer -= 0)
+		{
+			EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
+			EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
+			RespawnTimer = TimeBeforeRespawn;
+			
+			if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+			{
+				gamemode->Reset();
+
+				UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+			}
+		}
 	}
 }
 

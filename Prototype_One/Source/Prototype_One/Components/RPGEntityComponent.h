@@ -14,18 +14,24 @@ struct FEntityProperties
 	int CurrentHealth{};
 	UPROPERTY(EditAnywhere)
 	int MaxHealth{100};
+	UPROPERTY(VisibleAnywhere)
+	int HealthCurrentLevel{1};
 
-	// Mana
+	// Carry weight
 	UPROPERTY(VisibleAnywhere)
 	int CurrentCarryWeight{};
 	UPROPERTY(EditAnywhere)
 	int MaxCarryWeight{100};
+	UPROPERTY(VisibleAnywhere)
+	int CarryWeightCurrentLevel{1};
 
 	// Stamina
 	UPROPERTY(VisibleAnywhere)
 	int CurrentStamina{};
 	UPROPERTY(EditAnywhere)
 	int MaxStamina{100};
+	UPROPERTY(VisibleAnywhere)
+	int StaminaCurrentLevel{1};
 	UPROPERTY(EditAnywhere)
 	int StaminaRegen{1};
 	UPROPERTY(EditAnywhere)
@@ -49,16 +55,9 @@ struct FEntityProperties
 	UPROPERTY(EditAnywhere)
 	int CurrentMoney{200};
 
+	// Upgrading
 	UPROPERTY(EditAnywhere)
 	int UpgradeCost{100};
-	
-	UPROPERTY(VisibleAnywhere)
-	int HealthCurrentLevel{1};
-	UPROPERTY(VisibleAnywhere)
-	int StaminaCurrentLevel{1};
-	UPROPERTY(VisibleAnywhere)
-	int CarryWightCurrentLevel{1};
-
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
 };
