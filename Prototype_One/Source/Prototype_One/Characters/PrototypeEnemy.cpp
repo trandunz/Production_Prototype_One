@@ -55,7 +55,7 @@ void APrototypeEnemy::Tick(float DeltaTime)
 	{
 		if (auto* widget = Cast<UHealthBarWidget>(HealthBarWidget->GetWidget()))
 		{
-			widget->SetHealthPercent(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+			widget->SetHealthPercent(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
 
 			if (auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 			{
@@ -89,8 +89,8 @@ void APrototypeEnemy::TakeDamage(int _amount)
 		}
 		EntityComponent->TakeDamage(_amount);
 		UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
-		UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->CurrentHealth));
-		if (EntityComponent->CurrentHealth <= 0)
+		UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
+		if (EntityComponent->Properties.CurrentHealth <= 0)
 		{
 			
 			UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));

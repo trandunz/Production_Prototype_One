@@ -24,7 +24,8 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))
 	{
-		UpdateStamina(player->EntityComponent->CurrentStamina, player->EntityComponent->MaxStamina);
+		UpdateStamina(player->EntityComponent->Properties.CurrentStamina, player->EntityComponent->Properties.MaxStamina);
+		UpdateHealth(player->EntityComponent->Properties.CurrentHealth, player->EntityComponent->Properties.MaxHealth);
 	}
 }
 

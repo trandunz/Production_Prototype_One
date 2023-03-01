@@ -4,28 +4,11 @@
 #include "Components/ActorComponent.h"
 #include "RPGEntityComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROTOTYPE_ONE_API URPGEntityComponent : public UActorComponent
+USTRUCT()
+struct FEntityProperties
 {
 	GENERATED_BODY()
 
-public:	
-	URPGEntityComponent();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void TakeDamage(int _amount);
-	void Heal(int _amount);
-
-	void UpgradeHealth();
-	void UpgradeStamina();
-	void UpgradeCarryWeight();
-	
 	// Health
 	UPROPERTY(VisibleAnywhere)
 	int CurrentHealth{};
@@ -70,14 +53,40 @@ public:
 	int UpgradeCost{100};
 	
 	UPROPERTY(VisibleAnywhere)
-	int HealthCurrentLevel{0};
+	int HealthCurrentLevel{1};
 	UPROPERTY(VisibleAnywhere)
-	int StaminaCurrentLevel{0};
+	int StaminaCurrentLevel{1};
 	UPROPERTY(VisibleAnywhere)
-	int CarryWightCurrentLevel{0};
+	int CarryWightCurrentLevel{1};
 
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
+};
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PROTOTYPE_ONE_API URPGEntityComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	URPGEntityComponent();
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+
+public:	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void TakeDamage(int _amount);
+	void Heal(int _amount);
+
+	void UpgradeHealth();
+	void UpgradeStamina();
+	void UpgradeCarryWeight();
+
+	UPROPERTY(EditAnywhere)
+	FEntityProperties Properties{};
 private:
 
 	void StaminaRegenDrain(float dt);

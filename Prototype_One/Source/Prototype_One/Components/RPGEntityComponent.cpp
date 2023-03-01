@@ -1,5 +1,9 @@
 #include "RPGEntityComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/SavedPlayerData.h"
+
 URPGEntityComponent::URPGEntityComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -9,8 +13,21 @@ URPGEntityComponent::URPGEntityComponent()
 void URPGEntityComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	CurrentHealth = MaxHealth;
-	CurrentStamina = MaxStamina;
+	Properties.CurrentHealth = Properties.MaxHealth;
+	Properties.CurrentStamina = Properties.MaxStamina;
+}
+
+void URPGEntityComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+
+	if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+	{
+		if (gamemode->SavedPlayerData)
+		{
+			gamemode->SavedPlayerData->SavedProperties = Properties;
+		}
+	}
 }
 
 void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -22,87 +39,87 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void URPGEntityComponent::TakeDamage(int _amount)
 {
-	if (CurrentHealth > 0)
+	if (Properties.CurrentHealth > 0)
 	{
-		CurrentHealth -= _amount;
+		Properties.CurrentHealth -= _amount;
 
-		if (CurrentHealth <= 0)
+		if (Properties.CurrentHealth <= 0)
 		{
-			CurrentHealth = 0;
+			Properties.CurrentHealth = 0;
 		}
 	}
 }
 
 void URPGEntityComponent::Heal(int _amount)
 {
-	if (CurrentHealth > 0)
+	if (Properties.CurrentHealth > 0)
 	{
-		CurrentHealth += _amount;
+		Properties.CurrentHealth += _amount;
 
-		if (CurrentHealth >= MaxHealth)
+		if (Properties.CurrentHealth >= Properties.MaxHealth)
 		{
-			CurrentHealth = MaxHealth;
+			Properties.CurrentHealth = Properties.MaxHealth;
 		}
 	}
 }
 
 void URPGEntityComponent::UpgradeHealth()
 {
-	if (CurrentMoney >= UpgradeCost * HealthCurrentLevel)
+	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.HealthCurrentLevel)
 	{
-		CurrentHealth += UpgradeAmount;
-		CurrentMoney -= UpgradeCost * HealthCurrentLevel;
-		HealthCurrentLevel++;
+		Properties.CurrentHealth += Properties.UpgradeAmount;
+		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.HealthCurrentLevel;
+		Properties.HealthCurrentLevel++;
 	}
 }
 
 void URPGEntityComponent::UpgradeStamina()
 {
-	if (CurrentMoney >= UpgradeCost * StaminaCurrentLevel)
+	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.StaminaCurrentLevel)
 	{
-		CurrentStamina += UpgradeAmount;
-		UpgradeAmount += 20.0;
-		CurrentMoney -= UpgradeCost * StaminaCurrentLevel;
-		StaminaCurrentLevel++;
+		Properties.CurrentStamina += Properties.UpgradeAmount;
+		Properties.UpgradeAmount += 20.0;
+		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.StaminaCurrentLevel;
+		Properties.StaminaCurrentLevel++;
 	}
 }
 
 void URPGEntityComponent::UpgradeCarryWeight()
 {
-	if (CurrentMoney >= UpgradeCost * CarryWightCurrentLevel)
+	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.CarryWightCurrentLevel)
 	{
-		CurrentCarryWeight += UpgradeAmount;
-		CurrentMoney -= UpgradeCost * CarryWightCurrentLevel;
-		CarryWightCurrentLevel++;
+		Properties.CurrentCarryWeight += Properties.UpgradeAmount;
+		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.CarryWightCurrentLevel;
+		Properties.CarryWightCurrentLevel++;
 	}
 }
 
 void URPGEntityComponent::StaminaRegenDrain(float dt)
 {
-	if (IsStaminaDraining == true && CurrentStamina > 0) // Stamina drain
+	if (Properties.IsStaminaDraining == true && Properties.CurrentStamina > 0) // Stamina drain
 	{
-		if (CurrentStaminaTime > 0)
+		if (Properties.CurrentStaminaTime > 0)
 		{
-			CurrentStaminaTime -= dt;
+			Properties.CurrentStaminaTime -= dt;
 		}
 		else
 		{
-			CurrentStaminaTime = MaxStaminaDrainTime; // Reset stamina timer
-			CurrentStamina -= StaminaDrain;
+			Properties.CurrentStaminaTime = Properties.MaxStaminaDrainTime; // Reset stamina timer
+			Properties.CurrentStamina -= Properties.StaminaDrain;
 		}
 	}
 	else
 	{
-		if (CurrentStamina < MaxStamina)
+		if (Properties.CurrentStamina < Properties.MaxStamina)
 		{
-			if (CurrentStaminaTime > 0)
+			if (Properties.CurrentStaminaTime > 0)
 			{
-				CurrentStaminaTime -= dt;
+				Properties.CurrentStaminaTime -= dt;
 			}
 			else
 			{
-				CurrentStaminaTime = MaxStaminaRegenTime; // Reset stamina timer
-				CurrentStamina += StaminaRegen;
+				Properties.CurrentStaminaTime = Properties.MaxStaminaRegenTime; // Reset stamina timer
+				Properties.CurrentStamina += Properties.StaminaRegen;
 			}
 		}
 	}

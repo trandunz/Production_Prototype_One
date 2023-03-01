@@ -63,8 +63,8 @@ void APrototype_OneCharacter::BeginPlay()
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
-		PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
+		PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 	}
 
 	EndSprint();
@@ -118,7 +118,7 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 		IsAttacking = false;
 
 	// Sprint related
-	if (EntityComponent->CurrentStamina <= 0)
+	if (EntityComponent->Properties.CurrentStamina <= 0)
 		EndSprint();
 
 	UpdateFadeActors();
@@ -260,10 +260,10 @@ void APrototype_OneCharacter::StartSprint()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0 && CanSprint == true)
 	{
-		if (EntityComponent->CurrentStamina > EntityComponent->MinimumStaminaToSprint)
+		if (EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.MinimumStaminaToSprint)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-			EntityComponent->IsStaminaDraining = true;
+			EntityComponent->Properties.IsStaminaDraining = true;
 		}
 	}
 }
@@ -271,23 +271,23 @@ void APrototype_OneCharacter::StartSprint()
 void APrototype_OneCharacter::EndSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
-	EntityComponent->IsStaminaDraining = false;
+	EntityComponent->Properties.IsStaminaDraining = false;
 }
 
 void APrototype_OneCharacter::TryDash()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (DashMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->DashStaminaCost)
+		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.DashStaminaCost)
 		{
 			//if (DashAnimation)
 			//{
 				IsDashing = true;
 				HasStartedDash = true;
-				EntityComponent->CurrentStamina -= EntityComponent->DashStaminaCost;
+				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.DashStaminaCost;
 				if (PlayerHud)
 				{
-					PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+					PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 				}
 				//GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
 				DashMovementCurrentTime = DashMovementMaxTime;
@@ -298,13 +298,13 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->AttackStaminaCost)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.AttackStaminaCost)
 	{
 		IsAttacking = true;
-		EntityComponent->CurrentStamina -= EntityComponent->AttackStaminaCost;
+		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.AttackStaminaCost;
 		if (PlayerHud)
 		{
-			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 		}
 		if (MeleeAnimation)
 			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
@@ -591,9 +591,9 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 	EntityComponent->TakeDamage(_amount);
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
 	}
-	if (EntityComponent->CurrentHealth <= 0)
+	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
 		Ragdoll();
 		
@@ -607,7 +607,7 @@ void APrototype_OneCharacter::RecoverHealth(int _amount)
 	EntityComponent->Heal(_amount);
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
 	}
 }
 
