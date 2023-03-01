@@ -59,8 +59,6 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
@@ -72,6 +70,15 @@ void APrototype_OneCharacter::BeginPlay()
 	EndSprint();
 
 	InitInputMappingContext();
+
+	// Spawning sword in hand
+	if (SwordPrefab)
+	{
+		if (auto* newSword = GetWorld()->SpawnActor(SwordPrefab))
+		{
+			Cast<ASword>(newSword)->Interact();
+		}
+	}
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)

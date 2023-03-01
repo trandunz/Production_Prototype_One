@@ -3,7 +3,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Prototype_One/Sword.h"
 #include "Prototype_OneCharacter.generated.h"
+
 
 class UPlayerInventory;
 class UPlayerHUD;
@@ -155,6 +157,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<ASword> SwordPrefab;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	//UAnimMontage* DashAnimation;
