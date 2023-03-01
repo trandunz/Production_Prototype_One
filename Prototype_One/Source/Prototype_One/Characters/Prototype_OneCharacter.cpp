@@ -202,6 +202,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndAim);
 		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
 	}
 }
@@ -225,7 +226,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 			//UE_LOG(LogTemp, Log, TEXT("Movement Vector: %s"), *MovementVector.ToString());
 		}
 	}
-	else // Rolling code
+	else // Dashing code
 	{
 		if (IsDashing == true)
 		{
@@ -246,7 +247,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 					
 					HasStartedDash = false;
 					
-					UE_LOG(LogTemp, Log, TEXT("Dash Movement Vecotr: %s"), *DashMovementVector.ToString());
+					//UE_LOG(LogTemp, Log, TEXT("Dash Movement Vector: %s"), *DashMovementVector.ToString()); // Log output to check current dash vector
 				}
 			}
 		}
@@ -255,7 +256,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 
 void APrototype_OneCharacter::StartSprint()
 {
-	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0 && CanSprint == true)
 	{
 		if (EntityComponent->CurrentStamina > EntityComponent->MinimumStaminaToSprint)
 		{
@@ -312,39 +313,12 @@ void APrototype_OneCharacter::TryMelee()
 void APrototype_OneCharacter::StartAim()
 {
 	LookAtCursor();
-    
-	//// FHitResult will hold all data returned by our line collision query
-	//FHitResult Hit;
-	//ETraceTypeQuery Query{};
-	//FHitResult EndHit;
-//
-	//// We set up a line trace from our current location to a point 1000cm ahead of us
-	//FVector TraceStart = FollowCamera->GetComponentLocation();
-	//FVector TraceEnd;
-//
-	//if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetHitResultUnderCursorByChannel(Query, false, EndHit))
-	//{
-	//	TraceEnd = EndHit.Location;
-	//}
-//
-	//// You can use FCollisionQueryParams to further configure the query
-	//// Here we add ourselves to the ignored list so we won't block the trace
-	//FCollisionQueryParams QueryParams;
-	//QueryParams.AddIgnoredActor(this);
-//
-	//if (GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
-	//{
-	//	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
-	//}
-//
-	//Controller->SetControlRotation(FRotator{Controller->GetControlRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, Controller->GetControlRotation().Roll});
-	////GetMesh()->SetWorldRotation(FRotator{GetMesh()->GetComponentRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetMesh()->GetComponentRotation().Roll});
 }
 
-//void APrototype_OneCharacter::EndAim()
-//
-//	
-//
+void APrototype_OneCharacter::EndAim()
+{
+	CanSprint = true;
+}
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
 {
@@ -593,6 +567,8 @@ void APrototype_OneCharacter::LookAtCursor()
 	{
 		SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetActorRotation().Roll});
 	}
+
+	CanSprint = false;
 }
 
 void APrototype_OneCharacter::TryOpenBag()

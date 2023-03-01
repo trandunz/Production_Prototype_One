@@ -48,7 +48,7 @@ protected:
 	void TryDash(); 
 	void TryMelee();
 	void StartAim();
-	//void EndAim();
+	void EndAim();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
@@ -106,6 +106,8 @@ public:
 	int JogSpeed{400};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int SprintSpeed{800};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool CanSprint{true};
 
 	// Dash related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
