@@ -32,6 +32,7 @@ void ABag::Tick(float DeltaTime)
 	if (IsOpen && OpenMesh)
 	{
 		Mesh->SetStaticMesh(OpenMesh);
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(Player->ValuablesCount * 0.1f, 0.1f, 99999));
 		
 		if (SpawnTimer > 0 && Player->ValuablesCount > 0)
 		{
@@ -59,10 +60,10 @@ void ABag::Tick(float DeltaTime)
 	}
 	else if (ClosedMesh)
 	{
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(Player->ValuablesCount * 10.0f, 10.0f, 99999));
 		Mesh->SetStaticMesh(ClosedMesh);
 	}
 	
-	SetActorScale3D(FVector{1,1,1} * FMath::Clamp(Player->ValuablesCount * 10.0f, 10.0f, 99999));
 
 	if (Player)
 	{

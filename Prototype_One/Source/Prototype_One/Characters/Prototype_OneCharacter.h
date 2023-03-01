@@ -33,6 +33,8 @@ private:
 	class UInputAction* ToggleDebugAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* AimAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* OpenBagAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -67,6 +69,7 @@ protected:
 	void SetHiddenMeshes();
 
 	void LookAtCursor();
+	void TryOpenBag();
 public:
 	void TakeDamage(int _amount);
 	

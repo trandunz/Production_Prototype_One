@@ -16,6 +16,7 @@
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Prototype_One/Bag.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"
@@ -120,31 +121,41 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 		PlayerHud->UpdateSneakStatus(2);
 		TArray<AActor*> actors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(), actors);
+		bool seen{};
+		bool anyCanSeePlayer{};
 		for(auto enemyActor : actors)
 		{
 			if (auto* enemy = Cast<APrototypeEnemy>(enemyActor))
 			{
 				if (auto* enemyController = Cast<AEnemyController>(enemy->Controller))
 				{
-					int seen = enemyController->BlackboardComponent->GetValueAsBool(FName("CanSeePlayer"));
-					if (enemyController->CanSeePlayer && !seen)
+					
+					if (enemyController->CanSeePlayer)
 					{
-						PlayerHud->UpdateSneakStatus(1);
+						anyCanSeePlayer = true;
 					}
-					else if (seen)
+					if (enemyController->BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
 					{
-						PlayerHud->UpdateSneakStatus(0);
+						seen = true;
 					}
-					else if (!seen && !enemyController->CanSeePlayer)
-					{
-						PlayerHud->UpdateSneakStatus(2);
-					}
+					
+					
 				}
-				
 			}
 		}
 		
-		
+		if (anyCanSeePlayer && !seen)
+		{
+			PlayerHud->UpdateSneakStatus(1);
+		}
+		else if (seen)
+		{
+			PlayerHud->UpdateSneakStatus(0);
+		}
+		else if (!seen && !anyCanSeePlayer)
+		{
+			PlayerHud->UpdateSneakStatus(2);
+		}
 	}
 }
 
@@ -184,6 +195,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
+		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
 	}
 }
 
@@ -573,6 +585,19 @@ void APrototype_OneCharacter::LookAtCursor()
 	if (GetWorld()->LineTraceSingleByChannel(Hit, worldPos, worldPos + worldDir * 10000, ECC_Visibility, QueryParams))
 	{
 		SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetActorRotation().Roll});
+	}
+}
+
+void APrototype_OneCharacter::TryOpenBag()
+{
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			bag->IsOpen = !bag->IsOpen;
+		}
 	}
 }
 
