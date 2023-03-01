@@ -77,6 +77,7 @@ public:
 	void RecoverHealth(int _amount);
 	void RecoverMana(int _amount);
 	void UseMana(int _amount);
+	void PlayerRespawn();
 	
 	// References
 public:
@@ -126,15 +127,7 @@ public:
 	// Aiming related - player looking towards mouse position
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool IsAiming{false};
-
-	// Inventory
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))
-	UPlayerInventory* PlayerInventory;
 	
-	// Stats 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-    class URPGEntityComponent* EntityComponent;
-
 	// Combat related variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float combatMovementMaxTime{0.5f};
@@ -143,6 +136,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking{false};
 
+	// Player Death/Respawn
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
+	float TimeBeforeRespawn{5.0f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
+	float RespawnTimer{};
+	
+	// Inventory
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	UPlayerInventory* PlayerInventory;
+	
+	// Stats 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    class URPGEntityComponent* EntityComponent;
+	
 	// Related to disappearing objects
 	UPROPERTY(VisibleAnywhere)
 	int ValuablesCount{1};

@@ -79,6 +79,8 @@ void APrototype_OneCharacter::BeginPlay()
 			Cast<ASword>(newSword)->Interact();
 		}
 	}
+
+	RespawnTimer = TimeBeforeRespawn;
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -607,6 +609,22 @@ void APrototype_OneCharacter::RecoverHealth(int _amount)
 	{
 		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
 	}
+}
+
+void APrototype_OneCharacter::PlayerRespawn()
+{
+	if (EntityComponent->CurrentHealth <= 0)
+	{
+		RespawnTimer -= Dt; // Start timer before player is respawned - allows time for ragdoll, then fade to black
+
+		if (RespawnTimer -= 0)
+		{
+			EntityComponent->CurrentHealth = EntityComponent->MaxHealth; // Reset health
+			EntityComponent->CurrentStamina = EntityComponent->MaxStamina; // Reset stamina
+			
+		}
+	}
+	
 }
 
 
