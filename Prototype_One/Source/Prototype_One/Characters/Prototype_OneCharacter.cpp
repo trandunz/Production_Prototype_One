@@ -123,9 +123,13 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	if (EntityComponent->Properties.CurrentStamina <= 0)
 		EndSprint();
 
+	PlayerRespawn();
+	
 	UpdateFadeActors();
 	SetShowMeshes();
 	SetHiddenMeshes();
+	
+	
 
 	if (PlayerHud)
 	{
@@ -448,7 +452,7 @@ void APrototype_OneCharacter::Ragdoll()
 {
 	SetReplicateMovement(false);
 
-	DetachFromControllerPendingDestroy();
+	//DetachFromControllerPendingDestroy();
 	
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);

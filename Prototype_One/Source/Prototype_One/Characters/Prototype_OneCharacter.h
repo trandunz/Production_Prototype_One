@@ -6,7 +6,6 @@
 #include "Prototype_One/Sword.h"
 #include "Prototype_OneCharacter.generated.h"
 
-
 class UPlayerInventory;
 class UPlayerHUD;
 UCLASS(config=Game)
