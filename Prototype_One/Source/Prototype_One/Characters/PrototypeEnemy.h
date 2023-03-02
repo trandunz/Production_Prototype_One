@@ -58,5 +58,8 @@ public:
 	class URPGEntityComponent* EntityComponent;
 
 	UPROPERTY(EditAnywhere)
+	bool IsFleeing{};
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<AEnemyDrop> ItemDropPrefab;
 };

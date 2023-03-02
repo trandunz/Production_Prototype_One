@@ -12,11 +12,18 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PrototypeEnemy.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Prototype_One/Bag.h"
+#include "Prototype_One/Prototype_OneGameMode.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
+#include "Prototype_One/Components/PlayerInventory.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
@@ -47,22 +54,35 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
+	PlayerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("Inventory"));
 }
 
 void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitInputMappingContext();
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
-		PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
+		PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 	}
 
 	EndSprint();
+
+	InitInputMappingContext();
+
+	// Spawning sword in hand
+	if (SwordPrefab)
+	{
+		if (auto* newSword = GetWorld()->SpawnActor(SwordPrefab))
+		{
+			Cast<ASword>(newSword)->Interact();
+		}
+	}
+
+	// Respawn
+	RespawnTimer = TimeBeforeRespawn;
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -83,14 +103,14 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	InteractRaycast();
 
 	// Timer for dodging
-	if (dodgeMovementCurrentTime > 0)
-		dodgeMovementCurrentTime -= DeltaSeconds;
-	if (dodgeMovementCurrentTime <= 0)
-		IsDodging = false;
+	if (DashMovementCurrentTime > 0)
+		DashMovementCurrentTime -= DeltaSeconds;
+	if (DashMovementCurrentTime <= 0)
+		IsDashing = false;
 	// Dodging
-	if (IsDodging == true)
+	if (IsDashing == true)
 	{
-		GetCharacterMovement()->Velocity.Set(DodgeMovementVector.Y * 1000.0f, DodgeMovementVector.X * 1000.0f, GetCharacterMovement()->Velocity.Z);
+		GetCharacterMovement()->Velocity.Set(DashMovementVector.Y * DashDistance, DashMovementVector.X * DashDistance, GetCharacterMovement()->Velocity.Z);
 	}
 	
 	// Timer for combat
@@ -100,12 +120,54 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 		IsAttacking = false;
 
 	// Sprint related
-	if (EntityComponent->CurrentStamina <= 0)
+	if (EntityComponent->Properties.CurrentStamina <= 0)
 		EndSprint();
 
 	UpdateFadeActors();
 	SetShowMeshes();
 	SetHiddenMeshes();
+
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateSneakStatus(2);
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(), actors);
+		bool seen{};
+		bool anyCanSeePlayer{};
+		for(auto enemyActor : actors)
+		{
+			if (auto* enemy = Cast<APrototypeEnemy>(enemyActor))
+			{
+				if (auto* enemyController = Cast<AEnemyController>(enemy->Controller))
+				{
+					
+					if (enemyController->CanSeePlayer)
+					{
+						anyCanSeePlayer = true;
+					}
+					if (enemyController->BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+					{
+						seen = true;
+					}
+					
+					
+				}
+			}
+		}
+		
+		if (anyCanSeePlayer && !seen)
+		{
+			PlayerHud->UpdateSneakStatus(1);
+		}
+		else if (seen)
+		{
+			PlayerHud->UpdateSneakStatus(0);
+		}
+		else if (!seen && !anyCanSeePlayer)
+		{
+			PlayerHud->UpdateSneakStatus(2);
+		}
+	}
 }
 
 void APrototype_OneCharacter::InitInputMappingContext()
@@ -116,9 +178,6 @@ void APrototype_OneCharacter::InitInputMappingContext()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-
-		PlayerController->SetInputMode(FInputModeGameAndUI{});
-		PlayerController->bShowMouseCursor = true;
 	}
 }
 
@@ -135,7 +194,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 {
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryRoll);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryDash);
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryMelee);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -146,6 +205,9 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartSprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndSprint);
 		EnhancedInputComponent->BindAction(ToggleDebugAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::ToggleDebugMenu);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndAim);
+		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
 	}
 }
 
@@ -153,7 +215,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
-	if (dodgeMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
+	if (DashMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
 	{
 		if (Controller != nullptr)
 		{
@@ -168,28 +230,28 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 			//UE_LOG(LogTemp, Log, TEXT("Movement Vector: %s"), *MovementVector.ToString());
 		}
 	}
-	else // Rolling code
+	else // Dashing code
 	{
-		if (IsDodging == true)
+		if (IsDashing == true)
 		{
-			if (HasStartedDodge == true)
+			if (HasStartedDash == true)
 			{
-				DodgeMovementVector = Value.Get<FVector2D>();
-				DodgeMovementVector.Normalize();
+				DashMovementVector = Value.Get<FVector2D>();
+				DashMovementVector.Normalize();
 				
 				if (Controller != nullptr)
 				{
 					const FRotator Rotation = Controller->GetControlRotation();
 					const FRotator YawRotation(0, Rotation.Yaw, 0);
-					DodgeForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-					DodgeRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					DashForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+					DashRightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 					
-					AddMovementInput(DodgeForwardDirection , DodgeMovementVector.Y);
-					AddMovementInput(DodgeRightDirection, DodgeMovementVector.X);
+					AddMovementInput(DashForwardDirection , DashMovementVector.Y);
+					AddMovementInput(DashRightDirection, DashMovementVector.X);
 					
-					HasStartedDodge = false;
+					HasStartedDash = false;
 					
-					UE_LOG(LogTemp, Log, TEXT("Dodge Movement Vecotr: %s"), *DodgeMovementVector.ToString());
+					//UE_LOG(LogTemp, Log, TEXT("Dash Movement Vector: %s"), *DashMovementVector.ToString()); // Log output to check current dash vector
 				}
 			}
 		}
@@ -198,12 +260,12 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 
 void APrototype_OneCharacter::StartSprint()
 {
-	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0 && CanSprint == true)
 	{
-		if (EntityComponent->CurrentStamina > EntityComponent->MinimumStaminaToSprint)
+		if (EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.MinimumStaminaToSprint)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-			EntityComponent->IsStaminaDraining = true;
+			EntityComponent->Properties.IsStaminaDraining = true;
 		}
 	}
 }
@@ -211,45 +273,55 @@ void APrototype_OneCharacter::StartSprint()
 void APrototype_OneCharacter::EndSprint()
 {
 	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
-	EntityComponent->IsStaminaDraining = false;
+	EntityComponent->Properties.IsStaminaDraining = false;
 }
 
-void APrototype_OneCharacter::TryRoll()
+void APrototype_OneCharacter::TryDash()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (dodgeMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageDodge)
+		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.DashStaminaCost)
 		{
-			if (RollAnimation)
-			{
-				IsDodging = true;
-				HasStartedDodge = true;
-				EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageDodge;
+			//if (DashAnimation)
+			//{
+				IsDashing = true;
+				HasStartedDash = true;
+				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.DashStaminaCost;
 				if (PlayerHud)
 				{
-					PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+					PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 				}
-				GetMesh()->GetAnimInstance()->Montage_Play(RollAnimation, 1.5f);
-				dodgeMovementCurrentTime = dodgeMovementMaxTime;
-			}
+				//GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
+				DashMovementCurrentTime = DashMovementMaxTime;
+			//}
 		}
 	}
 }
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->CurrentStamina > EntityComponent->StaminaDamageAttack)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.AttackStaminaCost)
 	{
 		IsAttacking = true;
-		EntityComponent->CurrentStamina -= EntityComponent->StaminaDamageAttack;
+		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.AttackStaminaCost;
 		if (PlayerHud)
 		{
-			PlayerHud->UpdateStamina(EntityComponent->CurrentStamina, EntityComponent->MaxStamina);
+			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 		}
 		if (MeleeAnimation)
 			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
 		combatMovementCurrentTime = combatMovementMaxTime;
 	}
+}
+
+void APrototype_OneCharacter::StartAim()
+{
+	LookAtCursor();
+}
+
+void APrototype_OneCharacter::EndAim()
+{
+	CanSprint = true;
 }
 
 void APrototype_OneCharacter::Look(const FInputActionValue& Value)
@@ -418,7 +490,7 @@ void APrototype_OneCharacter::UpdateFadeActors()
 			{
 				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
+					//UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
 					CameraHitMeshes.AddUnique(staticMesh);
 				}
 			}
@@ -473,19 +545,93 @@ void APrototype_OneCharacter::SetHiddenMeshes()
 	}
 }
 
+void APrototype_OneCharacter::LookAtCursor()
+{
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	InputMode.SetHideCursorDuringCapture(false);
+	Cast<APrototypePlayerController>(Controller)->SetInputMode(InputMode);
+
+	// Show the mouse cursor
+	Cast<APrototypePlayerController>(Controller)->bShowMouseCursor = true;
+	
+	float mouseX;
+	float mouseY;
+	auto* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	controller->GetMousePosition(mouseX, mouseY);
+	FVector worldPos{};
+	FVector worldDir{};
+	UGameplayStatics::DeprojectScreenToWorld(controller, {mouseX, mouseY}, worldPos, worldDir);
+
+	FHitResult Hit;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	
+	if (GetWorld()->LineTraceSingleByChannel(Hit, worldPos, worldPos + worldDir * 10000, ECC_Visibility, QueryParams))
+	{
+		SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Hit.Location).Yaw, GetActorRotation().Roll});
+	}
+
+	CanSprint = false;
+}
+
+void APrototype_OneCharacter::TryOpenBag()
+{
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			bag->IsOpen = !bag->IsOpen;
+		}
+	}
+}
+
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
 	EntityComponent->TakeDamage(_amount);
 	if (PlayerHud)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->CurrentHealth, EntityComponent->MaxHealth);
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
 	}
-	if (EntityComponent->CurrentHealth <= 0)
+	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
 		Ragdoll();
 		
 		//Controller->SetIgnoreMoveInput(true);
 		//Controller->Possess(nullptr);
+	}
+}
+
+void APrototype_OneCharacter::RecoverHealth(int _amount)
+{
+	EntityComponent->Heal(_amount);
+	if (PlayerHud)
+	{
+		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
+	}
+}
+
+void APrototype_OneCharacter::PlayerRespawn()
+{
+	if (EntityComponent->Properties.CurrentHealth <= 0)
+	{
+		RespawnTimer -= Dt; // Start timer before player is respawned - allows time for ragdoll, then fade to black
+
+		if (RespawnTimer -= 0)
+		{
+			EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
+			EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
+			RespawnTimer = TimeBeforeRespawn;
+			
+			if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+			{
+				gamemode->Reset();
+
+				UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+			}
+		}
 	}
 }
 

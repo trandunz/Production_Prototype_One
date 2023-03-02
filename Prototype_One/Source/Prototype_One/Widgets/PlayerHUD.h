@@ -37,12 +37,13 @@ public:
 	class UProgressBar* StaminaBar;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UPauseMenuWidget* PauseMenu;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* Crosshair;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* Crosshair_Overlay;
-
-
 
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* SeenImage;

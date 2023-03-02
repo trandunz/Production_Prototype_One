@@ -10,6 +10,7 @@
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Components/WidgetComponent.h"
+#include "Prototype_One/Bag.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 
 class UBTTask_MoveTo;
@@ -31,8 +32,6 @@ void AEnemyController::BeginPlay()
 		RunBehaviorTree(BehaviorTree);
 		BehaviorTreeComponent->StartTree(*BehaviorTree);
 	}
-
-
 }
 
 
@@ -68,7 +67,7 @@ void AEnemyController::Tick(float DeltaSeconds)
 			DetectionTimer += DeltaSeconds;
 		}
 		
-		if (BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")))
+		if (BlackboardComponent->GetValueAsBool(FName("CanSeePlayer")) || character->IsFleeing)
 		{
 			character->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 		}
@@ -76,30 +75,9 @@ void AEnemyController::Tick(float DeltaSeconds)
 		{
 			character->GetCharacterMovement()->MaxWalkSpeed = 100.0f;
 		}
-
-
-
 	}
 
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		if (player->PlayerHud)
-		{
-			int seen = BlackboardComponent->GetValueAsBool(FName("CanSeePlayer"));
-			if (CanSeePlayer && !seen)
-			{
-				player->PlayerHud->UpdateSneakStatus(1);
-			}
-			else if (seen)
-			{
-				player->PlayerHud->UpdateSneakStatus(0);
-			}
-			else if (!seen && !CanSeePlayer)
-			{
-				player->PlayerHud->UpdateSneakStatus(2);
-			}
-		}
-	}
+	
 }
 
 void AEnemyController::OnUpdated(AActor* actor, FAIStimulus const stimulus)
@@ -113,15 +91,27 @@ void AEnemyController::OnUpdated(AActor* actor, FAIStimulus const stimulus)
 		{
 			if (auto* character = Cast<APrototypeEnemy>(GetCharacter()))
 			{
-				if (character->RoarMontage)
+				TArray<AActor*> actors;
+				UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+				for(auto bagActor : actors)
 				{
-					character->GetCharacterMovement()->StopActiveMovement();
-					character->GetCharacterMovement()->StopMovementImmediately();
-					character->GetMesh()->GetAnimInstance()->Montage_Play(character->RoarMontage, 2.0f);
+					if (auto* bag = Cast<ABag>(bagActor))
+					{
+						if (character->RoarMontage && bag->IsOpen)
+						{
+							character->GetCharacterMovement()->StopActiveMovement();
+							character->GetCharacterMovement()->StopMovementImmediately();
+							//character->GetMesh()->GetAnimInstance()->Montage_Play(character->RoarMontage, 2.0f);
+						}
+					}
 				}
 			}
 		}
 		
+	}
+	else
+	{
+		CanSeePlayer = false;
 	}
 }
 

@@ -5,6 +5,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
+#include "Controllers/EnemyController.h"
+#include "Controllers/PrototypePlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTTask_FindRandomLocation::UBTTask_FindRandomLocation()
 {
@@ -24,6 +27,7 @@ EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompone
 	auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SearchRadius, location))
 	{
+		Cast<APrototypeEnemy>(aiPawn)->IsFleeing = false;
 		if (!Cast<APrototypeEnemy>(aiPawn)->SeenPlayer)
 		{
 			aiController->GetBlackboardComponent()->SetValueAsVector(BlackboardKey.SelectedKeyName, location.Location);

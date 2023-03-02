@@ -3,8 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Prototype_One/Sword.h"
 #include "Prototype_OneCharacter.generated.h"
 
+
+class UPlayerInventory;
 class UPlayerHUD;
 UCLASS(config=Game)
 class APrototype_OneCharacter : public ACharacter
@@ -30,6 +33,10 @@ private:
 	class UInputAction* SprintAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ToggleDebugAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AimAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* OpenBagAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -38,8 +45,10 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void StartSprint();
 	void EndSprint();
-	void TryRoll();
+	void TryDash(); 
 	void TryMelee();
+	void StartAim();
+	void EndAim();
 	void Look(const FInputActionValue& Value);
 	void ScrollZoom(const FInputActionValue& Value);
 	void TryInteract();
@@ -61,8 +70,14 @@ protected:
 	void SetShowMeshes();
 	void SetHiddenMeshes();
 
+	void LookAtCursor();
+	void TryOpenBag();
 public:
 	void TakeDamage(int _amount);
+	void RecoverHealth(int _amount);
+	void RecoverMana(int _amount);
+	void UseMana(int _amount);
+	void PlayerRespawn();
 	
 	// References
 public:
@@ -92,23 +107,27 @@ public:
 	int JogSpeed{400};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	int SprintSpeed{800};
-
-	// Dodge roll related
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float dodgeMovementMaxTime{0.5f};
+	bool CanSprint{true};
+
+	// Dash related
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DashMovementMaxTime{0.5f};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float dodgeMovementCurrentTime{};
+	float DashMovementCurrentTime{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	bool IsDodging{false};
-	bool HasStartedDodge{false};
-	FVector2D DodgeMovementVector;
-	FVector DodgeForwardDirection;
-	FVector DodgeRightDirection; 
+	bool IsDashing{false};
+	bool HasStartedDash{false};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float DashDistance{5000.0f};
+	FVector2D DashMovementVector;
+	FVector DashForwardDirection;
+	FVector DashRightDirection;
+
+	// Aiming related - player looking towards mouse position
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool IsAiming{false};
 	
-	// Stats 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-    class URPGEntityComponent* EntityComponent;
-
 	// Combat related variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float combatMovementMaxTime{0.5f};
@@ -117,6 +136,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking{false};
 
+	// Player Death/Respawn
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	float TimeBeforeRespawn{1.0f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	float RespawnTimer{};
+	
+	// Inventory
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	UPlayerInventory* PlayerInventory;
+	
+	// Stats 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+    class URPGEntityComponent* EntityComponent;
+	
+	// Related to disappearing objects
 	UPROPERTY(VisibleAnywhere)
 	int ValuablesCount{1};
 
@@ -125,15 +159,19 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
+	
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<ASword> SwordPrefab;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* RollAnimation;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	//UAnimMontage* DashAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* MeleeAnimation;

@@ -26,6 +26,11 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 
 	UFUNCTION()
 	void OnUpgradeCarryWeight();
+
+	UFUNCTION()
+	void OnBuyStaminaPotion();
+	UFUNCTION()
+	void OnBuyHealthPotion();
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Sell;
@@ -44,5 +49,18 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* UpgradeCarryWeight;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* HealthIcon;
 	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* StaminaIcon;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* CarryWeightIcon;
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* BuyHealthPotion;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* BuyStaminaPotion;
 };

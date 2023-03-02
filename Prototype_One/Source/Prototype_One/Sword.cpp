@@ -28,6 +28,17 @@ void ASword::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UpdateInteractionOutline();
 
+	if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		if (charatcer->IsAttacking)
+		{
+			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
 }
 
 void ASword::UpdateInteractionOutline()
@@ -87,7 +98,7 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		{
 			if (character->IsAttacking == true)
 			{
-				enemy->TakeDamage(1);
+				enemy->TakeDamage(Damage);
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
 		}

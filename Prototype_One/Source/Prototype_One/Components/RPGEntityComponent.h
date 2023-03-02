@@ -4,45 +4,34 @@
 #include "Components/ActorComponent.h"
 #include "RPGEntityComponent.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROTOTYPE_ONE_API URPGEntityComponent : public UActorComponent
+USTRUCT()
+struct FEntityProperties
 {
 	GENERATED_BODY()
 
-public:	
-	URPGEntityComponent();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void TakeDamage(int _amount);
-	void Heal(int _amount);
-
-	void UpgradeHealth();
-	void UpgradeStamina();
-	void UpgradeCarryWeight();
-	
 	// Health
 	UPROPERTY(VisibleAnywhere)
 	int CurrentHealth{};
 	UPROPERTY(EditAnywhere)
 	int MaxHealth{100};
+	UPROPERTY(VisibleAnywhere)
+	int HealthCurrentLevel{1};
 
-	// Mana
+	// Carry weight
 	UPROPERTY(VisibleAnywhere)
 	int CurrentCarryWeight{};
 	UPROPERTY(EditAnywhere)
 	int MaxCarryWeight{100};
+	UPROPERTY(VisibleAnywhere)
+	int CarryWeightCurrentLevel{1};
 
 	// Stamina
 	UPROPERTY(VisibleAnywhere)
 	int CurrentStamina{};
 	UPROPERTY(EditAnywhere)
 	int MaxStamina{100};
+	UPROPERTY(VisibleAnywhere)
+	int StaminaCurrentLevel{1};
 	UPROPERTY(EditAnywhere)
 	int StaminaRegen{1};
 	UPROPERTY(EditAnywhere)
@@ -66,18 +55,38 @@ public:
 	UPROPERTY(EditAnywhere)
 	int CurrentMoney{};
 
+	// Upgrading
 	UPROPERTY(EditAnywhere)
 	int UpgradeCost{100};
-	
-	UPROPERTY(VisibleAnywhere)
-	int HealthCurrentLevel{0};
-	UPROPERTY(VisibleAnywhere)
-	int StaminaCurrentLevel{0};
-	UPROPERTY(VisibleAnywhere)
-	int CarryWightCurrentLevel{0};
-
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
+};
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PROTOTYPE_ONE_API URPGEntityComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	URPGEntityComponent();
+
+protected:
+	
+	virtual void BeginPlay() override;
+	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
+
+public:	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void TakeDamage(int _amount);
+	void Heal(int _amount);
+
+	void UpgradeHealth();
+	void UpgradeStamina();
+	void UpgradeCarryWeight();
+
+	UPROPERTY(EditAnywhere)
+	FEntityProperties Properties{};
 private:
 
 	void StaminaRegenDrain(float dt);
