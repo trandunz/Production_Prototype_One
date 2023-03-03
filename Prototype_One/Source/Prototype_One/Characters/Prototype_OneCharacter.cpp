@@ -58,6 +58,9 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	PlayerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("Inventory"));
 
 	AttackStencilCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Attack Stenciling"));
+	AttackStencilCollider->SetupAttachment(RootComponent); // not working?
+	AttackStencilCollider->SetCollisionProfileName("Trigger");
+
 }
 
 void APrototype_OneCharacter::BeginPlay()
@@ -90,7 +93,7 @@ void APrototype_OneCharacter::BeginPlay()
 	StartLocation = GetActorLocation();
 
 	// Combat
-	AttackStencilCollider->OnComponentBeginOverlap.AddDynamic(this, &APrototype_OneCharacter::OnBoxBeginOverlap);
+	AttackStencilCollider->OnComponentBeginOverlap.AddDynamic(this, &APrototype_OneCharacter::OnBeginOverlap);
 	AttackStencilCollider->OnComponentEndOverlap.AddDynamic(this, &APrototype_OneCharacter::OnOverlapEnd);
 }
 
@@ -761,14 +764,14 @@ void APrototype_OneCharacter::PlayerRespawn()
 	
 }
 
-void APrototype_OneCharacter::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+void APrototype_OneCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != this) 
 	{
 		if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
 		{
-			// do something
+			enemy->UpdateAttackOutline(true);
 		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("Triggered with enemy"));
@@ -782,7 +785,7 @@ void APrototype_OneCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, 
 	{
 		if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
 		{
-			// do something
+			enemy->UpdateAttackOutline(false);
 		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("Stopped triggering with enemy"));
