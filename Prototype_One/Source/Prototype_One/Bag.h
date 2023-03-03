@@ -22,10 +22,25 @@ public:
 	virtual void Interact() override;
 
 	void UpdateInteractionOutline();
+	void AttractItems();
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
+	float Dt{};
+	
+	UPROPERTY(VisibleAnywhere)
+	int MeatCount{0};
+	UPROPERTY(VisibleAnywhere)
+	int AntlerCount{0};
+	UPROPERTY(VisibleAnywhere)
+	int MaskCount{0};
+	UPROPERTY(VisibleAnywhere)
+	int CrownCount{0};
+	
+	UPROPERTY(EditAnywhere)
+	int SuctionRadius{200};
+	
 	UPROPERTY(EditAnywhere)
 	int WeightThreshold{5};
 

@@ -17,6 +17,7 @@ enum class EItemType : uint8
 	Mask,
 	Crown,
 	Potion,
+	Meat
 };
 
 
@@ -65,4 +66,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
+
+	bool IsPickupable{};
 };
