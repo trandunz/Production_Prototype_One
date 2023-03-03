@@ -1,11 +1,13 @@
 #include "Bag.h"
 
+#include "Item.h"
 #include "NavigationSystem.h"
 #include "Characters/Prototype_OneCharacter.h"
 #include "Components/RPGEntityComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Rope.h"
 #include "CableComponent/Classes/CableComponent.h"
+#include "Prototype_One/Item.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ABag::ABag()
@@ -51,15 +53,16 @@ void ABag::BeginPlay()
 void ABag::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	Dt = DeltaTime;
+	int weight = (MeatCount + AntlerCount + MaskCount + CrownCount) - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 	UpdateInteractionOutline();
 	
 	if (IsOpen && OpenMesh)
 	{
 		Mesh->SetStaticMesh(OpenMesh);
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(Player->ValuablesCount * 0.1f, 0.1f, 99999));
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 0.1f, 0.1f, 99999));
 		
-		if (SpawnTimer > 0 && Player->ValuablesCount > 0)
+		if (SpawnTimer > 0 && weight > 0)
 		{
 			SpawnTimer -= DeltaTime;
 		}
@@ -81,17 +84,20 @@ void ABag::Tick(float DeltaTime)
 					
 			}
 		}
+
+		AttractItems();
 	}
 	else if (ClosedMesh)
 	{
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(Player->ValuablesCount * 10.0f, 10.0f, 99999));
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 10.0f, 10.0f, 99999));
 		Mesh->SetStaticMesh(ClosedMesh);
 	}
 	
-
+	
+	
 	if (Player)
 	{
-		if (Player->ValuablesCount >= StoppingThreshold)
+		if (weight >= StoppingThreshold)
 		{
 			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
 			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -99,10 +105,10 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 			Mesh->SetSimulatePhysics(false);
 			Mesh->SetCanEverAffectNavigation(true);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel) * 100090, 0, 999999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight) * 100090, 0, 999999));
 			
 		}
-		else if (Player->ValuablesCount >= WeightThreshold && IsBiengPulled)
+		else if (weight >= WeightThreshold && IsBiengPulled)
 		{
 			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
 			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -112,13 +118,13 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCanEverAffectNavigation(true);
 			Mesh->SetLinearDamping(1.0f);
 			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel), 0, 99999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight), 0, 99999));
 			FVector targetLocation = GetActorLocation();
-			targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * Player->ValuablesCount).X;
-			targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * Player->ValuablesCount).Y;
+			targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * weight).X;
+			targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * weight).Y;
 			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
 		}
-		else if (Player->ValuablesCount >= WeightThreshold && !IsBiengPulled)
+		else if (weight >= WeightThreshold && !IsBiengPulled)
 		{
 			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
 			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -128,14 +134,14 @@ void ABag::Tick(float DeltaTime)
 			Mesh->SetCanEverAffectNavigation(true);
 			Mesh->SetLinearDamping(100.0f);
 			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((Player->ValuablesCount - Player->EntityComponent->Properties.CarryWeightCurrentLevel) * 99999, 0, 99999));
+			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight) * 99999, 0, 99999));
 		}
 		else
 		{
 			Mesh->SetCanEverAffectNavigation(false);
 			Mesh->SetSimulatePhysics(false);
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			float z = (FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f )+ 50.0f * Player->ValuablesCount;
+			float z = (FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f )+ 50.0f * weight;
 			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z  - Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f, DeltaTime));
 		}
 	}
@@ -162,6 +168,76 @@ void ABag::UpdateInteractionOutline()
 			Mesh->CustomDepthStencilValue = 1;
 		}
 	}
+	
+}
+
+void ABag::AttractItems()
+{
+	int weight = (MeatCount + AntlerCount + MaskCount + CrownCount) - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+	
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItem::StaticClass(), actors);
+	TArray<AActor*> îtemsInRange;
+	for(auto* actor : actors)
+	{
+		if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight), 1, 99999))
+		{
+			îtemsInRange.Add(actor);
+		}
+	}
+
+	for(auto* actor : îtemsInRange)
+	{
+		if (auto* item = Cast<AItem>(actor))
+		{
+			if (item->IsPickupable)
+			{
+				if ((actor->GetActorLocation() - GetActorLocation()).Length() <= 40.0f)
+				{
+			
+					switch(item->ItemDetails.Type)
+					{
+					case EItemType::Meat:
+						{
+							MeatCount++;
+							break;
+						}
+					case EItemType::Antler:
+						{
+							AntlerCount++;
+							break;
+						}
+					case EItemType::Mask:
+						{
+							MaskCount++;
+							break;
+						}
+					case EItemType::Crown:
+						{
+							CrownCount++;
+							break;
+						}
+					default:
+						{
+							break;
+						}
+					}
+					actor->Destroy();
+				}
+				else
+				{
+					item->Mesh->SetSimulatePhysics(false);
+					item->Mesh->SetCollisionProfileName("Trigger");
+					actor->SetActorLocation(FMath::Lerp<FVector>(actor->GetActorLocation(), GetActorLocation(), Dt * 10.0f));
+				}
+			}
+			
+			
+		}
+		
+		
+	}
+
 	
 }
 

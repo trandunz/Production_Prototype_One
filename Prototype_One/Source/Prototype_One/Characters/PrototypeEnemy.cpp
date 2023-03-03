@@ -169,6 +169,7 @@ void APrototypeEnemy::Ragdoll()
 			meat->Mesh->SetSimulatePhysics(true);
 			meat->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 			meat->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+			meat->IsPickupable = true;
 		}
 	}
 
@@ -180,6 +181,7 @@ void APrototypeEnemy::Ragdoll()
 		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		item->Mesh->AddImpulse({0,0,100});
+		item->IsPickupable = true;
 	}
 	
 	SetReplicateMovement(false);
