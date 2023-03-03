@@ -63,4 +63,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FItemDetails ItemDetails;
 
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* Mesh;
 };

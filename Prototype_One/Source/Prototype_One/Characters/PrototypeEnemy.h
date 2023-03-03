@@ -15,7 +15,8 @@ class PROTOTYPE_ONE_API APrototypeEnemy : public ACharacter
 
 public:
 	APrototypeEnemy();
-
+	void UpdateAttackOutline(bool);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -61,5 +62,10 @@ public:
 	bool IsFleeing{};
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AEnemyDrop> ItemDropPrefab;
+	TSubclassOf<AActor> MonsterMeatPrefab;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> ItemDropPrefab;
+	
+	AActor* ItemDrop;
 };
