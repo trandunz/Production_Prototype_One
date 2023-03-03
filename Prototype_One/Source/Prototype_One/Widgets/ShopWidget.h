@@ -16,6 +16,18 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 	void SellAnyItems();
 
 	UFUNCTION()
+	void SellMeatItems();
+
+	UFUNCTION()
+	void SellCrownItems();
+
+	UFUNCTION()
+	void SellMaskItems();
+	
+	UFUNCTION()
+	void SellAntlerItems();
+
+	UFUNCTION()
 	void Back();
 
 	UFUNCTION()
@@ -34,6 +46,14 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Sell;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* SellMeat;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* SellAntler;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* SellMask;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* SellCrown;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* GoBack;
@@ -63,4 +83,7 @@ public:
 	class UButton* BuyHealthPotion;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BuyStaminaPotion;
+
+private:
+	class ABag* Bag;
 };
