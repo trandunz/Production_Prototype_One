@@ -36,6 +36,9 @@ public:
 	bool IsOpen{};
 
 	UPROPERTY(EditAnywhere)
+	bool IsDropped{};
+
+	UPROPERTY(EditAnywhere)
 	UStaticMesh* OpenMesh;
 
 	UPROPERTY(EditAnywhere)
