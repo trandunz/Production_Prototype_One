@@ -148,7 +148,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	bool HasRespawnedOnce{false};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
-	float TimeBeforeRespawn{3.0f};
+	float TimeRespawnPauseMovement{4.0f};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	float PauseMovementTimer{};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	float TimeBeforeRespawn{2.0f};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	float RespawnTimer{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))

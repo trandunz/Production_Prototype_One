@@ -83,6 +83,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	// Respawn
 	RespawnTimer = TimeBeforeRespawn;
+	PauseMovementTimer = TimeRespawnPauseMovement;
 	StartLocation = GetActorLocation();
 }
 
@@ -658,59 +659,94 @@ void APrototype_OneCharacter::PlayerRespawn()
 {
 	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
-		TArray<AActor*> actors;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+		if (IsRespawning == false)
+		{
+			TArray<AActor*> actors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
 		
-		if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
-		{
-			for (auto* bagActor:actors)
+			if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
 			{
-				if (auto* bag = Cast<ABag>(bagActor))
+				for (auto* bagActor:actors)
 				{
-					bag->IsDropped = true;
-					bag->IsOpen = false;
+					if (auto* bag = Cast<ABag>(bagActor))
+					{
+						bag->IsDropped = true;
+						bag->IsOpen = false;
+					}
 				}
 			}
-		}
-		else // Player loses contents of bag, but get it back
-		{
-			for (auto* bagActor:actors)
+			else // Player loses contents of bag, but get it back
 			{
-				if (auto* bag = Cast<ABag>(bagActor))
+				for (auto* bagActor:actors)
 				{
-					bag->IsOpen = false;
+					if (auto* bag = Cast<ABag>(bagActor))
+					{
+						bag->IsOpen = false;
+					}
+				}
+				// Delete contents of bag & reset size etc
+			}
+
+			IsRespawning = true;
+			this->GetMesh()->SetVisibility(false); // temporary, make player invisible
+
+			TArray<AActor*> swordActors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASword::StaticClass(), swordActors);
+
+			for (auto* swordActor:swordActors)
+			{
+				if (auto* sword = Cast<ASword>(swordActor))
+				{
+					sword->Mesh->SetVisibility(false);
 				}
 			}
-			// Delete contents of bag & reset size etc
+			
+			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			if (CharacterComp)
+			{
+				CharacterComp->Deactivate();
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
 		}
-
-		IsRespawning = true;
-		SetActorLocation(StartLocation);
-		EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
-		EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
-
-		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
-		if (CharacterComp)
-		{
-			CharacterComp->Deactivate();
-		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
 	}
 
 	if (IsRespawning == true)
 	{
 		RespawnTimer -= Dt;
-	
+		PauseMovementTimer -= Dt;
+
 		if (RespawnTimer <= 0)
 		{
+			SetActorLocation(StartLocation);
+			
+			this->GetMesh()->SetVisibility(true);
+
+			TArray<AActor*> swordActors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASword::StaticClass(), swordActors);
+
+			for (auto* swordActor:swordActors)
+			{
+				if (auto* sword = Cast<ASword>(swordActor))
+				{
+					sword->Mesh->SetVisibility(true);
+				}
+			}
+		}
+		
+		if (PauseMovementTimer <= 0)
+		{
 			IsRespawning = false;
-	
+			RespawnTimer = TimeBeforeRespawn;
+			PauseMovementTimer = TimeRespawnPauseMovement;
+
+			EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
+			EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
+			
 			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
 			if (CharacterComp)
 			{
 				CharacterComp->Activate();
-				
 			}
 		}
 	}
