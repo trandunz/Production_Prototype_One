@@ -193,6 +193,11 @@ void APrototype_OneCharacter::InitGUI()
 		PlayerHud = CreateWidget<UPlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PlayerHudPrefab);
 		PlayerHud->AddToViewport();
 	}
+	if (!PauseMenu && PauseMenuPrefab)
+	{
+		PauseMenu = CreateWidget<UPauseMenuWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PauseMenuPrefab);
+		PauseMenu->AddToViewport();
+	}
 }
 
 void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -213,6 +218,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndAim);
 		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::PauseGame);
 	}
 }
 
@@ -447,6 +453,36 @@ void APrototype_OneCharacter::InteractRaycast()
 			}
 		}
 	}
+}
+
+void APrototype_OneCharacter::PauseGame()
+{
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		if (PauseMenu)
+		{
+			PauseMenu->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (PlayerHud)
+		{
+			PlayerHud->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+	else
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		if (PauseMenu)
+		{
+			PauseMenu->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (PlayerHud)
+		{
+			PlayerHud->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+	
+	
 }
 
 void APrototype_OneCharacter::Ragdoll()

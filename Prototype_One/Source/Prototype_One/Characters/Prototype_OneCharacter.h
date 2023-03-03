@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Prototype_One/Sword.h"
+#include "Prototype_One/Widgets/PauseMenuWidget.h"
 #include "Prototype_OneCharacter.generated.h"
 
 class UPlayerInventory;
@@ -36,6 +37,8 @@ private:
 	class UInputAction* AimAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* OpenBagAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* PauseAction;
 	
 public:
 	APrototype_OneCharacter();
@@ -53,6 +56,7 @@ protected:
 	void TryInteract();
 	void ToggleDebugMenu();
 	void InteractRaycast();
+	void PauseGame();
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -91,6 +95,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	UPlayerHUD* PlayerHud;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
+	UPauseMenuWidget* PauseMenu;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	AActor* CurrentlyHeldActor;
@@ -171,6 +178,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UPlayerHUD> PlayerHudPrefab;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HUD, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UPauseMenuWidget> PauseMenuPrefab;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
     TSubclassOf<ASword> SwordPrefab;
