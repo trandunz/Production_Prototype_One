@@ -59,8 +59,14 @@ public:
 	UPROPERTY(EditAnywhere, Category=EnemySpawning)
 	TSubclassOf<AActor> KingPrefab;
 
-	//sUPROPERTY(EditAnywhere, Category=Rope)
-	//sclass ACableActor* cableActor;
+	UPROPERTY(EditAnywhere, Category=Rope)
+	class ARope* Rope;
+
+	UPROPERTY(EditAnywhere, Category=Rope)
+	TSubclassOf<ARope> RopePrefab;
+
+	UPROPERTY(EditAnywhere, Category=Rope)
+	class UCableComponent* CableComponent;
 protected:
 	float SpawnTimer{};
 
