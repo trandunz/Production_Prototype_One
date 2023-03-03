@@ -13,7 +13,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-
+#include "Prototype_One/Item.h"
 
 
 APrototypeEnemy::APrototypeEnemy()
@@ -29,9 +29,41 @@ APrototypeEnemy::APrototypeEnemy()
 	HealthBarWidget->SetupAttachment(RootComponent);
 }
 
+void APrototypeEnemy::UpdateAttackOutline(bool _showOutline)
+{
+	if (auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+	{
+		if (_showOutline)
+		{
+			GetMesh()->SetRenderCustomDepth(true);
+			GetMesh()->CustomDepthStencilValue = 1;
+		}
+		else
+		{
+			GetMesh()->SetRenderCustomDepth(false);
+			GetMesh()->CustomDepthStencilValue = 1;
+		}
+	}
+}
+
 void APrototypeEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (ItemDropPrefab)
+	{
+		ItemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
+		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("Head"));
+		if (auto* item = Cast<AItem>(ItemDrop))
+		{
+			item->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			item->Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+			item->Mesh->SetSimulatePhysics(false);
+			item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+			item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		}
+	}
+	
 }
 
 void APrototypeEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -126,17 +158,26 @@ void APrototypeEnemy::Ragdoll()
 		HealthBarWidget->RemoveFromRoot();
 		HealthBarWidget = nullptr;
 	}
-	if (ItemDropPrefab)
-	{
-		auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-		itemDrop->SetActorLocation(GetActorLocation() + FVector{-150,0,300});
-		itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+	//if (ItemDropPrefab)
+	//{
+	//	auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
+	//	itemDrop->SetActorLocation(GetActorLocation() + FVector{-150,0,300});
+	//	itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+//
+	//	itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
+	//	itemDrop->SetActorLocation(GetActorLocation() + FVector{150,0,300});
+	//	itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+	//}
 
-		itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-		itemDrop->SetActorLocation(GetActorLocation() + FVector{150,0,300});
-		itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
+	if (auto* item = Cast<AItem>(ItemDrop))
+	{
+		item->Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		item->Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+		item->Mesh->SetSimulatePhysics(true);
+		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		item->Mesh->AddImpulse({0,0,100});
 	}
-	
 	
 	SetReplicateMovement(false);
 

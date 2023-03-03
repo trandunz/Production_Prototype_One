@@ -2,6 +2,8 @@
 
 AItem::AItem()
 {
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
 }
 
 void AItem::BeginPlay()
