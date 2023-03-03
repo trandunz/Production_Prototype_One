@@ -83,6 +83,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	// Respawn
 	RespawnTimer = TimeBeforeRespawn;
+	StartLocation = GetActorLocation();
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -192,6 +193,11 @@ void APrototype_OneCharacter::InitGUI()
 		PlayerHud = CreateWidget<UPlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PlayerHudPrefab);
 		PlayerHud->AddToViewport();
 	}
+	if (!PauseMenu && PauseMenuPrefab)
+	{
+		PauseMenu = CreateWidget<UPauseMenuWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PauseMenuPrefab);
+		PauseMenu->AddToViewport();
+	}
 }
 
 void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -212,6 +218,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::StartAim);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndAim);
 		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::PauseGame);
 	}
 }
 
@@ -284,13 +291,13 @@ void APrototype_OneCharacter::TryDash()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.DashStaminaCost)
+		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
 		{
 			//if (DashAnimation)
 			//{
 				IsDashing = true;
 				HasStartedDash = true;
-				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.DashStaminaCost;
+				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
 				if (PlayerHud)
 				{
 					PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -304,10 +311,10 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.AttackStaminaCost)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack)
 	{
 		IsAttacking = true;
-		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.AttackStaminaCost;
+		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -446,6 +453,36 @@ void APrototype_OneCharacter::InteractRaycast()
 			}
 		}
 	}
+}
+
+void APrototype_OneCharacter::PauseGame()
+{
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		if (PauseMenu)
+		{
+			PauseMenu->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (PlayerHud)
+		{
+			PlayerHud->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+	else
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		if (PauseMenu)
+		{
+			PauseMenu->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (PlayerHud)
+		{
+			PlayerHud->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+	
+	
 }
 
 void APrototype_OneCharacter::Ragdoll()
@@ -601,7 +638,7 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 	}
 	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
-		Ragdoll();
+		//Ragdoll();
 		
 		//Controller->SetIgnoreMoveInput(true);
 		//Controller->Possess(nullptr);
@@ -621,22 +658,64 @@ void APrototype_OneCharacter::PlayerRespawn()
 {
 	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
-		RespawnTimer -= Dt; // Start timer before player is respawned - allows time for ragdoll, then fade to black
-
-		if (RespawnTimer -= 0)
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+		
+		if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
 		{
-			EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
-			EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
-			RespawnTimer = TimeBeforeRespawn;
-			
-			if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+			for (auto* bagActor:actors)
 			{
-				gamemode->Reset();
+				if (auto* bag = Cast<ABag>(bagActor))
+				{
+					bag->IsDropped = true;
+					bag->IsOpen = false;
+				}
+			}
+		}
+		else // Player loses contents of bag, but get it back
+		{
+			for (auto* bagActor:actors)
+			{
+				if (auto* bag = Cast<ABag>(bagActor))
+				{
+					bag->IsOpen = false;
+				}
+			}
+			// Delete contents of bag & reset size etc
+		}
 
-				UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+		IsRespawning = true;
+		SetActorLocation(StartLocation);
+		EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
+		EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
+
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->Deactivate();
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+	}
+
+	if (IsRespawning == true)
+	{
+		RespawnTimer -= Dt;
+	
+		if (RespawnTimer <= 0)
+		{
+			IsRespawning = false;
+	
+			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			if (CharacterComp)
+			{
+				CharacterComp->Activate();
+				
 			}
 		}
 	}
+
+	
 }
 
 

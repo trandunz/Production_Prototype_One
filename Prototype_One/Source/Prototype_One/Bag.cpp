@@ -4,6 +4,8 @@
 #include "Characters/Prototype_OneCharacter.h"
 #include "Components/RPGEntityComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Rope.h"
+#include "CableComponent/Classes/CableComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ABag::ABag()
@@ -11,6 +13,8 @@ ABag::ABag()
 	PrimaryActorTick.bCanEverTick = true;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	RootComponent = Mesh;
+
+	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
 }
 
 void ABag::BeginPlay()
@@ -21,6 +25,27 @@ void ABag::BeginPlay()
 	{
 		Player = player;
 	}
+
+	if (RopePrefab)
+	{
+		Rope = Cast<ARope>(GetWorld()->SpawnActor(RopePrefab));
+		Rope->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		Rope->SetActorScale3D({0.1f,0.1f,0.1f});
+		TArray<UCableComponent*> cableComponents{};
+		Rope->GetComponents<UCableComponent>(cableComponents);
+		
+		if (cableComponents.Num() > 0)
+		{
+			CableComponent = cableComponents[0];
+		}
+
+		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			CableComponent->SetAttachEndToComponent(player->GetMesh());
+		}
+		
+	}
+	
 }
 
 void ABag::Tick(float DeltaTime)
