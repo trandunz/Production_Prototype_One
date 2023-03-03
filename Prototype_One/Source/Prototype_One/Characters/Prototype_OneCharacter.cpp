@@ -285,13 +285,13 @@ void APrototype_OneCharacter::TryDash()
 {
 	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 	{
-		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.DashStaminaCost)
+		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
 		{
 			//if (DashAnimation)
 			//{
 				IsDashing = true;
 				HasStartedDash = true;
-				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.DashStaminaCost;
+				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
 				if (PlayerHud)
 				{
 					PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -305,10 +305,10 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.AttackStaminaCost)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack)
 	{
 		IsAttacking = true;
-		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.AttackStaminaCost;
+		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
