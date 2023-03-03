@@ -5,6 +5,7 @@
 #include "InputActionValue.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Widgets/PauseMenuWidget.h"
+#include "Components/SphereComponent.h"
 #include "Prototype_OneCharacter.generated.h"
 
 class UPlayerInventory;
@@ -81,6 +82,11 @@ public:
 	void RecoverMana(int _amount);
 	void UseMana(int _amount);
 	void PlayerRespawn();
+
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
 	// References
 public:
@@ -101,6 +107,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	AActor* CurrentlyHeldActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* AttackStencilCollider;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	int LargestZoomDistance{800};

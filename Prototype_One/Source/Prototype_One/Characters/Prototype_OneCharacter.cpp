@@ -15,6 +15,7 @@
 #include "PrototypeEnemy.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Bag.h"
 #include "Prototype_One/Prototype_OneGameMode.h"
@@ -55,6 +56,8 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
 	PlayerInventory = CreateDefaultSubobject<UPlayerInventory>(TEXT("Inventory"));
+
+	AttackStencilCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Attack Stenciling"));
 }
 
 void APrototype_OneCharacter::BeginPlay()
@@ -85,6 +88,10 @@ void APrototype_OneCharacter::BeginPlay()
 	RespawnTimer = TimeBeforeRespawn;
 	PauseMovementTimer = TimeRespawnPauseMovement;
 	StartLocation = GetActorLocation();
+
+	// Combat
+	AttackStencilCollider->OnComponentBeginOverlap.AddDynamic(this, &APrototype_OneCharacter::OnBoxBeginOverlap);
+	AttackStencilCollider->OnComponentEndOverlap.AddDynamic(this, &APrototype_OneCharacter::OnOverlapEnd);
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -754,5 +761,32 @@ void APrototype_OneCharacter::PlayerRespawn()
 	
 }
 
+void APrototype_OneCharacter::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != this) 
+	{
+		if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
+		{
+			// do something
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("Triggered with enemy"));
+	}
+}
+
+void APrototype_OneCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor != this) 
+	{
+		if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
+		{
+			// do something
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("Stopped triggering with enemy"));
+	}
+}
 
 
