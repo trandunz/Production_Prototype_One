@@ -158,16 +158,19 @@ void APrototypeEnemy::Ragdoll()
 		HealthBarWidget->RemoveFromRoot();
 		HealthBarWidget = nullptr;
 	}
-	//if (ItemDropPrefab)
-	//{
-	//	auto* itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-	//	itemDrop->SetActorLocation(GetActorLocation() + FVector{-150,0,300});
-	//	itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
-//
-	//	itemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-	//	itemDrop->SetActorLocation(GetActorLocation() + FVector{150,0,300});
-	//	itemDrop->SetActorScale3D({0.1f,0.1f,0.1f});
-	//}
+	if (MonsterMeatPrefab)
+	{
+		auto* meatDrop = GetWorld()->SpawnActor(MonsterMeatPrefab);
+		meatDrop->SetActorLocation(GetActorLocation());
+		if (auto* meat = Cast<AItem>(meatDrop))
+		{
+			meat->Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			meat->Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+			meat->Mesh->SetSimulatePhysics(true);
+			meat->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+			meat->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		}
+	}
 
 	if (auto* item = Cast<AItem>(ItemDrop))
 	{
