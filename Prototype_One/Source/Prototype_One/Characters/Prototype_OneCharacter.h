@@ -136,10 +136,16 @@ public:
 	bool IsAttacking{false};
 
 	// Player Death/Respawn
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	bool IsRespawning{false};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	bool HasRespawnedOnce{false};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
-	float TimeBeforeRespawn{1.0f};
+	float TimeBeforeRespawn{3.0f};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	float RespawnTimer{};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
+	FVector StartLocation{};
 	
 	// Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))

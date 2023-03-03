@@ -83,6 +83,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	// Respawn
 	RespawnTimer = TimeBeforeRespawn;
+	StartLocation = GetActorLocation();
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -601,7 +602,7 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 	}
 	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
-		Ragdoll();
+		//Ragdoll();
 		
 		//Controller->SetIgnoreMoveInput(true);
 		//Controller->Possess(nullptr);
@@ -621,22 +622,64 @@ void APrototype_OneCharacter::PlayerRespawn()
 {
 	if (EntityComponent->Properties.CurrentHealth <= 0)
 	{
-		RespawnTimer -= Dt; // Start timer before player is respawned - allows time for ragdoll, then fade to black
-
-		if (RespawnTimer -= 0)
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+		
+		if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
 		{
-			EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
-			EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
-			RespawnTimer = TimeBeforeRespawn;
-			
-			if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+			for (auto* bagActor:actors)
 			{
-				gamemode->Reset();
+				if (auto* bag = Cast<ABag>(bagActor))
+				{
+					bag->IsDropped = true;
+					bag->IsOpen = false;
+				}
+			}
+		}
+		else // Player loses contents of bag, but get it back
+		{
+			for (auto* bagActor:actors)
+			{
+				if (auto* bag = Cast<ABag>(bagActor))
+				{
+					bag->IsOpen = false;
+				}
+			}
+			// Delete contents of bag & reset size etc
+		}
 
-				UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+		IsRespawning = true;
+		SetActorLocation(StartLocation);
+		EntityComponent->Properties.CurrentHealth = EntityComponent->Properties.MaxHealth; // Reset health
+		EntityComponent->Properties.CurrentStamina = EntityComponent->Properties.MaxStamina; // Reset stamina
+
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->Deactivate();
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Player respawned"));
+	}
+
+	if (IsRespawning == true)
+	{
+		RespawnTimer -= Dt;
+	
+		if (RespawnTimer <= 0)
+		{
+			IsRespawning = false;
+	
+			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+			if (CharacterComp)
+			{
+				CharacterComp->Activate();
+				
 			}
 		}
 	}
+
+	
 }
 
 
