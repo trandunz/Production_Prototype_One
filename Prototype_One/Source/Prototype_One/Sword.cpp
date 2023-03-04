@@ -98,7 +98,7 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		{
 			if (character->IsAttacking == true)
 			{
-				enemy->TakeDamage(Damage);
+				enemy->TakeDamage(character->EntityComponent->Properties.AttackDamage);
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
 		}

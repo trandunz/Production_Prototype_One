@@ -24,6 +24,8 @@ struct FEntityProperties
 	int MaxCarryWeight{100};
 	UPROPERTY(VisibleAnywhere)
 	int CarryWeightCurrentLevel{1};
+	UPROPERTY(VisibleAnywhere)
+	int AttackDamageLevel{1};
 
 	// Stamina
 	UPROPERTY(VisibleAnywhere)
@@ -60,6 +62,9 @@ struct FEntityProperties
 	int UpgradeCost{100};
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
+
+	UPROPERTY(VisibleAnywhere)
+	int AttackDamage{50};
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -84,6 +89,7 @@ public:
 	void UpgradeHealth();
 	void UpgradeStamina();
 	void UpgradeCarryWeight();
+	void UpgradeAttackDamage();
 
 	UPROPERTY(EditAnywhere)
 	FEntityProperties Properties{};

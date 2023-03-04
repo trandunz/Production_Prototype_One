@@ -24,6 +24,7 @@ void UShopWidget::NativeOnInitialized()
 	UpgradeHealth->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeHealth);
 	UpgradeStamina->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeStamina);
 	UpgradeCarryWeight->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeCarryWeight);
+	UpgradeAttackDamage->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeAttackDamage);
 
 	BuyHealthPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyHealthPotion);
 	BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
@@ -80,6 +81,15 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		else
 		{
 			UpgradeCarryWeight->SetIsEnabled(false);
+		}
+
+		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.AttackDamageLevel)
+		{
+			UpgradeAttackDamage->SetIsEnabled(true);
+		}
+		else
+		{
+			UpgradeAttackDamage->SetIsEnabled(false);
 		}
 	}
 	
@@ -202,6 +212,14 @@ void UShopWidget::OnUpgradeCarryWeight()
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		player->EntityComponent->UpgradeCarryWeight();
+	}
+}
+
+void UShopWidget::OnUpgradeAttackDamage()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->EntityComponent->UpgradeAttackDamage();
 	}
 }
 
