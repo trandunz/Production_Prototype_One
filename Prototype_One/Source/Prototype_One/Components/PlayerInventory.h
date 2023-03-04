@@ -61,11 +61,18 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<FInventorySlot> GetItems() { return Items; }
-
-	// Todo: Delete 
+	
 	UFUNCTION(BlueprintPure)
 	int32 GetCoins() { return Coins; }
 
+	/* When player buys something, this function takes the amount from coins */
+	UFUNCTION(BlueprintCallable)
+	void SubtractCoins(int32 AmountToSubtract);
+
+	/* Function to call OnUpdateCoins delegate */
+	UFUNCTION(BlueprintCallable)
+	void UpdateCoins();
+	
 	UFUNCTION(BlueprintCallable)
 	void PrintInventory();
 private:
@@ -86,4 +93,8 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNewSlotDelegate, int32, SlotIndex, FInventorySlot, InventorySlot);
 	UPROPERTY(BlueprintAssignable)
 	FNewSlotDelegate OnNewSlot;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateCoinsDelegate);
+	UPROPERTY(BlueprintAssignable)
+	FUpdateCoinsDelegate OnUpdateCoins;
 };

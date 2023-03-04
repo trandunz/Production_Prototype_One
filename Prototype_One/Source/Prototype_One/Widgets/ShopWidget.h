@@ -14,18 +14,18 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 
 	UFUNCTION()
 	void SellAnyItems();
-
-	UFUNCTION()
-	void SellFoodItems();
-
-	UFUNCTION()
-	void SellCrownItems();
-
-	UFUNCTION()
-	void SellMaskItems();
 	
-	UFUNCTION()
-	void SellAntlerItems();
+	// UFUNCTION()
+	// void SellFoodItems();
+	//
+	// UFUNCTION()
+	// void SellCrownItems();
+	//
+	// UFUNCTION()
+	// void SellMaskItems();
+	//
+	// UFUNCTION()
+	// void SellAntlerItems();
 
 	UFUNCTION()
 	void Back();
@@ -54,20 +54,20 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Sell;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* SellMeat;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* SellAntler;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* SellMask;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* SellCrown;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UButton* SellMeat;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UButton* SellAntler;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UButton* SellMask;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UButton* SellCrown;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* GoBack;
 
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* Money;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UTextBlock* Money;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* UpgradeHealth;

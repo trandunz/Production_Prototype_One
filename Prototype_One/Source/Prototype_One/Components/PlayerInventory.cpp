@@ -109,6 +109,17 @@ void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 	AddNewSlot(PickedUpItemInfo);
 }
 
+void UPlayerInventory::SubtractCoins(int32 AmountToSubtract)
+{
+	Coins -= AmountToSubtract;
+	UpdateCoins();
+}
+
+void UPlayerInventory::UpdateCoins()
+{
+	OnUpdateCoins.Broadcast();
+}
+
 void UPlayerInventory::PrintInventory()
 {
 	for (FInventorySlot Slot : Items)
