@@ -43,6 +43,11 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 	void OnBuyStaminaPotion();
 	UFUNCTION()
 	void OnBuyHealthPotion();
+
+	UFUNCTION()
+	void OnBuyGateTicket();
+	UFUNCTION()
+	void OnEndGame();
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Sell;
@@ -83,7 +88,14 @@ public:
 	class UButton* BuyHealthPotion;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BuyStaminaPotion;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* BuyGateTicket;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UButton* EndGame;
+	
+	UPROPERTY(EditAnywhere)
+	float GateTicketPrice{10000};
 private:
 	class ABag* Bag;
 };

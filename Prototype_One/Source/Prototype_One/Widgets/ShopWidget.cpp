@@ -19,7 +19,6 @@ void UShopWidget::NativeOnInitialized()
 	SellAntler->OnPressed.AddDynamic(this, &UShopWidget::SellAntlerItems);
 	SellMask->OnPressed.AddDynamic(this, &UShopWidget::SellMaskItems);
 	SellCrown->OnPressed.AddDynamic(this, &UShopWidget::SellCrownItems);
-
 	
 	GoBack->OnPressed.AddDynamic(this, &UShopWidget::Back);
 	UpgradeHealth->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeHealth);
@@ -28,6 +27,10 @@ void UShopWidget::NativeOnInitialized()
 
 	BuyHealthPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyHealthPotion);
 	BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
+	BuyGateTicket->OnPressed.AddDynamic(this, &UShopWidget::OnBuyGateTicket);
+
+	EndGame->OnPressed.AddDynamic(this, &UShopWidget::OnEndGame);
+	EndGame->SetVisibility(ESlateVisibility::Hidden);
 
 	TArray<AActor*> actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
@@ -216,4 +219,21 @@ void UShopWidget::OnBuyHealthPotion()
 	{
 		// buy health potion
 	}
+}
+
+void UShopWidget::OnBuyGateTicket()
+{
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		if (player->EntityComponent->Properties.CurrentMoney >= GateTicketPrice)
+		{
+			player->EntityComponent->Properties.CurrentMoney -= GateTicketPrice;
+			EndGame->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
+void UShopWidget::OnEndGame()
+{
+	// End the game
 }
