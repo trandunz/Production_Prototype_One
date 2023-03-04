@@ -10,7 +10,7 @@ USTRUCT(BlueprintType)
 struct FInventorySlot
 {
 	GENERATED_BODY()
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Amount = 0;
 	
@@ -49,9 +49,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Sell(const int32 SlotIndex);
 
-	UFUNCTION(BlueprintCallable)
-	void SellAll();
-
 	/* Sorts the Items in the inventory by type */
 	UFUNCTION(BlueprintCallable)
 	void SortByType();
@@ -61,8 +58,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<FInventorySlot> GetItems() { return Items; }
-
-	// Todo: Delete 
+	
 	UFUNCTION(BlueprintPure)
 	int32 GetCoins() { return Coins; }
 
@@ -78,12 +74,4 @@ public:
 	float MaximumWeight;
 	float CurrentWeight;
 	int32 Coins;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlotModifiedDelegate, int32, SlotIndex, int32, Amount);
-	UPROPERTY(BlueprintAssignable)
-	FSlotModifiedDelegate OnSlotModified;
-	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FNewSlotDelegate, int32, SlotIndex, FInventorySlot, InventorySlot);
-	UPROPERTY(BlueprintAssignable)
-	FNewSlotDelegate OnNewSlot;
 };

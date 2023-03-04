@@ -13,11 +13,11 @@ enum class EItemType : uint8
 	Pebble,
 	Stick,
 	Carrot,
-	Meat,
 	Antler,
 	Mask,
 	Crown,
 	Potion,
+	Meat
 };
 
 

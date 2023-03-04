@@ -30,8 +30,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float PickupRange = 40.0f;
 	UPROPERTY(VisibleAnywhere)
 	int CarrotCount{0};
 	UPROPERTY(VisibleAnywhere)

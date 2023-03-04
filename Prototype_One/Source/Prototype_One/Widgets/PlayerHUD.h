@@ -51,7 +51,4 @@ public:
 	class UTexture2D* HiddenImage;
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* HalfHiddenImage;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, meta = (BindWidget))
-	class UInventoryWidget* InventoryWidget;
 };

@@ -42,20 +42,8 @@ void UPlayerInventory::Sell(const int32 SlotIndex)
 	// Remove Slot from Items
 	Items.RemoveAt(SlotIndex);
 
-	// Broadcast to widget to update UI
-	OnSlotModified.Broadcast(SlotIndex, 0);
-	
 	// Refresh weight
 	CalculateWeight();
-}
-
-void UPlayerInventory::SellAll()
-{
-	// Sell all the things
-	while(!Items.IsEmpty())
-	{
-		Sell(0);
-	}
 }
 
 void UPlayerInventory::SortByType()
@@ -69,13 +57,8 @@ void UPlayerInventory::SortByType()
 
 void UPlayerInventory::Drop(const int32 SlotIndex)
 {
-	if(Items.IsValidIndex(SlotIndex))
-	{
-		Items.RemoveAt(SlotIndex);
-		CalculateWeight();
-
-		OnSlotModified.Broadcast(SlotIndex, 0);
-	}
+	Items.RemoveAt(SlotIndex);
+	CalculateWeight();
 }
 
 void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
@@ -86,7 +69,7 @@ void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 		return;
 	}
 	
-	// Try add item to not full stack
+	// Try add item to incomplete stack
 	for (int SlotIdx = 0; SlotIdx < Items.Num(); SlotIdx++)
 	{
 		if (Items[SlotIdx].Info.Type == PickedUpItemInfo.Type)
@@ -98,9 +81,6 @@ void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 				
 				// Refresh the weight of the Inventory
 				CalculateWeight();
-
-				// Broadcast to Inventory widget
-				OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
 				return;
 			}
 		}
@@ -132,12 +112,9 @@ void UPlayerInventory::AddNewSlot(FItemDetails ItemInfoToAdd)
 	FInventorySlot NewSlot;
 	NewSlot.Amount = 1;
 	NewSlot.Info = ItemInfoToAdd;
-	int32 NewSlotIndex = Items.Add(NewSlot);
-
+	Items.Add(NewSlot);
+	
 	// Refresh the weight of the Inventory
 	CalculateWeight();
-
-	// Broadcast to Inventory widget
-	OnNewSlot.Broadcast(NewSlotIndex, NewSlot);
 }
 
