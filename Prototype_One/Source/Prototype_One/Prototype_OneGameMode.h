@@ -14,6 +14,7 @@ public:
 	APrototype_OneGameMode();
 
 	void SaveGame();
+	void ResetSavedData();
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
