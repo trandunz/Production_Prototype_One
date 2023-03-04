@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Rope.h"
 #include "CableComponent/Classes/CableComponent.h"
+#include "Components/PlayerInventory.h"
 #include "Prototype_One/Item.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -92,57 +93,89 @@ void ABag::AttractItems(float DeltaTime)
 	
 		TArray<AActor*> actors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItem::StaticClass(), actors);
-		TArray<AActor*> îtemsInRange;
+		TArray<AActor*> ItemsInRange;
 		for(auto* actor : actors)
 		{
 			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight), 1, 99999))
 			{
-				îtemsInRange.Add(actor);
+				ItemsInRange.Add(actor);
 			}
 		}
 
-		for(auto* actor : îtemsInRange)
+		//// Debug print number of items
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(ItemsInRange.Num()));
+		
+		// For all items in range, check if pickup able then pickup
+		for (int Item = 0; Item < ItemsInRange.Num(); ++Item)
+		{
+			if (auto* ItemCast = Cast<AItem>(ItemsInRange[Item]))
+			{
+				if (ItemCast->IsPickupable)
+				{
+					if ((ItemCast->GetActorLocation() - GetActorLocation()).Length() <= PickupRange)
+					{
+						// Pickup
+						Player->PlayerInventory->Pickup(ItemCast->ItemDetails);
+
+						// Destroy
+						ItemCast->Destroy();
+					}
+					else
+					{
+						ItemCast->Mesh->SetSimulatePhysics(false);
+						ItemCast->Mesh->SetCollisionProfileName("Trigger");
+						ItemCast->SetActorLocation(FMath::Lerp<FVector>(ItemCast->GetActorLocation(), GetActorLocation(), DeltaTime * 10.0f));
+					}
+				}
+			}
+		}
+		
+		// Old pickup functionality
+		/*
+		for(auto* actor : ItemsInRange)
 		{
 			if (auto* item = Cast<AItem>(actor))
 			{
 				if (item->IsPickupable)
-				{
-					if ((actor->GetActorLocation() - GetActorLocation()).Length() <= 40.0f)
+				{					
+					if ((actor->GetActorLocation() - GetActorLocation()).Length() <= PickupRange)
 					{
-			
-						switch(item->ItemDetails.Type)
-						{
-						case EItemType::Meat:
-							{
-								MeatCount++;
-								break;
-							}
-						case EItemType::Antler:
-							{
-								AntlerCount++;
-								break;
-							}
-						case EItemType::Mask:
-							{
-								MaskCount++;
-								break;
-							}
-						case EItemType::Crown:
-							{
-								CrownCount++;
-								break;
-							}
-						case EItemType::Carrot:
-							{
-								CarrotCount++;
-								break;
-							}
-						default:
-							{
-								break;
-							}
-						}
+						Player->PlayerInventory->Pickup(item->ItemDetails);
+						// switch(item->ItemDetails.Type)
+						// {
+						// case EItemType::Meat:
+						// 	{
+						// 		MeatCount++;
+						// 		break;
+						// 	}
+						// case EItemType::Antler:
+						// 	{
+						// 		AntlerCount++;
+						// 		break;
+						// 	}
+						// case EItemType::Mask:
+						// 	{
+						// 		MaskCount++;
+						// 		break;
+						// 	}
+						// case EItemType::Crown:
+						// 	{
+						// 		CrownCount++;
+						// 		break;
+						// 	}
+						// case EItemType::Carrot:
+						// 	{
+						// 		CarrotCount++;
+						// 		break;
+						// 	}
+						// default:
+						// 	{
+						// 		break;
+						// 	}
+						// }
 						actor->Destroy();
+						
+						
 					}
 					else
 					{
@@ -153,6 +186,7 @@ void ABag::AttractItems(float DeltaTime)
 				}
 			}
 		}
+		*/
 	}
 	
 }
