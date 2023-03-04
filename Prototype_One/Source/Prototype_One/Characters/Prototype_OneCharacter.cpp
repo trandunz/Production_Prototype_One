@@ -492,8 +492,6 @@ void APrototype_OneCharacter::PauseGame()
 			PlayerHud->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
-	
-	
 }
 
 void APrototype_OneCharacter::Ragdoll()
