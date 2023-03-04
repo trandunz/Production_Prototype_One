@@ -25,35 +25,50 @@ void APrototype_OneGameMode::SaveGame()
 	
 }
 
+void APrototype_OneGameMode::ResetSavedData()
+{
+}
+
 void APrototype_OneGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FString levelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
-	if (UGameplayStatics::DoesSaveGameExist(levelName, 0))
-	{
-		SavedPlayerData = Cast<USavedPlayerData>(UGameplayStatics::LoadGameFromSlot(levelName, 0));
-	}
-	else if (SavedPlayerDataPrefab)
-	{
-		SavedPlayerData = Cast<USavedPlayerData>(UGameplayStatics::CreateSaveGameObject(SavedPlayerDataPrefab));
-	}
-
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		if (SavedPlayerData)
-		{
-			if (SavedPlayerData->SavedProperties.CurrentHealth > 0)
-			{
-				player->EntityComponent->Properties = SavedPlayerData->SavedProperties;
-			}
-		}
-	}
+	//FString levelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+	//if (UGameplayStatics::DoesSaveGameExist(levelName, 0))
+	//{
+	//	SavedPlayerData = Cast<USavedPlayerData>(UGameplayStatics::LoadGameFromSlot(levelName, 0));
+	//}
+	//else if (SavedPlayerDataPrefab)
+	//{
+	//	SavedPlayerData = Cast<USavedPlayerData>(UGameplayStatics::CreateSaveGameObject(SavedPlayerDataPrefab));
+	//}
+//
+	//if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	//{
+	//	if (SavedPlayerData)
+	//	{
+	//		if (SavedPlayerData->SavedProperties.CurrentMoney > 0)
+	//		{
+	//			auto props = player->EntityComponent->Properties;
+	//			props.HealthCurrentLevel = SavedPlayerData->SavedProperties.HealthCurrentLevel;
+	//			props.MaxHealth = SavedPlayerData->SavedProperties.MaxHealth;
+	//			props.MaxCarryWeight = SavedPlayerData->SavedProperties.MaxCarryWeight;
+	//			props.CurrentCarryWeight = SavedPlayerData->SavedProperties.CurrentCarryWeight;
+	//			props.CarryWeightCurrentLevel = SavedPlayerData->SavedProperties.CarryWeightCurrentLevel;
+	//			props.AttackDamageLevel = SavedPlayerData->SavedProperties.AttackDamageLevel;
+	//			props.MaxStamina = SavedPlayerData->SavedProperties.MaxStamina;
+	//			props.StaminaCurrentLevel = SavedPlayerData->SavedProperties.StaminaCurrentLevel;
+	//			props.CurrentMoney = SavedPlayerData->SavedProperties.CurrentMoney;
+	//			props.AttackDamage = SavedPlayerData->SavedProperties.AttackDamage;
+	//			player->EntityComponent->Properties = props;
+	//		}
+	//	}
+	//}
 }
 
 void APrototype_OneGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	
-	SaveGame();
+	//SaveGame();
 }

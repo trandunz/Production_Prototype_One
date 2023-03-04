@@ -21,14 +21,14 @@ void URPGEntityComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
 	Super::OnComponentDestroyed(bDestroyingHierarchy);
 
-	if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
-	{
-		if (gamemode->SavedPlayerData)
-		{
-			gamemode->SavedPlayerData->SavedProperties = Properties;
-		}
-		gamemode->SaveGame();
-	}
+	//if (auto* gamemode = Cast<APrototype_OneGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+	//{
+	//	if (gamemode->SavedPlayerData)
+	//	{
+	//		gamemode->SavedPlayerData->SavedProperties = Properties;
+	//	}
+	//	gamemode->SaveGame();
+	//}
 }
 
 void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -95,10 +95,21 @@ void URPGEntityComponent::UpgradeCarryWeight()
 	}
 }
 
+void URPGEntityComponent::UpgradeAttackDamage()
+{
+	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.AttackDamageLevel)
+	{
+		Properties.MaxCarryWeight += Properties.UpgradeAmount;
+		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.AttackDamageLevel;
+		Properties.AttackDamageLevel++;
+	}
+}
+
 void URPGEntityComponent::StaminaRegenDrain(float dt)
 {
 	if (Properties.IsStaminaDraining == true && Properties.CurrentStamina > 0) // Stamina drain
 	{
+		
 		if (Properties.CurrentStaminaTime > 0)
 		{
 			Properties.CurrentStaminaTime -= dt;
@@ -113,14 +124,17 @@ void URPGEntityComponent::StaminaRegenDrain(float dt)
 	{
 		if (Properties.CurrentStamina < Properties.MaxStamina)
 		{
+			
 			if (Properties.CurrentStaminaTime > 0)
 			{
+				UE_LOG(LogTemp, Log, TEXT("Stamina Time : %s"), *FString::FromInt(Properties.CurrentStaminaTime));
 				Properties.CurrentStaminaTime -= dt;
 			}
 			else
 			{
+				UE_LOG(LogTemp, Log, TEXT("Regen Stamina: Smaina = %s"), *FString::FromInt(Properties.CurrentStamina));
 				Properties.CurrentStaminaTime = Properties.MaxStaminaRegenTime; // Reset stamina timer
-				Properties.CurrentStamina += Properties.StaminaRegen;
+				Properties.CurrentStamina += Properties.StaminaRegen * Properties.StaminaCurrentLevel;
 			}
 		}
 	}
