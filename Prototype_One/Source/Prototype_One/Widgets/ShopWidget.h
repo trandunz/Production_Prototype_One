@@ -16,7 +16,7 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 	void SellAnyItems();
 
 	UFUNCTION()
-	void SellMeatItems();
+	void SellFoodItems();
 
 	UFUNCTION()
 	void SellCrownItems();

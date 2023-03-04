@@ -22,13 +22,16 @@ public:
 	virtual void Interact() override;
 
 	void UpdateInteractionOutline();
-	void AttractItems();
+	void AttractItems(float DeltaTime);
+	void SpawnEnemies(float DeltaTime);
+	void SpawnSmallItems(float DeltaTime);
+	void HandleBehaviorBasedOnWeight(float DeltaTime);
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 
-	float Dt{};
-	
+	UPROPERTY(VisibleAnywhere)
+	int CarrotCount{0};
 	UPROPERTY(VisibleAnywhere)
 	int MeatCount{0};
 	UPROPERTY(VisibleAnywhere)
@@ -53,6 +56,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsDropped{};
 
+	UPROPERTY(VisibleAnywhere)
+	float SmallItemSpawnTimer{};
+	UPROPERTY(EditAnywhere)
+	float SmallItemSpawnInterval{10};
+
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* OpenMesh;
 
@@ -74,6 +82,9 @@ public:
 	UPROPERTY(EditAnywhere, Category=EnemySpawning)
 	TSubclassOf<AActor> KingPrefab;
 
+	UPROPERTY(EditAnywhere, Category= ItemPrefabs)
+	TSubclassOf<AActor> CarrotPrefab;
+	
 	UPROPERTY(EditAnywhere, Category=Rope)
 	class ARope* Rope;
 

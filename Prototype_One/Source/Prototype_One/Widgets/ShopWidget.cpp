@@ -15,7 +15,7 @@ void UShopWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	
 	Sell->OnPressed.AddDynamic(this, &UShopWidget::SellAnyItems);
-	SellMeat->OnPressed.AddDynamic(this, &UShopWidget::SellMeatItems);
+	SellMeat->OnPressed.AddDynamic(this, &UShopWidget::SellFoodItems);
 	SellAntler->OnPressed.AddDynamic(this, &UShopWidget::SellAntlerItems);
 	SellMask->OnPressed.AddDynamic(this, &UShopWidget::SellMaskItems);
 	SellCrown->OnPressed.AddDynamic(this, &UShopWidget::SellCrownItems);
@@ -84,13 +84,13 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UShopWidget::SellAnyItems()
 {
-	SellMeatItems();
+	SellFoodItems();
 	SellCrownItems();
 	SellMaskItems();
 	SellAntlerItems();
 }
 
-void UShopWidget::SellMeatItems()
+void UShopWidget::SellFoodItems()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
@@ -102,7 +102,14 @@ void UShopWidget::SellMeatItems()
 				player->EntityComponent->Properties.CurrentMoney += 10;
 			}
 		}
-		
+		if (Bag->CarrotCount > 0)
+		{
+			for(int i = 0; i < Bag->CarrotCount; i++)
+			{
+				Bag->CarrotCount--;
+				player->EntityComponent->Properties.CurrentMoney += 10;
+			}
+		}
 	}
 }
 
