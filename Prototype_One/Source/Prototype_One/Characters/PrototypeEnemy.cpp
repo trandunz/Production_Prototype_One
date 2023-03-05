@@ -53,7 +53,7 @@ void APrototypeEnemy::BeginPlay()
 	if (ItemDropPrefab)
 	{
 		ItemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("Head"));
+		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale);
 		if (auto* item = Cast<AItem>(ItemDrop))
 		{
 			item->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
