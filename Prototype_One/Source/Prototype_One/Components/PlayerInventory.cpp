@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "IDetailTreeNode.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -42,8 +43,20 @@ void UPlayerInventory::Sell(const int32 SlotIndex)
 	// Remove Slot from Items
 	Items.RemoveAt(SlotIndex);
 
+	// Broadcast to widget to update UI
+	OnSlotModified.Broadcast(SlotIndex, 0);
+	
 	// Refresh weight
 	CalculateWeight();
+}
+
+void UPlayerInventory::SellAll()
+{
+	// Sell all the things
+	while(!Items.IsEmpty())
+	{
+		Sell(0);
+	}
 }
 
 void UPlayerInventory::SortByType()
@@ -57,8 +70,13 @@ void UPlayerInventory::SortByType()
 
 void UPlayerInventory::Drop(const int32 SlotIndex)
 {
-	Items.RemoveAt(SlotIndex);
-	CalculateWeight();
+	if(Items.IsValidIndex(SlotIndex))
+	{
+		Items.RemoveAt(SlotIndex);
+		CalculateWeight();
+
+		OnSlotModified.Broadcast(SlotIndex, 0);
+	}
 }
 
 void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
@@ -69,7 +87,7 @@ void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 		return;
 	}
 	
-	// Try add item to incomplete stack
+	// Try add item to not full stack
 	for (int SlotIdx = 0; SlotIdx < Items.Num(); SlotIdx++)
 	{
 		if (Items[SlotIdx].Info.Type == PickedUpItemInfo.Type)
@@ -81,12 +99,104 @@ void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 				
 				// Refresh the weight of the Inventory
 				CalculateWeight();
+
+				// Broadcast to Inventory widget
+				OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
 				return;
 			}
 		}
 	}
 	
 	AddNewSlot(PickedUpItemInfo);
+}
+
+void UPlayerInventory::SubtractCoins(int32 AmountToSubtract)
+{
+	Coins -= AmountToSubtract;
+	UpdateCoins();
+}
+
+void UPlayerInventory::UpdateCoins()
+{
+	OnUpdateCoins.Broadcast();
+}
+
+int32 UPlayerInventory::GetRabbitSpawnCount()
+{
+	int32 RabbitsToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Carrot)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				RabbitsToSpawn += 1;
+			}
+		}
+	}
+	return RabbitsToSpawn;
+}
+
+int32 UPlayerInventory::GetMaskedSpawnCount()
+{
+	int32 MaskedToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Antler)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				MaskedToSpawn += 1;
+			}
+		}
+	}
+	return MaskedToSpawn;
+}
+
+int32 UPlayerInventory::GetKingSpawnCount()
+{
+	int32 KingToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Mask)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				KingToSpawn += 1;
+			}
+		}
+	}
+	return KingToSpawn;
+}
+
+void UPlayerInventory::BagDropped()
+{
+	while(!Items.IsEmpty())
+	{
+		DroppedItems.Add(Items[0]);
+		Drop(0);
+	}
+}
+
+void UPlayerInventory::BagReturned()
+{
+	int32 SlotIdx = 0;
+	while(DroppedItems.IsValidIndex(SlotIdx))
+	{
+		Pickup(DroppedItems[SlotIdx].Info);
+		
+		// Broadcast to Inventory widget
+		OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
+
+		SlotIdx++;
+	}
+	
+	DroppedItems.Empty();
+}
+
+void UPlayerInventory::BagLost()
+{
+	DroppedItems.Empty();
 }
 
 void UPlayerInventory::PrintInventory()
@@ -112,9 +222,12 @@ void UPlayerInventory::AddNewSlot(FItemDetails ItemInfoToAdd)
 	FInventorySlot NewSlot;
 	NewSlot.Amount = 1;
 	NewSlot.Info = ItemInfoToAdd;
-	Items.Add(NewSlot);
-	
+	int32 NewSlotIndex = Items.Add(NewSlot);
+
 	// Refresh the weight of the Inventory
 	CalculateWeight();
+
+	// Broadcast to Inventory widget
+	OnNewSlot.Broadcast(NewSlotIndex, NewSlot);
 }
 

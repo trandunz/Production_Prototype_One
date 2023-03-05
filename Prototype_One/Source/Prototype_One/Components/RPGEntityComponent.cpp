@@ -66,43 +66,28 @@ void URPGEntityComponent::Heal(int _amount)
 
 void URPGEntityComponent::UpgradeHealth()
 {
-	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.HealthCurrentLevel)
-	{
-		Properties.MaxHealth += Properties.UpgradeAmount;
-		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.HealthCurrentLevel;
-		Properties.HealthCurrentLevel++;
-	}
+	Properties.MaxHealth += Properties.UpgradeAmount;
+	Properties.HealthCurrentLevel++;	
 }
 
 void URPGEntityComponent::UpgradeStamina()
 {
-	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.StaminaCurrentLevel)
-	{
-		Properties.MaxStamina += Properties.UpgradeAmount;
-		Properties.UpgradeAmount += 20.0;
-		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.StaminaCurrentLevel;
-		Properties.StaminaCurrentLevel++;
-	}
+	Properties.MaxStamina += Properties.UpgradeAmount;
+	Properties.UpgradeAmount += 20.0;
+	Properties.StaminaCurrentLevel++;
+	
 }
 
 void URPGEntityComponent::UpgradeCarryWeight()
 {
-	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.CarryWeightCurrentLevel)
-	{
-		Properties.MaxCarryWeight += Properties.UpgradeAmount;
-		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.CarryWeightCurrentLevel;
-		Properties.CarryWeightCurrentLevel++;
-	}
+	Properties.MaxCarryWeight += Properties.UpgradeAmount;
+	Properties.CarryWeightCurrentLevel++;	
 }
 
 void URPGEntityComponent::UpgradeAttackDamage()
 {
-	if (Properties.CurrentMoney >= Properties.UpgradeCost * Properties.AttackDamageLevel)
-	{
-		Properties.MaxCarryWeight += Properties.UpgradeAmount;
-		Properties.CurrentMoney -= Properties.UpgradeCost * Properties.AttackDamageLevel;
-		Properties.AttackDamageLevel++;
-	}
+	Properties.MaxCarryWeight += Properties.UpgradeAmount;
+	Properties.AttackDamageLevel++;	
 }
 
 void URPGEntityComponent::StaminaRegenDrain(float dt)

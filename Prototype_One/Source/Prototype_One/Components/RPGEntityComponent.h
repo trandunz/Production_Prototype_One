@@ -17,9 +17,9 @@ struct FEntityProperties
 	UPROPERTY(VisibleAnywhere)
 	int HealthCurrentLevel{1};
 
-	// Carry weight
-	UPROPERTY(VisibleAnywhere)
-	int CurrentCarryWeight{};
+	// Carry weight (get from PlayerInventory)
+	//UPROPERTY(VisibleAnywhere)
+	//int CurrentCarryWeight{};
 	UPROPERTY(EditAnywhere)
 	int MaxCarryWeight{100};
 	UPROPERTY(VisibleAnywhere)
@@ -53,9 +53,9 @@ struct FEntityProperties
 	UPROPERTY(VisibleAnywhere)
 	bool IsStaminaDraining{false};
 	
-	// Currency
-	UPROPERTY(EditAnywhere)
-	int CurrentMoney{};
+	// Currency (get from PlayerInventory)
+	//UPROPERTY(EditAnywhere)
+	//int CurrentMoney{};
 
 	// Upgrading
 	UPROPERTY(EditAnywhere)

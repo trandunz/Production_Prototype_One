@@ -14,18 +14,18 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 
 	UFUNCTION()
 	void SellAnyItems();
-
-	//UFUNCTION()
-	//void SellFoodItems();
-
-	//UFUNCTION()
-	//void SellCrownItems();
-
-	//UFUNCTION()
-	//void SellMaskItems();
+	
+	// UFUNCTION()
+	// void SellFoodItems();
 	//
-	//UFUNCTION()
-	//void SellAntlerItems();
+	// UFUNCTION()
+	// void SellCrownItems();
+	//
+	// UFUNCTION()
+	// void SellMaskItems();
+	//
+	// UFUNCTION()
+	// void SellAntlerItems();
 
 	UFUNCTION()
 	void Back();
@@ -66,8 +66,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* GoBack;
 
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* Money;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UTextBlock* Money;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* UpgradeHealth;

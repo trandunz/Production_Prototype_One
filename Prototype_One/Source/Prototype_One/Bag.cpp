@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Rope.h"
 #include "CableComponent/Classes/CableComponent.h"
+#include "Components/PlayerInventory.h"
 #include "Prototype_One/Item.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -88,67 +89,39 @@ void ABag::AttractItems(float DeltaTime)
 {
 	if (IsOpen)
 	{
-		int weight = (CarrotCount + MeatCount + AntlerCount + MaskCount + CrownCount) - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+		int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 	
 		TArray<AActor*> actors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItem::StaticClass(), actors);
-		TArray<AActor*> îtemsInRange;
+		TArray<AActor*> ItemsInRange;
 		for(auto* actor : actors)
 		{
 			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight), 1, 99999))
 			{
-				îtemsInRange.Add(actor);
+				ItemsInRange.Add(actor);
 			}
 		}
-
-		for(auto* actor : îtemsInRange)
+		
+		// For all items in range, check if pickup able then pickup
+		for (int Item = 0; Item < ItemsInRange.Num(); ++Item)
 		{
-			if (auto* item = Cast<AItem>(actor))
+			if (auto* ItemCast = Cast<AItem>(ItemsInRange[Item]))
 			{
-				if (item->IsPickupable)
+				if (ItemCast->IsPickupable)
 				{
-					if ((actor->GetActorLocation() - GetActorLocation()).Length() <= 40.0f)
+					if ((ItemCast->GetActorLocation() - GetActorLocation()).Length() <= PickupRange)
 					{
-			
-						switch(item->ItemDetails.Type)
-						{
-						case EItemType::Meat:
-							{
-								MeatCount++;
-								break;
-							}
-						case EItemType::Antler:
-							{
-								AntlerCount++;
-								break;
-							}
-						case EItemType::Mask:
-							{
-								MaskCount++;
-								break;
-							}
-						case EItemType::Crown:
-							{
-								CrownCount++;
-								break;
-							}
-						case EItemType::Carrot:
-							{
-								CarrotCount++;
-								break;
-							}
-						default:
-							{
-								break;
-							}
-						}
-						actor->Destroy();
+						// Pickup
+						Player->PlayerInventory->Pickup(ItemCast->ItemDetails);
+
+						// Destroy
+						ItemCast->Destroy();
 					}
 					else
 					{
-						item->Mesh->SetSimulatePhysics(false);
-						item->Mesh->SetCollisionProfileName("Trigger");
-						actor->SetActorLocation(FMath::Lerp<FVector>(actor->GetActorLocation(), GetActorLocation(), DeltaTime * 10.0f));
+						ItemCast->Mesh->SetSimulatePhysics(false);
+						ItemCast->Mesh->SetCollisionProfileName("Trigger");
+						ItemCast->SetActorLocation(FMath::Lerp<FVector>(ItemCast->GetActorLocation(), GetActorLocation(), DeltaTime * 10.0f));
 					}
 				}
 			}
@@ -159,7 +132,7 @@ void ABag::AttractItems(float DeltaTime)
 
 void ABag::SpawnEnemies(float DeltaTime)
 {
-	int weight = (CarrotCount + MeatCount + AntlerCount + MaskCount + CrownCount) - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+	int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 	if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 	{
 		Mesh->SetStaticMesh(OpenMesh);
@@ -176,28 +149,38 @@ void ABag::SpawnEnemies(float DeltaTime)
 			FNavLocation location{};
 			auto origin = GetActorLocation();
 			auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-			if (CarrotCount > 10 || MeatCount > 10)
+			
+			if (Player->PlayerInventory->GetRabbitSpawnCount() > 0)
 			{
-				if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+				for (int i = 0; i < Player->PlayerInventory->GetRabbitSpawnCount(); i++)
 				{
-					auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
-					rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					{
+						auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
+						rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					}
 				}
 			}
-			if (AntlerCount > 10)
+			if (Player->PlayerInventory->GetMaskedSpawnCount() > 0)
 			{
-				if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+				for (int i = 0; i < Player->PlayerInventory->GetMaskedSpawnCount(); i++)
 				{
-					auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
-					masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					{
+						auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
+						masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					}
 				}
 			}
-			if (MaskCount > 10)
+			if (Player->PlayerInventory->GetKingSpawnCount() > 0)
 			{
-				if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+				for (int i = 0; i < Player->PlayerInventory->GetKingSpawnCount(); i++)
 				{
-					auto* king = GetWorld()->SpawnActor(KingPrefab);
-					king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					{
+						auto* king = GetWorld()->SpawnActor(KingPrefab);
+						king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					}
 				}
 			}
 		}
@@ -236,7 +219,7 @@ void ABag::SpawnSmallItems(float DeltaTime)
 
 void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 {
-	int weight = (CarrotCount + MeatCount + AntlerCount + MaskCount + CrownCount) - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+	int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 	if (Player)
 	{
 		if (weight >= StoppingThreshold)

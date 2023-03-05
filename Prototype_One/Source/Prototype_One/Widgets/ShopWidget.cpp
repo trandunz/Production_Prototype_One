@@ -8,6 +8,7 @@
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 #include "Prototype_One/Bag.h"
+#include "Prototype_One/Components/PlayerInventory.h"
 #include "Styling/SlateBrush.h"
 
 void UShopWidget::NativeOnInitialized()
@@ -53,10 +54,12 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		{
 			Sell->SetIsEnabled(false);
 		}
-		
-		Money->SetText(FText::FromString(FString::FromInt(player->EntityComponent->Properties.CurrentMoney)));
 
-		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.HealthCurrentLevel)
+		// todo: Remove money from shop widget
+		//Money->SetText(FText::FromString(FString::FromInt(player->EntityComponent->Properties.CurrentMoney)));
+
+		//if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.HealthCurrentLevel)
+		if (player->PlayerInventory->GetCoins() >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.HealthCurrentLevel)
 		{
 			UpgradeHealth->SetIsEnabled(true);
 		}
@@ -65,7 +68,7 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			UpgradeHealth->SetIsEnabled(false);
 		}
 
-		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.StaminaCurrentLevel)
+		if (player->PlayerInventory->GetCoins() >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.StaminaCurrentLevel)
 		{
 			UpgradeStamina->SetIsEnabled(true);
 		}
@@ -74,7 +77,7 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			UpgradeStamina->SetIsEnabled(false);
 		}
 
-		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.CarryWeightCurrentLevel)
+		if (player->PlayerInventory->GetCoins() >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.CarryWeightCurrentLevel)
 		{
 			UpgradeCarryWeight->SetIsEnabled(true);
 		}
@@ -83,7 +86,7 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			UpgradeCarryWeight->SetIsEnabled(false);
 		}
 
-		if (player->EntityComponent->Properties.CurrentMoney >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.AttackDamageLevel)
+		if (player->PlayerInventory->GetCoins() >= player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.AttackDamageLevel)
 		{
 			UpgradeAttackDamage->SetIsEnabled(true);
 		}
@@ -97,12 +100,18 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UShopWidget::SellAnyItems()
 {
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->PlayerInventory->SellAll();
+	}
+	
 	//SellFoodItems();
 	//SellCrownItems();
 	//SellMaskItems();
 	//SellAntlerItems();
 }
-//
+
+/* Selling functionality moved to inventory */
 // void UShopWidget::SellFoodItems()
 // {
 // 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
@@ -195,7 +204,12 @@ void UShopWidget::OnUpgradeHealth()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		player->EntityComponent->UpgradeHealth();
+		int32 CostOfUpgrade = player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.HealthCurrentLevel;
+		if (player->PlayerInventory->GetCoins() >= CostOfUpgrade)
+		{
+			player->PlayerInventory->SubtractCoins(CostOfUpgrade);
+			player->EntityComponent->UpgradeHealth();
+		}
 	}
 }
 
@@ -203,7 +217,12 @@ void UShopWidget::OnUpgradeStamina()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		player->EntityComponent->UpgradeStamina();
+		int32 CostOfUpgrade = player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.StaminaCurrentLevel;
+		if (player->PlayerInventory->GetCoins() >= CostOfUpgrade)
+		{
+			player->PlayerInventory->SubtractCoins(CostOfUpgrade);
+			player->EntityComponent->UpgradeStamina();
+		}
 	}
 }
 
@@ -211,7 +230,12 @@ void UShopWidget::OnUpgradeCarryWeight()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		player->EntityComponent->UpgradeCarryWeight();
+		int32 CostOfUpgrade = player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.CarryWeightCurrentLevel;
+		if (player->PlayerInventory->GetCoins() >= CostOfUpgrade)
+		{
+			player->PlayerInventory->SubtractCoins(CostOfUpgrade);
+			player->EntityComponent->UpgradeCarryWeight();
+		}
 	}
 }
 
@@ -219,7 +243,12 @@ void UShopWidget::OnUpgradeAttackDamage()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		player->EntityComponent->UpgradeAttackDamage();
+		int32 CostOfUpgrade = player->EntityComponent->Properties.UpgradeCost * player->EntityComponent->Properties.AttackDamageLevel;
+		if (player->PlayerInventory->GetCoins() >= CostOfUpgrade)
+		{
+			player->PlayerInventory->SubtractCoins(CostOfUpgrade);
+			player->EntityComponent->UpgradeAttackDamage();
+		}
 	}
 }
 
@@ -243,9 +272,9 @@ void UShopWidget::OnBuyGateTicket()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		if (player->EntityComponent->Properties.CurrentMoney >= GateTicketPrice)
+		if (player->PlayerInventory->GetCoins() >= GateTicketPrice)
 		{
-			player->EntityComponent->Properties.CurrentMoney -= GateTicketPrice;
+			player->PlayerInventory->SubtractCoins(GateTicketPrice);
 			EndGame->SetVisibility(ESlateVisibility::Visible);
 		}
 	}

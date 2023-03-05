@@ -23,7 +23,6 @@ void UDebugMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		PlayerHealthText->SetText(FText::FromString("Health: " + FString::FromInt(player->EntityComponent->Properties.CurrentHealth)));
-		PlayerMoneyText->SetText(FText::FromString("Money: " + FString::FromInt(player->EntityComponent->Properties.CurrentMoney)));
 		PlayerStaminaText->SetText(FText::FromString("Stamina: " + FString::FromInt(player->EntityComponent->Properties.CurrentStamina)));
 	}
 }
