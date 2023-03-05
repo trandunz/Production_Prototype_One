@@ -32,16 +32,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PickupRange = 40.0f;
-	UPROPERTY(VisibleAnywhere)
-	int CarrotCount{0};
-	UPROPERTY(VisibleAnywhere)
-	int MeatCount{0};
-	UPROPERTY(VisibleAnywhere)
-	int AntlerCount{0};
-	UPROPERTY(VisibleAnywhere)
-	int MaskCount{0};
-	UPROPERTY(VisibleAnywhere)
-	int CrownCount{0};
+	//UPROPERTY(VisibleAnywhere)
+	//int CarrotCount{0};
+	//UPROPERTY(VisibleAnywhere)
+	//int MeatCount{0};
+	//UPROPERTY(VisibleAnywhere)
+	//int AntlerCount{0};
+	//UPROPERTY(VisibleAnywhere)
+	//int MaskCount{0};
+	//UPROPERTY(VisibleAnywhere)
+	//int CrownCount{0};
 	
 	UPROPERTY(EditAnywhere)
 	int SuctionRadius{200};

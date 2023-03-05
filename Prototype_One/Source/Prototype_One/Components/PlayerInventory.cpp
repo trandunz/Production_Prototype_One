@@ -120,6 +120,54 @@ void UPlayerInventory::UpdateCoins()
 	OnUpdateCoins.Broadcast();
 }
 
+int32 UPlayerInventory::GetRabbitSpawnCount()
+{
+	int32 RabbitsToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Carrot)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				RabbitsToSpawn += 1;
+			}
+		}
+	}
+	return RabbitsToSpawn;
+}
+
+int32 UPlayerInventory::GetMaskedSpawnCount()
+{
+	int32 MaskedToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Antler)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				MaskedToSpawn += 1;
+			}
+		}
+	}
+	return MaskedToSpawn;
+}
+
+int32 UPlayerInventory::GetKingSpawnCount()
+{
+	int32 KingToSpawn = 0;
+	for (FInventorySlot Slot : Items)
+	{
+		if (Slot.Info.Type == EItemType::Mask)
+		{
+			if (Slot.Amount == Slot.Info.MaximumStackSize)
+			{
+				KingToSpawn += 1;
+			}
+		}
+	}
+	return KingToSpawn;
+}
+
 void UPlayerInventory::PrintInventory()
 {
 	for (FInventorySlot Slot : Items)

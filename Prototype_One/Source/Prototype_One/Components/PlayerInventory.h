@@ -72,6 +72,14 @@ public:
 	/* Function to call OnUpdateCoins delegate */
 	UFUNCTION(BlueprintCallable)
 	void UpdateCoins();
+
+	/* Getter for CurrentWeight */
+	UFUNCTION(BlueprintCallable)
+	float GetWeight(){ return CurrentWeight; }
+
+	int32 GetRabbitSpawnCount();
+	int32 GetMaskedSpawnCount();
+	int32 GetKingSpawnCount();
 	
 	UFUNCTION(BlueprintCallable)
 	void PrintInventory();
