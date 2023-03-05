@@ -89,6 +89,10 @@ public:
 	void BagReturned();
 	/* Delete cached items */
 	void BagLost();
+
+	/* Allows items to be sold if true */
+	UFUNCTION(BlueprintCallable)
+	void SetIsShopping(bool IsShopping){ bIsShopping = IsShopping; }
 	
 	UFUNCTION(BlueprintCallable)
 	void PrintInventory();
@@ -117,4 +121,5 @@ private:
 	float MaximumWeight;
 	float CurrentWeight;
 	int32 Coins;
+	bool bIsShopping;
 };

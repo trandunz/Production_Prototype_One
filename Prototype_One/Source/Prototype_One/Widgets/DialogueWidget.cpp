@@ -6,6 +6,8 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Components/PlayerInventory.h"
 
 
 FString UDialogueWidget::RandomHelloMessage{"Hi there traveller!"};
@@ -194,6 +196,16 @@ void UDialogueWidget::OnNextDialogueLine()
 void UDialogueWidget::OnBye()
 {
 	OnNextDialogueLine();
+
+	// Set the PlayerInventory to not shopping so player can't sell when not at shop
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->PlayerInventory->SetIsShopping(false);
+	}
+	else
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnBye()");
+	}
 }
 
 
@@ -211,4 +223,14 @@ void UDialogueWidget::OnQuestMenu()
 void UDialogueWidget::OnShopMenu()
 {
 	ShopWidget->SetVisibility(ESlateVisibility::Visible);
+
+	// Set the PlayerInventory to shopping so player can sell while at shop only
+	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+	{
+		player->PlayerInventory->SetIsShopping(true);
+	}
+	else
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnShopMenu()");
+	}
 }

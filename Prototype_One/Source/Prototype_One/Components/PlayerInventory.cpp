@@ -37,17 +37,20 @@ void UPlayerInventory::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UPlayerInventory::Sell(const int32 SlotIndex)
 {
-	// Increase coins by value of item in slot * amount
-	Coins += Items[SlotIndex].Info.Value * Items[SlotIndex].Amount;
+	if (bIsShopping)
+	{
+		// Increase coins by value of item in slot * amount
+		Coins += Items[SlotIndex].Info.Value * Items[SlotIndex].Amount;
 
-	// Remove Slot from Items
-	Items.RemoveAt(SlotIndex);
+		// Remove Slot from Items
+		Items.RemoveAt(SlotIndex);
 
-	// Broadcast to widget to update UI
-	OnSlotModified.Broadcast(SlotIndex, 0);
+		// Broadcast to widget to update UI
+		OnSlotModified.Broadcast(SlotIndex, 0);
 	
-	// Refresh weight
-	CalculateWeight();
+		// Refresh weight
+		CalculateWeight();
+	}
 }
 
 void UPlayerInventory::SellAll()
@@ -57,6 +60,7 @@ void UPlayerInventory::SellAll()
 	{
 		Sell(0);
 	}
+	UpdateCoins();
 }
 
 void UPlayerInventory::SortByType()
