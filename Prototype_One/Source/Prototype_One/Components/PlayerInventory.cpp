@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "IDetailTreeNode.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -166,6 +167,36 @@ int32 UPlayerInventory::GetKingSpawnCount()
 		}
 	}
 	return KingToSpawn;
+}
+
+void UPlayerInventory::BagDropped()
+{
+	while(!Items.IsEmpty())
+	{
+		DroppedItems.Add(Items[0]);
+		Drop(0);
+	}
+}
+
+void UPlayerInventory::BagReturned()
+{
+	int32 SlotIdx = 0;
+	while(DroppedItems.IsValidIndex(SlotIdx))
+	{
+		Pickup(DroppedItems[SlotIdx].Info);
+		
+		// Broadcast to Inventory widget
+		OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
+
+		SlotIdx++;
+	}
+	
+	DroppedItems.Empty();
+}
+
+void UPlayerInventory::BagLost()
+{
+	DroppedItems.Empty();
 }
 
 void UPlayerInventory::PrintInventory()

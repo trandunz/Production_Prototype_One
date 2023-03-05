@@ -56,6 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SortByType();
 
+	/* Drop the items in SlotIndex passed in */
 	UFUNCTION(BlueprintCallable)
 	void Drop(const int32 SlotIndex);
 
@@ -77,23 +78,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetWeight(){ return CurrentWeight; }
 
+	/* Calculate how many enemies to spawn */
 	int32 GetRabbitSpawnCount();
 	int32 GetMaskedSpawnCount();
 	int32 GetKingSpawnCount();
+
+	/* Cache items in bag in separate array */
+	void BagDropped();
+	/* Restore items to bag */
+	void BagReturned();
+	/* Delete cached items */
+	void BagLost();
 	
 	UFUNCTION(BlueprintCallable)
 	void PrintInventory();
 private:
 	/* Sum all items held in inventory */
 	void CalculateWeight();
+	/* Add a new slot to the inventory with the itemdetails passed in */
 	void AddNewSlot(FItemDetails ItemInfoToAdd);
 
 public:
-	TArray<FInventorySlot> Items;
-	float MaximumWeight;
-	float CurrentWeight;
-	int32 Coins;
-
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlotModifiedDelegate, int32, SlotIndex, int32, Amount);
 	UPROPERTY(BlueprintAssignable)
 	FSlotModifiedDelegate OnSlotModified;
@@ -105,4 +110,11 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateCoinsDelegate);
 	UPROPERTY(BlueprintAssignable)
 	FUpdateCoinsDelegate OnUpdateCoins;
+
+private:
+	TArray<FInventorySlot> Items;
+	TArray<FInventorySlot> DroppedItems;
+	float MaximumWeight;
+	float CurrentWeight;
+	int32 Coins;
 };
