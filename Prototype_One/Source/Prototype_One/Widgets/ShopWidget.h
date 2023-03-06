@@ -42,8 +42,8 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 	UFUNCTION()
 	void OnUpgradeAttackDamage();
 
-	UFUNCTION()
-	void OnBuyStaminaPotion();
+	//UFUNCTION()
+	//void OnBuyStaminaPotion();
 	UFUNCTION()
 	void OnBuyHealthPotion();
 
@@ -54,20 +54,9 @@ class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* Sell;
-	//UPROPERTY(EditAnywhere, meta = (BindWidget))
-	//class UButton* SellMeat;
-	//UPROPERTY(EditAnywhere, meta = (BindWidget))
-	//class UButton* SellAntler;
-	//UPROPERTY(EditAnywhere, meta = (BindWidget))
-	//class UButton* SellMask;
-	//UPROPERTY(EditAnywhere, meta = (BindWidget))
-	//class UButton* SellCrown;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* GoBack;
-
-	//UPROPERTY(EditAnywhere, meta = (BindWidget))
-	//class UTextBlock* Money;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* UpgradeHealth;
@@ -95,8 +84,8 @@ public:
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BuyHealthPotion;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* BuyStaminaPotion;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget))
+	//class UButton* BuyStaminaPotion;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BuyGateTicket;
 
