@@ -26,6 +26,7 @@
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
+#include "Prototype_One/HealthPotion.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -60,6 +61,8 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	AttackStencilCollider = CreateDefaultSubobject<USphereComponent>(TEXT("Attack Stenciling"));
 	AttackStencilCollider->SetupAttachment(RootComponent); // not working?
 	AttackStencilCollider->SetCollisionProfileName("Trigger");
+
+	healthPotion = new HealthPotion();
 
 }
 
@@ -230,6 +233,7 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrototype_OneCharacter::EndAim);
 		EnhancedInputComponent->BindAction(OpenBagAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::TryOpenBag);
 		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::PauseGame);
+		EnhancedInputComponent->BindAction(UseHealthPotionAction, ETriggerEvent::Triggered, this, &APrototype_OneCharacter::Heal);
 	}
 }
 
@@ -758,12 +762,19 @@ void APrototype_OneCharacter::PlayerRespawn()
 			}
 		}
 	}
+}
 
-	
+void APrototype_OneCharacter::Heal()
+{
+	if (true) // UsePotion() here, return true if potions left
+	{
+		int recover = healthPotion->amountRestored;
+		RecoverHealth(recover);
+	}
 }
 
 void APrototype_OneCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                             UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor != this) 
 	{

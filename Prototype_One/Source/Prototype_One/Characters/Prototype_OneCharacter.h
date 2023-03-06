@@ -10,6 +10,7 @@
 
 class UPlayerInventory;
 class UPlayerHUD;
+class HealthPotion;
 UCLASS(config=Game)
 class APrototype_OneCharacter : public ACharacter
 {
@@ -40,6 +41,10 @@ private:
 	class UInputAction* OpenBagAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* PauseAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* UseHealthPotionAction;
+	
+	HealthPotion* healthPotion = nullptr;
 	
 public:
 	APrototype_OneCharacter();
@@ -82,6 +87,8 @@ public:
 	void RecoverMana(int _amount);
 	void UseMana(int _amount);
 	void PlayerRespawn();
+
+	void Heal();
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
