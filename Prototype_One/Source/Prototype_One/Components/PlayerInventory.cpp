@@ -214,6 +214,7 @@ bool UPlayerInventory::UsePotion()
 			if (Items[SlotIdx].Amount > 1)
 			{
 				Items[SlotIdx].Amount -= 1;
+				OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
 				bHasPotion = true;
 			}
 			else
@@ -221,6 +222,7 @@ bool UPlayerInventory::UsePotion()
 				Drop(SlotIdx);
 				bHasPotion = true;
 			}
+			
 			break;
 		}
 	}

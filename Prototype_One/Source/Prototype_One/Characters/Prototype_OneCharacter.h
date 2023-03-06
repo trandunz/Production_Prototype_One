@@ -82,12 +82,14 @@ protected:
 	void LookAtCursor();
 	void TryOpenBag();
 public:
+	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int _amount);
 	void RecoverHealth(int _amount);
 	void RecoverMana(int _amount);
 	void UseMana(int _amount);
 	void PlayerRespawn();
 
+	UFUNCTION(BlueprintCallable)
 	void Heal();
 
 	UFUNCTION()

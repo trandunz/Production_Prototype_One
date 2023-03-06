@@ -766,7 +766,7 @@ void APrototype_OneCharacter::PlayerRespawn()
 
 void APrototype_OneCharacter::Heal()
 {
-	if (true) // UsePotion() here, return true if potions left
+	if (PlayerInventory->UsePotion())
 	{
 		int recover = healthPotion->amountRestored;
 		RecoverHealth(recover);
