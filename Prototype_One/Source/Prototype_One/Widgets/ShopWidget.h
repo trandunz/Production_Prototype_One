@@ -96,4 +96,6 @@ public:
 	float GateTicketPrice{10000};
 private:
 	class ABag* Bag;
+
+	int32 PotionCost = 50;
 };

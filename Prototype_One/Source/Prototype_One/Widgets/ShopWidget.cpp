@@ -35,7 +35,7 @@ void UShopWidget::NativeOnInitialized()
 	if (actors.Num() > 0)
 	{
 		Bag = Cast<ABag>(actors[0]);
-	}
+	}	
 }
 
 void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -181,7 +181,10 @@ void UShopWidget::OnBuyHealthPotion()
 {
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
-		// buy health potion
+		if (player->PlayerInventory->GetCoins() >= PotionCost)
+		{
+			player->PlayerInventory->SubtractCoins(50);
+		}
 	}
 }
 
