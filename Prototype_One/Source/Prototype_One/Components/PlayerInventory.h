@@ -93,6 +93,8 @@ public:
 	/* Allows items to be sold if true */
 	UFUNCTION(BlueprintCallable)
 	void SetIsShopping(bool IsShopping){ bIsShopping = IsShopping; }
+
+	bool UsePotion();
 	
 	UFUNCTION(BlueprintCallable)
 	void PrintInventory();

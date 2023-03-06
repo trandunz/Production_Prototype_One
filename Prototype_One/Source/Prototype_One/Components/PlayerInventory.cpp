@@ -203,6 +203,30 @@ void UPlayerInventory::BagLost()
 	DroppedItems.Empty();
 }
 
+bool UPlayerInventory::UsePotion()
+{
+	// Find a potion in inventory, return true if successful and remove it
+	bool bHasPotion = false;
+	for (int SlotIdx = 0; SlotIdx < Items.Num(); SlotIdx++)
+	{
+		if (Items[SlotIdx].Info.Type == EItemType::Potion)
+		{
+			if (Items[SlotIdx].Amount > 1)
+			{
+				Items[SlotIdx].Amount -= 1;
+				bHasPotion = true;
+			}
+			else
+			{
+				Drop(SlotIdx);
+				bHasPotion = true;
+			}
+			break;
+		}
+	}
+	return bHasPotion;
+}
+
 void UPlayerInventory::PrintInventory()
 {
 	for (FInventorySlot Slot : Items)

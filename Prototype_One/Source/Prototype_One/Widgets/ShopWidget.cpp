@@ -24,7 +24,7 @@ void UShopWidget::NativeOnInitialized()
 	UpgradeAttackDamage->OnPressed.AddDynamic(this, &UShopWidget::OnUpgradeAttackDamage);
 
 	BuyHealthPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyHealthPotion);
-	BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
+	//BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
 	BuyGateTicket->OnPressed.AddDynamic(this, &UShopWidget::OnBuyGateTicket);
 
 	EndGame->OnPressed.AddDynamic(this, &UShopWidget::OnEndGame);
@@ -168,14 +168,14 @@ void UShopWidget::OnUpgradeAttackDamage()
 		}
 	}
 }
-
-void UShopWidget::OnBuyStaminaPotion()
-{
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		// buy Stamina potion
-	}
-}
+//
+// void UShopWidget::OnBuyStaminaPotion()
+// {
+// 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+// 	{
+// 		// buy Stamina potion
+// 	}
+// }
 
 void UShopWidget::OnBuyHealthPotion()
 {
