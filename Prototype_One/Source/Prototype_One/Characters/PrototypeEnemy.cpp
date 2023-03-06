@@ -25,7 +25,7 @@ APrototypeEnemy::APrototypeEnemy()
 	Stimulus->RegisterForSense(TSubclassOf<UAISense_Sight>());
 	Stimulus->RegisterWithPerceptionSystem();
 	EntityComponent = CreateDefaultSubobject<URPGEntityComponent>(TEXT("Entity Component"));
-	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widgeet Info"));
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Info"));
 	HealthBarWidget->SetupAttachment(RootComponent);
 }
 
@@ -140,7 +140,8 @@ void APrototypeEnemy::Attack()
 {
 	if (AttackMontage)
 	{
-		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
+		if (GetMesh()->GetAnimInstance())
+			GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
 
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
