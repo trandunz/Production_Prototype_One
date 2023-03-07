@@ -2,6 +2,7 @@
 
 #include "DebugMenu.h"
 #include "GameplayTask.h"
+#include "InventoryWidget.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
