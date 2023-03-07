@@ -401,7 +401,7 @@ void APrototype_OneCharacter::TryInteract()
 	{
 		if (actor)
 		{
-			if (auto* interactable = Cast<IInteractInterface>(actor))
+			if (Cast<IInteractInterface>(actor))
 			{
 				if (CurrentlyHeldActor != actor)
 				{
@@ -414,7 +414,6 @@ void APrototype_OneCharacter::TryInteract()
 	{
 		if (nearestActor <= 200)
 		{
-			
 			if (auto* interactable = Cast<IInteractInterface>(nearestNPC))
 			{
 				if (Cast<ASword>(nearestNPC))
@@ -434,6 +433,8 @@ void APrototype_OneCharacter::TryInteract()
 						}
 						CurrentlyHeldActor = nullptr;
 						CurrentlyHeldActor = nearestNPC;
+
+						
 						interactable->Interact();
 						
 						return;
@@ -443,6 +444,16 @@ void APrototype_OneCharacter::TryInteract()
 				{
 					interactable->Interact();
 					return;
+				}
+			}
+		}
+		else
+		{
+			if (auto* bag = Cast<ABag>(nearestNPC))
+			{
+				if (bag->IsBiengPulled == true)
+				{
+					bag->IsBiengPulled = false;
 				}
 			}
 		}
@@ -692,21 +703,24 @@ void APrototype_OneCharacter::PlayerRespawn()
 		
 			if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
 			{
+				PlayerInventory->BagDropped();
 				for (auto* bagActor:actors)
 				{
 					if (auto* bag = Cast<ABag>(bagActor))
 					{
-						bag->IsDropped = true;
+						bag->IsBiengPulled = false;
 						bag->IsOpen = false;
 					}
 				}
 			}
 			else // Player loses contents of bag, but get it back
 			{
+				PlayerInventory->BagLost();
 				for (auto* bagActor:actors)
 				{
 					if (auto* bag = Cast<ABag>(bagActor))
 					{
+						bag->IsBiengPulled = true;
 						bag->IsOpen = false;
 					}
 				}
@@ -795,6 +809,7 @@ void APrototype_OneCharacter::OnBeginOverlap(UPrimitiveComponent* OverlappedComp
 		if (auto* enemy = Cast<APrototypeEnemy>(OtherActor))
 		{
 			enemy->UpdateAttackOutline(true);
+			
 		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("Triggered with enemy"));

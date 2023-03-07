@@ -63,7 +63,25 @@ void ABag::Tick(float DeltaTime)
 
 void ABag::Interact()
 {
-	IsBiengPulled = !IsBiengPulled;
+	//IsBiengPulled = !IsBiengPulled;
+
+	if (IsBiengPulled == true)
+	{
+		IsBiengPulled = false;
+	}
+	else if (IsBiengPulled == false && IsWithinInteractionRange == true)
+	{
+		IsBiengPulled = true;
+		
+		if (Player)
+		{
+			if (Player->HasRespawnedOnce == true)
+			{
+				Player->PlayerInventory->BagReturned();
+				Player->HasRespawnedOnce = false;
+			}
+		}
+	}
 }
 
 void ABag::UpdateInteractionOutline()
@@ -73,16 +91,17 @@ void ABag::UpdateInteractionOutline()
 		auto distanceToPlayer = (character->GetActorLocation() - GetActorLocation()).Length();
 		if (distanceToPlayer <= InteractionRange)
 		{
+			IsWithinInteractionRange = true;
 			Mesh->SetRenderCustomDepth(true);
 			Mesh->CustomDepthStencilValue = 1;
 		}
 		else
 		{
+			IsWithinInteractionRange = false;
 			Mesh->SetRenderCustomDepth(false);
 			Mesh->CustomDepthStencilValue = 1;
 		}
 	}
-	
 }
 
 void ABag::AttractItems(float DeltaTime)
