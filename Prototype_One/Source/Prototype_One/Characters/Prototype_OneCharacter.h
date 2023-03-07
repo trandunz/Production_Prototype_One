@@ -159,6 +159,8 @@ public:
 	float combatMovementCurrentTime{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	bool IsAttacking{false};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	float AttackMovementAmount{2000.0f};
 
 	// Player Death/Respawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))

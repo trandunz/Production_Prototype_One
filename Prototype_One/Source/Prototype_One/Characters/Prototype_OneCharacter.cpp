@@ -337,6 +337,14 @@ void APrototype_OneCharacter::TryMelee()
 		if (MeleeAnimation)
 			GetMesh()->GetAnimInstance()->Montage_Play(MeleeAnimation, 1.5f);
 		combatMovementCurrentTime = combatMovementMaxTime;
+
+		const FVector ForwardVector = GetActorForwardVector();
+
+		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (CharacterComp)
+		{
+			CharacterComp->Velocity = ForwardVector * AttackMovementAmount;
+		}
 	}
 }
 
