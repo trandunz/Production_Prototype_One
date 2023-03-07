@@ -67,9 +67,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsOpen{};
 
-	UPROPERTY(EditAnywhere)
-	bool IsDropped{};
-
 	UPROPERTY(VisibleAnywhere)
 	float SmallItemSpawnTimer{};
 	UPROPERTY(EditAnywhere)
@@ -86,6 +83,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
+	UPROPERTY(EditAnywhere)
+	bool IsWithinInteractionRange{false};
+	
 
 	UPROPERTY(EditAnywhere, Category=EnemySpawning)
 	TSubclassOf<AActor> RabbitPrefab;
