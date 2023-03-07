@@ -32,7 +32,7 @@ void ABag::BeginPlay()
 	if (RopePrefab)
 	{
 		Rope = Cast<ARope>(GetWorld()->SpawnActor(RopePrefab));
-		Rope->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		Rope->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		Rope->SetActorScale3D({0.1f,0.1f,0.1f});
 		TArray<UCableComponent*> cableComponents{};
 		Rope->GetComponents<UCableComponent>(cableComponents);
@@ -59,6 +59,9 @@ void ABag::Tick(float DeltaTime)
 	SpawnEnemies(DeltaTime);
 	SpawnSmallItems(DeltaTime);
 	HandleBehaviorBasedOnWeight(DeltaTime);
+
+	if (Rope)
+		Rope->SetActorScale3D({1.0f,1.0f,1.0f});
 }
 
 void ABag::Interact()
@@ -136,7 +139,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 	if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 	{
 		Mesh->SetStaticMesh(OpenMesh);
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 0.1f, 0.1f, 99999));
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
 		
 		if (SpawnTimer > 0)
 		{
@@ -187,7 +190,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 	}
 	else if (ClosedMesh)
 	{
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 10.0f, 10.0f, 99999));
+		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
 		Mesh->SetStaticMesh(ClosedMesh);
 	}
 }
