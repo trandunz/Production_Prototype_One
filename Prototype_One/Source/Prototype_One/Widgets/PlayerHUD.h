@@ -4,10 +4,12 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerHUD.generated.h"
 
+class Fade;
 UCLASS()
 class PROTOTYPE_ONE_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
+	Fade* fade = nullptr;;
 public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -44,6 +46,9 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* Crosshair_Overlay;
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* BlackFade;
 
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* SeenImage;

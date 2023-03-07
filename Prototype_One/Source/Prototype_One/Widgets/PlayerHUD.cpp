@@ -10,12 +10,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
+#include "Prototype_One/Fade.h"
 
 void UPlayerHUD::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
+	fade = new Fade(BlackFade, 1.0f);
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
