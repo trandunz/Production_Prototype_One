@@ -319,6 +319,9 @@ void APrototype_OneCharacter::TryDash()
 				}
 				//GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
 				DashMovementCurrentTime = DashMovementMaxTime;
+
+				// For Audio
+				OnDash.Broadcast();
 			//}
 		}
 	}
@@ -345,6 +348,9 @@ void APrototype_OneCharacter::TryMelee()
 		{
 			CharacterComp->Velocity = ForwardVector * AttackMovementAmount;
 		}
+		
+		// broadcast OnAttack for audio		
+		OnAttack.Broadcast();
 	}
 }
 

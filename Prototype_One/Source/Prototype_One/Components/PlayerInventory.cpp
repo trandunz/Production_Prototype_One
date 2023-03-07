@@ -50,6 +50,8 @@ void UPlayerInventory::Sell(const int32 SlotIndex)
 	
 		// Refresh weight
 		CalculateWeight();
+
+		UpdateCoins();
 	}
 }
 
@@ -60,7 +62,6 @@ void UPlayerInventory::SellAll()
 	{
 		Sell(0);
 	}
-	UpdateCoins();
 }
 
 void UPlayerInventory::SortByType()

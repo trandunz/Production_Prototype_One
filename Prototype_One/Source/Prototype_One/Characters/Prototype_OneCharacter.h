@@ -195,6 +195,13 @@ public:
 	UPROPERTY(EditAnywhere, Category=Camera)
 	TArray<class UStaticMeshComponent*> HiddenMeshes;
 
+	// Delegates
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttackDelegate);
+	UPROPERTY(BlueprintAssignable)
+	FAttackDelegate OnAttack;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDashDelegate);
+	UPROPERTY(BlueprintAssignable)
+	FDashDelegate OnDash;
 	
 	// Prefabs
 protected:
