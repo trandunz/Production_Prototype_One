@@ -18,7 +18,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Bag.h"
-#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Components/FadeComponent.h"
 #include "Prototype_One/Components/PlayerInventory.h"

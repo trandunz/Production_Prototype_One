@@ -1,5 +1,5 @@
 #include "Prototype_OneGameMode.h"
-#include "Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 #include "Kismet/GameplayStatics.h"

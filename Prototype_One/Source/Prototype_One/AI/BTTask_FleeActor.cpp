@@ -2,9 +2,9 @@
 
 #include "AIController.h"
 #include "NavigationSystem.h"
-#include "Characters/PrototypeEnemy.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 

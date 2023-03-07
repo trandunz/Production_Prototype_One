@@ -3,7 +3,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
