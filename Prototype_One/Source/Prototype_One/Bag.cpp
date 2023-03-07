@@ -90,9 +90,9 @@ void ABag::UpdateInteractionOutline()
 
 void ABag::AttractItems(float DeltaTime)
 {
-	if (IsOpen)
+	if (IsOpen && Player)
 	{
-		int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+		int weight = GetWeight();
 	
 		TArray<AActor*> actors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItem::StaticClass(), actors);
@@ -135,63 +135,66 @@ void ABag::AttractItems(float DeltaTime)
 
 void ABag::SpawnEnemies(float DeltaTime)
 {
-	int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
-	if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
+	if (Player)
 	{
-		Mesh->SetStaticMesh(OpenMesh);
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
-		
-		if (SpawnTimer > 0)
+		int weight = GetWeight();
+		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
-			SpawnTimer -= DeltaTime;
-		}
-		else if (SpawnTimer <= 0 && weight > 0)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
-			SpawnTimer = rand() % 3 + 1;
-			FNavLocation location{};
-			auto origin = GetActorLocation();
-			auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+			Mesh->SetStaticMesh(OpenMesh);
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
 			
-			if (Player->PlayerInventory->GetRabbitSpawnCount() > 0)
+			if (SpawnTimer > 0)
 			{
-				for (int i = 0; i < Player->PlayerInventory->GetRabbitSpawnCount(); i++)
+				SpawnTimer -= DeltaTime;
+			}
+			else if (SpawnTimer <= 0 && weight > 0)
+			{
+				UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
+				SpawnTimer = rand() % 3 + 1;
+				FNavLocation location{};
+				auto origin = GetActorLocation();
+				auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+				
+				if (Player->PlayerInventory->GetRabbitSpawnCount() > 0)
 				{
-					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					for (int i = 0; i < Player->PlayerInventory->GetRabbitSpawnCount(); i++)
 					{
-						auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
-						rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+						{
+							auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
+							rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						}
 					}
 				}
-			}
-			if (Player->PlayerInventory->GetMaskedSpawnCount() > 0)
-			{
-				for (int i = 0; i < Player->PlayerInventory->GetMaskedSpawnCount(); i++)
+				if (Player->PlayerInventory->GetMaskedSpawnCount() > 0)
 				{
-					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					for (int i = 0; i < Player->PlayerInventory->GetMaskedSpawnCount(); i++)
 					{
-						auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
-						masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+						{
+							auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
+							masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						}
 					}
 				}
-			}
-			if (Player->PlayerInventory->GetKingSpawnCount() > 0)
-			{
-				for (int i = 0; i < Player->PlayerInventory->GetKingSpawnCount(); i++)
+				if (Player->PlayerInventory->GetKingSpawnCount() > 0)
 				{
-					if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+					for (int i = 0; i < Player->PlayerInventory->GetKingSpawnCount(); i++)
 					{
-						auto* king = GetWorld()->SpawnActor(KingPrefab);
-						king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+						{
+							auto* king = GetWorld()->SpawnActor(KingPrefab);
+							king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						}
 					}
 				}
 			}
 		}
-	}
-	else if (ClosedMesh)
-	{
-		SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
-		Mesh->SetStaticMesh(ClosedMesh);
+		else if (ClosedMesh)
+		{
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
+			Mesh->SetStaticMesh(ClosedMesh);
+		}
 	}
 }
 
@@ -222,9 +225,9 @@ void ABag::SpawnSmallItems(float DeltaTime)
 
 void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 {
-	int weight = Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 	if (Player)
 	{
+		int weight = GetWeight();
 		if (weight >= StoppingThreshold)
 		{
 			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
@@ -273,5 +276,10 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z  - Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f, DeltaTime));
 		}
 	}
+}
+
+int ABag::GetWeight()
+{
+	return Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
 }
 

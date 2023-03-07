@@ -26,6 +26,7 @@ public:
 	void SpawnEnemies(float DeltaTime);
 	void SpawnSmallItems(float DeltaTime);
 	void HandleBehaviorBasedOnWeight(float DeltaTime);
+	int GetWeight();
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
