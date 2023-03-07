@@ -5,6 +5,16 @@
 #include "Interfaces/InteractInterface.h"
 #include "Bag.generated.h"
 
+UENUM()
+enum class MOVEMENTSTATE
+{
+	FLYING,
+	DRAGGING,
+	FROZEN,
+	FROZEN_GROUND
+};
+
+
 class APrototype_OneCharacter;
 UCLASS()
 class PROTOTYPE_ONE_API ABag : public AActor, public IInteractInterface
@@ -27,6 +37,7 @@ public:
 	void SpawnSmallItems(float DeltaTime);
 	void HandleBehaviorBasedOnWeight(float DeltaTime);
 	int GetWeight();
+	MOVEMENTSTATE GetMovementState();
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;

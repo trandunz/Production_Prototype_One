@@ -24,11 +24,6 @@ void ABag::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		Player = player;
-	}
-
 	if (RopePrefab)
 	{
 		Rope = Cast<ARope>(GetWorld()->SpawnActor(RopePrefab));
@@ -44,7 +39,9 @@ void ABag::BeginPlay()
 
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
-			CableComponent->SetAttachEndToComponent(player->GetMesh());
+			Player = player;
+			CableComponent->SetAttachEndToComponent(Player->GetMesh(), FName("hand_l"));
+			CableComponent->EndLocation = {};
 		}
 		
 	}
@@ -227,53 +224,54 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 {
 	if (Player)
 	{
-		int weight = GetWeight();
-		if (weight >= StoppingThreshold)
+		switch(GetMovementState())
 		{
-			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			Mesh->SetSimulatePhysics(false);
-			Mesh->SetCanEverAffectNavigation(true);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight) * 100090, 0, 999999));
-			
-		}
-		else if (weight >= WeightThreshold && IsBiengPulled)
-		{
-			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			Mesh->SetSimulatePhysics(true);
-			Mesh->SetCanEverAffectNavigation(true);
-			Mesh->SetLinearDamping(1.0f);
-			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight), 0, 99999));
-			FVector targetLocation = GetActorLocation();
-			targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * weight).X;
-			targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * weight).Y;
-			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
-		}
-		else if (weight >= WeightThreshold && !IsBiengPulled)
-		{
-			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-			Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
-			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			Mesh->SetSimulatePhysics(true);
-			Mesh->SetCanEverAffectNavigation(true);
-			Mesh->SetLinearDamping(100.0f);
-			Mesh->SetAngularDamping(100.0f);
-			Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((weight) * 99999, 0, 99999));
-		}
-		else
-		{
-			Mesh->SetCanEverAffectNavigation(false);
-			Mesh->SetSimulatePhysics(false);
-			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 50.0f * weight, 50.0f, 99999.0f);
-			SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z  - Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f, DeltaTime));
+		case MOVEMENTSTATE::FLYING:
+			{
+				Mesh->SetCanEverAffectNavigation(false);
+				Mesh->SetSimulatePhysics(false);
+				Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 50.0f * GetWeight(), 50.0f, 99999.0f);
+				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z  - Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f, DeltaTime));
+				break;
+			}
+		case MOVEMENTSTATE::DRAGGING:
+			{
+				Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+				Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+				Mesh->SetSimulatePhysics(true);
+				Mesh->SetCanEverAffectNavigation(true);
+				Mesh->SetLinearDamping(1.0f);
+				Mesh->SetAngularDamping(100.0f);
+				Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((GetWeight()), 0, 99999));
+				FVector targetLocation = GetActorLocation();
+				targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).X;
+				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).Y;
+				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
+				break;
+			}
+		case MOVEMENTSTATE::FROZEN_GROUND:
+			{
+				Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+				Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+				Mesh->SetSimulatePhysics(true);
+				Mesh->SetCanEverAffectNavigation(true);
+				Mesh->SetLinearDamping(100.0f);
+				Mesh->SetAngularDamping(100.0f);
+				Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((GetWeight()) * 99999, 0, 99999));
+				break;
+			}
+		case MOVEMENTSTATE::FROZEN:
+			{
+				Mesh->SetCanEverAffectNavigation(false);
+				Mesh->SetSimulatePhysics(false);
+				Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				break;
+			}
 		}
 	}
 }
@@ -281,5 +279,30 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 int ABag::GetWeight()
 {
 	return Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+}
+
+MOVEMENTSTATE ABag::GetMovementState()
+{
+	int weight = GetWeight();
+	if (weight >= StoppingThreshold)
+	{
+		return MOVEMENTSTATE::FROZEN_GROUND;
+	}
+	else if (weight >= WeightThreshold && IsBiengPulled)
+	{
+		return MOVEMENTSTATE::DRAGGING;
+	}
+	else if (weight >= WeightThreshold && !IsBiengPulled)
+	{
+		return MOVEMENTSTATE::FROZEN_GROUND;
+	}
+	else if (IsBiengPulled)
+	{
+		return MOVEMENTSTATE::FLYING;
+	}
+	else
+	{
+		return MOVEMENTSTATE::FROZEN;
+	}
 }
 
