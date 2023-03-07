@@ -7,7 +7,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/PawnSensingComponent.h"
-#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Components/CapsuleComponent.h"

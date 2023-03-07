@@ -1,7 +1,7 @@
 #include "RPGEntityComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/SavedPlayerData.h"
 
 URPGEntityComponent::URPGEntityComponent()

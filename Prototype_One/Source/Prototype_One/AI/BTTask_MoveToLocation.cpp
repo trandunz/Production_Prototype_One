@@ -5,8 +5,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
-#include "Characters/PrototypeEnemy.h"
-#include "Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Tasks/AITask_MoveTo.h"
 
 UBTTask_MoveToLocation::UBTTask_MoveToLocation()

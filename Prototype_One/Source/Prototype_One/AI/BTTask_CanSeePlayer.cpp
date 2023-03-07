@@ -3,13 +3,13 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Characters/PrototypeEnemy.h"
-#include "Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include <Prototype_One/Bag.h>
 
-#include "Controllers/EnemyController.h"
+#include "Prototype_One/Controllers/EnemyController.h"
 
 UBTTask_CanSeePlayer::UBTTask_CanSeePlayer()
 {
