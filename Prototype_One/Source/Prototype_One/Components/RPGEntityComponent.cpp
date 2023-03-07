@@ -76,6 +76,7 @@ void URPGEntityComponent::UpgradeStamina()
 	Properties.UpgradeAmount += 20.0;
 	Properties.StaminaCurrentLevel++;
 	
+	Properties.StaminaRegen ++; // Increase stamina regen
 }
 
 void URPGEntityComponent::UpgradeCarryWeight()
@@ -109,17 +110,14 @@ void URPGEntityComponent::StaminaRegenDrain(float dt)
 	{
 		if (Properties.CurrentStamina < Properties.MaxStamina)
 		{
-			
 			if (Properties.CurrentStaminaTime > 0)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Stamina Time : %s"), *FString::FromInt(Properties.CurrentStaminaTime));
 				Properties.CurrentStaminaTime -= dt;
 			}
 			else
 			{
-				UE_LOG(LogTemp, Log, TEXT("Regen Stamina: Smaina = %s"), *FString::FromInt(Properties.CurrentStamina));
 				Properties.CurrentStaminaTime = Properties.MaxStaminaRegenTime; // Reset stamina timer
-				Properties.CurrentStamina += Properties.StaminaRegen * Properties.StaminaCurrentLevel;
+				Properties.CurrentStamina += Properties.StaminaRegen;
 			}
 		}
 	}
