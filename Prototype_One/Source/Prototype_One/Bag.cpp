@@ -28,7 +28,6 @@ void ABag::BeginPlay()
 	{
 		Rope = Cast<ARope>(GetWorld()->SpawnActor(RopePrefab));
 		Rope->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		Rope->SetActorScale3D({0.1f,0.1f,0.1f});
 		TArray<UCableComponent*> cableComponents{};
 		Rope->GetComponents<UCableComponent>(cableComponents);
 		
@@ -43,9 +42,7 @@ void ABag::BeginPlay()
 			CableComponent->SetAttachEndToComponent(Player->GetMesh(), FName("hand_l"));
 			CableComponent->EndLocation = {};
 		}
-		
 	}
-	
 }
 
 void ABag::Tick(float DeltaTime)
@@ -63,7 +60,31 @@ void ABag::Tick(float DeltaTime)
 
 void ABag::Interact()
 {
-	IsBiengPulled = !IsBiengPulled;
+	//IsBiengPulled = !IsBiengPulled;
+
+	if (IsBiengPulled == true)
+	{
+		IsBiengPulled = false;
+		
+		if (CableComponent)
+			CableComponent->bAttachEnd = false;
+	}
+	else if (IsBiengPulled == false && IsWithinInteractionRange == true)
+	{
+		IsBiengPulled = true;
+
+		if (CableComponent)
+			CableComponent->bAttachEnd = true;
+		
+		if (Player)
+		{
+			if (Player->HasRespawnedOnce == true)
+			{
+				Player->PlayerInventory->BagReturned();
+				Player->HasRespawnedOnce = false;
+			}
+		}
+	}
 }
 
 void ABag::UpdateInteractionOutline()
@@ -73,16 +94,17 @@ void ABag::UpdateInteractionOutline()
 		auto distanceToPlayer = (character->GetActorLocation() - GetActorLocation()).Length();
 		if (distanceToPlayer <= InteractionRange)
 		{
+			IsWithinInteractionRange = true;
 			Mesh->SetRenderCustomDepth(true);
 			Mesh->CustomDepthStencilValue = 1;
 		}
 		else
 		{
+			IsWithinInteractionRange = false;
 			Mesh->SetRenderCustomDepth(false);
 			Mesh->CustomDepthStencilValue = 1;
 		}
 	}
-	
 }
 
 void ABag::AttractItems(float DeltaTime)
@@ -96,7 +118,7 @@ void ABag::AttractItems(float DeltaTime)
 		TArray<AActor*> ItemsInRange;
 		for(auto* actor : actors)
 		{
-			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight), 1, 99999))
+			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight / StoppingThreshold) * 500.0f, 1, 500))
 			{
 				ItemsInRange.Add(actor);
 			}
@@ -138,7 +160,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
 			
 			if (SpawnTimer > 0)
 			{
@@ -189,7 +211,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		}
 		else if (ClosedMesh)
 		{
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}

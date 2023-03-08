@@ -32,8 +32,6 @@ public:
 	class UBlackboardComponent* BlackboardComponent;
 
 	class UAISenseConfig_Sight* SightConfig;
-
-
 	
 	float DetectionTimer{};
 	UPROPERTY(EditAnywhere)

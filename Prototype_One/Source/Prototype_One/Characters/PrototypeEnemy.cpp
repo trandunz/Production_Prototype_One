@@ -7,7 +7,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/PawnSensingComponent.h"
-#include "Prototype_One/Prototype_OneGameMode.h"
+#include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -119,14 +119,18 @@ void APrototypeEnemy::TakeDamage(int _amount)
 			constoller->CanSeePlayer = true;
 			constoller->BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), true);
 		}
-		EntityComponent->TakeDamage(_amount);
-		UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
-		UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
-		if (EntityComponent->Properties.CurrentHealth <= 0)
+
+		if (EntityComponent->Properties.CurrentHealth > 0)
 		{
+			EntityComponent->TakeDamage(_amount);
+			UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
+			UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
+			if (EntityComponent->Properties.CurrentHealth <= 0)
+			{
 			
-			UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
-			Ragdoll();
+				UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
+				Ragdoll();
+			}
 		}
 	}
 }

@@ -3,8 +3,8 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Characters/PrototypeEnemy.h"
-#include "Characters/Prototype_OneCharacter.h"
+#include "Prototype_One/Characters/PrototypeEnemy.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
