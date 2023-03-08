@@ -118,7 +118,7 @@ void ABag::AttractItems(float DeltaTime)
 		TArray<AActor*> ItemsInRange;
 		for(auto* actor : actors)
 		{
-			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight), 1, 99999))
+			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight / StoppingThreshold) * 500.0f, 1, 500))
 			{
 				ItemsInRange.Add(actor);
 			}
@@ -160,7 +160,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
 			
 			if (SpawnTimer > 0)
 			{
@@ -211,7 +211,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		}
 		else if (ClosedMesh)
 		{
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp(weight * 1.0f, 1.0f, 99999));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
