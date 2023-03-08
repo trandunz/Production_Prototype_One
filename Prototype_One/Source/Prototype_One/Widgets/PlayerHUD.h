@@ -19,6 +19,7 @@ public:
 	void UpdateInteractionText(FString _interactionKey = "", FString _message = "");
 	void UpdateSneakStatus(int _seen);
 	void ToggleDebugMenu();
+	void FadeIn();
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* InteractionText;

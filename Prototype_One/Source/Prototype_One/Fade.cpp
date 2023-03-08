@@ -15,6 +15,10 @@ void Fade::Tick(float deltaTime)
 	if (fadeTimer != fadeTime)
 	{
 		fadeTimer += deltaTime;
+		if (fadeTimer > fadeTime)
+		{
+			fadeTimer = fadeTime;
+		}
 	}
 	
 	switch (fadeState)

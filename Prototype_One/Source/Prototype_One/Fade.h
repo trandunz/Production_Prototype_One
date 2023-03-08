@@ -30,4 +30,5 @@ public:
 	void ImmediateFadeOut();
 	void ImmediateFadeIn();
 	~Fade();
+	float GetFadeValue() {return fadeValue;};
 };
