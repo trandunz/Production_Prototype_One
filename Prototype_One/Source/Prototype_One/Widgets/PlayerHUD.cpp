@@ -107,5 +107,24 @@ void UPlayerHUD::ToggleDebugMenu()
 
 void UPlayerHUD::FadeIn()
 {
-	fade->FadeIn();
+	if (fade)
+	{
+		fade->FadeIn();
+	}
+}
+
+void UPlayerHUD::FadeOut()
+{
+	if (fade)
+	{
+		fade->FadeOut();
+	}
+}
+
+void UPlayerHUD::ChangeFadeTime(float _fadeTime)
+{
+	if (fade)
+	{
+		fade->ChangeFadeTime(_fadeTime);
+	}
 }
