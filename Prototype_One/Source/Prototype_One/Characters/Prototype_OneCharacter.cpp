@@ -16,6 +16,7 @@
 #include "PrototypeEnemy.h"
 #include "Prototype_One/Widgets/PlayerHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prototype_One/Bag.h"
@@ -64,7 +65,7 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	AttackStencilCollider->SetCollisionProfileName("Trigger");
 
 	healthPotion = new HealthPotion();
-
+	
 }
 
 void APrototype_OneCharacter::BeginPlay()
@@ -789,6 +790,9 @@ void APrototype_OneCharacter::PlayerRespawn()
 		RespawnTimer -= Dt;
 		PauseMovementTimer -= Dt;
 
+		PlayerHud->BlackFade->SetVisibility(ESlateVisibility::Visible);
+		PlayerHud->FadeIn();
+
 		if (RespawnTimer <= 0)
 		{
 			SetActorLocation(StartLocation);
@@ -810,6 +814,9 @@ void APrototype_OneCharacter::PlayerRespawn()
 		if (PauseMovementTimer <= 0)
 		{
 			IsRespawning = false;
+
+			PlayerHud->BlackFade->SetVisibility(ESlateVisibility::Hidden);
+			
 			RespawnTimer = TimeBeforeRespawn;
 			PauseMovementTimer = TimeRespawnPauseMovement;
 

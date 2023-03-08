@@ -22,7 +22,7 @@ class PROTOTYPE_ONE_API Fade
 	float fadeValue = 0;
 	FadeState fadeState = FadeState::Halt;
 public:
-	Fade(UImage* _imageToFade, float _fadeTime);
+	Fade(UImage* _imageToFade, float _fadeTime, float _fadeStartTime);
 	void Tick(float deltaTime);
 	void FadeIn();
 	void FadeOut();
@@ -31,4 +31,5 @@ public:
 	void ImmediateFadeIn();
 	~Fade();
 	float GetFadeValue() {return fadeValue;};
+	void ChangeFadeTime(float _fadeTime) {fadeTime = _fadeTime;};
 };

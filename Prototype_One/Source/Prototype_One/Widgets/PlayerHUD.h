@@ -20,6 +20,9 @@ public:
 	void UpdateSneakStatus(int _seen);
 	void ToggleDebugMenu();
 	void FadeIn();
+	void FadeOut();
+
+	void ChangeFadeTime(float _fadeTime);
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* InteractionText;

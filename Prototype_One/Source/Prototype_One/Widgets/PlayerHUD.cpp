@@ -18,7 +18,7 @@ void UPlayerHUD::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
-	fade = new Fade(BlackFade, 1.0f);
+	fade = new Fade(BlackFade, 2.0f, 0.0f);
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -107,5 +107,24 @@ void UPlayerHUD::ToggleDebugMenu()
 
 void UPlayerHUD::FadeIn()
 {
-	fade->FadeIn();
+	if (fade)
+	{
+		fade->FadeIn();
+	}
+}
+
+void UPlayerHUD::FadeOut()
+{
+	if (fade)
+	{
+		fade->FadeOut();
+	}
+}
+
+void UPlayerHUD::ChangeFadeTime(float _fadeTime)
+{
+	if (fade)
+	{
+		fade->ChangeFadeTime(_fadeTime);
+	}
 }
