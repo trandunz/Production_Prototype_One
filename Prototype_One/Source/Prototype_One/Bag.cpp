@@ -10,6 +10,7 @@
 #include "Components/PlayerInventory.h"
 #include "Prototype_One/Item.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 
 ABag::ABag()
 {
@@ -18,6 +19,10 @@ ABag::ABag()
 	RootComponent = Mesh;
 
 	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
+
+	//Constraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Rope Constraint"));
+	//Constraint->SetupAttachment(RootComponent);
+	//Constraint->ConstraintActor2 = this;
 }
 
 void ABag::BeginPlay()
@@ -39,8 +44,10 @@ void ABag::BeginPlay()
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
 			Player = player;
-			CableComponent->SetAttachEndToComponent(Player->GetMesh(), FName("hand_l"));
+			CableComponent->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_l"));
+			CableComponent->SetAttachEndTo(this, FName(""));
 			CableComponent->EndLocation = {};
+			//Constraint->ConstraintActor1 = Player;
 		}
 	}
 }
@@ -65,6 +72,8 @@ void ABag::Interact()
 	if (IsBiengPulled == true)
 	{
 		IsBiengPulled = false;
+		//if (Constraint)
+		//	Constraint->ConstraintActor1 = nullptr;
 		
 		if (CableComponent)
 			CableComponent->bAttachEnd = false;
@@ -73,6 +82,9 @@ void ABag::Interact()
 	{
 		IsBiengPulled = true;
 
+		//if (Constraint)
+		//	Constraint->ConstraintActor1 = Player;
+//
 		if (CableComponent)
 			CableComponent->bAttachEnd = true;
 		
@@ -118,7 +130,7 @@ void ABag::AttractItems(float DeltaTime)
 		TArray<AActor*> ItemsInRange;
 		for(auto* actor : actors)
 		{
-			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= SuctionRadius * FMath::Clamp((weight / StoppingThreshold) * 500.0f, 1, 500))
+			if ((actor->GetActorLocation() - GetActorLocation()).Length() <= (SuctionRadius * (float)weight / (float)StoppingThreshold) + 500.0f)
 			{
 				ItemsInRange.Add(actor);
 			}
@@ -160,7 +172,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
 			
 			if (SpawnTimer > 0)
 			{
@@ -211,7 +223,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		}
 		else if (ClosedMesh)
 		{
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((weight / StoppingThreshold) * 3.0f, 1.0f, 3));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
@@ -253,8 +265,8 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 				Mesh->SetCanEverAffectNavigation(false);
 				Mesh->SetSimulatePhysics(false);
 				Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 50.0f * GetWeight(), 50.0f, 99999.0f);
-				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z  - Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f, DeltaTime));
+				float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 25.0f * GetWeight(), 25.0f, 99999.0f);
+				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z - Player->GetActorForwardVector() * 100.0f, DeltaTime));
 				break;
 			}
 		case MOVEMENTSTATE::DRAGGING:
