@@ -79,7 +79,7 @@ public:
 	UStaticMesh* ClosedMesh;
 
 	UPROPERTY(EditAnywhere)
-	bool IsBiengPulled{};
+	bool IsBiengPulled{true};
 
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};

@@ -248,7 +248,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 		{
 			if (bag->IsBiengPulled == true && bag->GetWeight() >= bag->WeightThreshold)
 			{
-				GetCharacterMovement()->MaxWalkSpeed = DesiredSpeed * (bag->GetWeight()/bag->StoppingThreshold);
+				GetCharacterMovement()->MaxWalkSpeed = DesiredSpeed * FMath::Lerp(1.0f,0.0f,(float)bag->GetWeight() / (float)bag->StoppingThreshold);
 			}
 			else
 			{
