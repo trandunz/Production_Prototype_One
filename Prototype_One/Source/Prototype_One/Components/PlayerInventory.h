@@ -60,6 +60,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Drop(const int32 SlotIndex);
 
+	/* Drop an item from a slot */
+	UFUNCTION(BlueprintCallable)
+	void DropOneItem(const int32 SlotIndex);
+	
 	UFUNCTION(BlueprintPure)
 	TArray<FInventorySlot> GetItems() { return Items; }
 	
@@ -92,8 +96,12 @@ public:
 
 	/* Allows items to be sold if true */
 	UFUNCTION(BlueprintCallable)
-	void SetIsShopping(bool IsShopping){ bIsShopping = IsShopping; }
+	void SetIsShopping(bool IsShopping);
 
+	/* Return bIsShopping */
+	UFUNCTION(BlueprintCallable)
+	bool GetIsShopping() { return bIsShopping; }
+	
 	bool UsePotion();
 	
 	UFUNCTION(BlueprintCallable)
@@ -116,6 +124,10 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateCoinsDelegate);
 	UPROPERTY(BlueprintAssignable)
 	FUpdateCoinsDelegate OnUpdateCoins;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FIsShoppingDelegate, bool, bIsShopping);
+	UPROPERTY(BlueprintAssignable)
+	FIsShoppingDelegate OnIsShopping;
 
 private:
 	TArray<FInventorySlot> Items;

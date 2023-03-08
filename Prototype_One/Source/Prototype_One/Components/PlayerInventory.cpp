@@ -84,6 +84,27 @@ void UPlayerInventory::Drop(const int32 SlotIndex)
 	}
 }
 
+void UPlayerInventory::DropOneItem(const int32 SlotIndex)
+{
+	if(Items.IsValidIndex(SlotIndex))
+	{
+		Items[SlotIndex].Amount -= 1;
+		CalculateWeight();
+		
+		if (Items[SlotIndex].Amount == 0)
+		{
+			// Remove Slot from Items
+			Items.RemoveAt(SlotIndex);
+			OnSlotModified.Broadcast(SlotIndex, 0);
+
+		}
+		else
+		{
+			OnSlotModified.Broadcast(SlotIndex, Items[SlotIndex].Amount);
+		}
+	}
+}
+
 void UPlayerInventory::Pickup(FItemDetails PickedUpItemInfo)
 {
 	if (Items.IsEmpty())
@@ -202,6 +223,14 @@ void UPlayerInventory::BagReturned()
 void UPlayerInventory::BagLost()
 {
 	DroppedItems.Empty();
+}
+
+void UPlayerInventory::SetIsShopping(bool IsShopping)
+{
+	bIsShopping = IsShopping;
+
+	// Tell widget if shopping to change some text (Drop Item/Sell Stack)
+	OnIsShopping.Broadcast(IsShopping);
 }
 
 bool UPlayerInventory::UsePotion()
