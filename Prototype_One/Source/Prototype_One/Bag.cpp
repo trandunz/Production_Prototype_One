@@ -28,7 +28,6 @@ void ABag::BeginPlay()
 	{
 		Rope = Cast<ARope>(GetWorld()->SpawnActor(RopePrefab));
 		Rope->AttachToActor(this, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		Rope->SetActorScale3D({0.1f,0.1f,0.1f});
 		TArray<UCableComponent*> cableComponents{};
 		Rope->GetComponents<UCableComponent>(cableComponents);
 		
@@ -43,9 +42,7 @@ void ABag::BeginPlay()
 			CableComponent->SetAttachEndToComponent(Player->GetMesh(), FName("hand_l"));
 			CableComponent->EndLocation = {};
 		}
-		
 	}
-	
 }
 
 void ABag::Tick(float DeltaTime)
@@ -68,10 +65,16 @@ void ABag::Interact()
 	if (IsBiengPulled == true)
 	{
 		IsBiengPulled = false;
+		
+		if (CableComponent)
+			CableComponent->bAttachEnd = false;
 	}
 	else if (IsBiengPulled == false && IsWithinInteractionRange == true)
 	{
 		IsBiengPulled = true;
+
+		if (CableComponent)
+			CableComponent->bAttachEnd = true;
 		
 		if (Player)
 		{

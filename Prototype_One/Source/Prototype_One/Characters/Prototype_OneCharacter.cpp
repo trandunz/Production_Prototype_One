@@ -1,6 +1,7 @@
 #include "Prototype_OneCharacter.h"
 
 #include "AITypes.h"
+#include "CableComponent.h"
 #include "DialogueNPC.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -453,6 +454,8 @@ void APrototype_OneCharacter::TryInteract()
 			{
 				if (bag->IsBiengPulled == true)
 				{
+					if (bag->CableComponent)
+						bag->CableComponent->bAttachEnd = false;
 					bag->IsBiengPulled = false;
 				}
 			}

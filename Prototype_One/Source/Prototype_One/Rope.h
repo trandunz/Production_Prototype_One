@@ -13,5 +13,4 @@ UCLASS()
 class PROTOTYPE_ONE_API ARope : public ACableActor
 {
 	GENERATED_BODY()
-	
 };
