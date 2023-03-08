@@ -25,6 +25,11 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	if (fade)
+	{
+		fade->Tick(InDeltaTime);
+	}
+
 	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))
 	{
 		UpdateStamina(player->EntityComponent->Properties.CurrentStamina, player->EntityComponent->Properties.MaxStamina);
@@ -98,4 +103,9 @@ void UPlayerHUD::ToggleDebugMenu()
 		else
 			DebugMenu->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void UPlayerHUD::FadeIn()
+{
+	fade->FadeIn();
 }
