@@ -240,6 +240,24 @@ void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* P
 
 void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 {
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			if (bag->IsBiengPulled == true && bag->GetWeight() >= bag->WeightThreshold)
+			{
+				GetCharacterMovement()->MaxWalkSpeed = DesiredSpeed * (bag->GetWeight()/bag->StoppingThreshold);
+			}
+			else
+			{
+				GetCharacterMovement()->MaxWalkSpeed = DesiredSpeed;
+			}
+		}
+	}
+
+	
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
 	if (DashMovementCurrentTime <= 0 && combatMovementCurrentTime <= 0)
@@ -291,7 +309,7 @@ void APrototype_OneCharacter::StartSprint()
 	{
 		if (EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.MinimumStaminaToSprint)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+			DesiredSpeed = SprintSpeed;
 			EntityComponent->Properties.IsStaminaDraining = true;
 		}
 	}
@@ -299,31 +317,41 @@ void APrototype_OneCharacter::StartSprint()
 
 void APrototype_OneCharacter::EndSprint()
 {
-	GetCharacterMovement()->MaxWalkSpeed = JogSpeed;
+	DesiredSpeed = JogSpeed;
 	EntityComponent->Properties.IsStaminaDraining = false;
 }
 
 void APrototype_OneCharacter::TryDash()
 {
-	if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
 	{
-		if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
+		if (auto* bag = Cast<ABag>(bagActor))
 		{
-			//if (DashAnimation)
-			//{
-				IsDashing = true;
-				HasStartedDash = true;
-				EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
-				if (PlayerHud)
+			if (bag->GetMovementState() == MOVEMENTSTATE::FLYING ||
+				bag->IsBiengPulled == false)
+			{
+				if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 				{
-					PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
-				}
-				//GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
-				DashMovementCurrentTime = DashMovementMaxTime;
+					if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
+					{
+						IsDashing = true;
+						HasStartedDash = true;
+						EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
+						if (PlayerHud)
+						{
+							PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
+						}
 
-				// For Audio
-				OnDash.Broadcast();
-			//}
+						DashMovementCurrentTime = DashMovementMaxTime;
+
+						// For Audio
+						OnDash.Broadcast();
+						
+					}
+				}
+			}
 		}
 	}
 }
@@ -713,6 +741,8 @@ void APrototype_OneCharacter::PlayerRespawn()
 					{
 						bag->IsBiengPulled = false;
 						bag->IsOpen = false;
+						if (bag->CableComponent)
+							bag->CableComponent->bAttachEnd = false;
 					}
 				}
 			}
