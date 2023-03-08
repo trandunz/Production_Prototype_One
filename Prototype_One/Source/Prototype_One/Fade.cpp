@@ -3,11 +3,11 @@
 
 #include "Fade.h"
 
-Fade::Fade(UImage* _imageToFade, float _fadeTime)
+Fade::Fade(UImage* _imageToFade, float _fadeTime, float _fadeStartTime)
 {
 	imageToFade = _imageToFade;
 	fadeTime = _fadeTime;
-	fadeTimer = fadeTime;
+	fadeTimer = _fadeStartTime;
 }
 
 void Fade::Tick(float deltaTime)
@@ -38,11 +38,13 @@ void Fade::Tick(float deltaTime)
 
 void Fade::FadeIn()
 {
+    fadeTimer = fadeValue * fadeTime;
 	fadeState = FadeState::FadeIn;
 }
 
 void Fade::FadeOut()
 {
+	fadeTimer = 1 - (fadeValue * fadeTime);
 	fadeState = FadeState::FadeOut;
 }
 

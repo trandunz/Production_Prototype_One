@@ -18,7 +18,7 @@ void UPlayerHUD::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
-	fade = new Fade(BlackFade, 2.0f);
+	fade = new Fade(BlackFade, 2.0f, 0.0f);
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
