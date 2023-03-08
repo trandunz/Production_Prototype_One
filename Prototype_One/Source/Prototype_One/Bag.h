@@ -102,6 +102,8 @@ public:
 	UPROPERTY(EditAnywhere, Category=Rope)
 	class ARope* Rope;
 
+
+
 	UPROPERTY(EditAnywhere, Category=Rope)
 	TSubclassOf<ARope> RopePrefab;
 
