@@ -19,8 +19,9 @@ ABag::ABag()
 	RootComponent = Mesh;
 
 	WingRightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Right Wing"));
+	WingRightMesh->SetupAttachment(RootComponent);
 	WingLeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Left Wing"));
-
+	WingLeftMesh->SetupAttachment(RootComponent);
 	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
 
 	//Constraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Rope Constraint"));
@@ -63,6 +64,7 @@ void ABag::Tick(float DeltaTime)
 	SpawnEnemies(DeltaTime);
 	SpawnSmallItems(DeltaTime);
 	HandleBehaviorBasedOnWeight(DeltaTime);
+	FlapWings();
 
 	if (Rope)
 		Rope->SetActorScale3D({1.0f,1.0f,1.0f});
@@ -175,6 +177,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
+			
 			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
 			
 			if (SpawnTimer > 0)
@@ -230,6 +233,8 @@ void ABag::SpawnEnemies(float DeltaTime)
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
+
+
 }
 
 void ABag::SpawnSmallItems(float DeltaTime)
@@ -316,6 +321,15 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 int ABag::GetWeight()
 {
 	return Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+}
+
+void ABag::FlapWings()
+{
+	WingLeftMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	WingRightMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	FRotator currentRotation = WingLeftMesh->GetRelativeRotation();
+	
+	WingLeftMesh->SetRelativeRotation(currentRotation);
 }
 
 MOVEMENTSTATE ABag::GetMovementState()

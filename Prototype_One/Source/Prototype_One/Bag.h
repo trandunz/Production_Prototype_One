@@ -37,6 +37,7 @@ public:
 	void SpawnSmallItems(float DeltaTime);
 	void HandleBehaviorBasedOnWeight(float DeltaTime);
 	int GetWeight();
+	void FlapWings();
 	MOVEMENTSTATE GetMovementState();
 
 	UPROPERTY(EditAnywhere)
