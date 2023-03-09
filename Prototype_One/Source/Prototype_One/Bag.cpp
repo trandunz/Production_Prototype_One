@@ -22,6 +22,8 @@ ABag::ABag()
 	WingRightMesh->SetupAttachment(RootComponent);
 	WingLeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Left Wing"));
 	WingLeftMesh->SetupAttachment(RootComponent);
+	WingLeftMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WingRightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
 
 	//Constraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Rope Constraint"));
@@ -289,8 +291,8 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 				Mesh->SetAngularDamping(100.0f);
 				Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((GetWeight()), 0, 99999));
 				FVector targetLocation = GetActorLocation();
-				targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).X;
-				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).Y;
+				targetLocation.X = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).X;
+				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).Y;
 				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
 				break;
 			}
@@ -328,8 +330,15 @@ void ABag::FlapWings()
 	WingLeftMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WingRightMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	FRotator currentRotation = WingLeftMesh->GetRelativeRotation();
-	
+
+	if ((float)GetWeight() < (float)WeightThreshold)
+		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * (20.0f + FMath::Clamp(FMath::Lerp(0.0f, 1.0f, (float)GetWeight() / (float)WeightThreshold) * 50.0f, 0.0f, 50.0f))) * 30.0f;
+
+	if ((float)GetWeight() >= (float)WeightThreshold)
+		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * 2.0f) * 30.0f;
+		
 	WingLeftMesh->SetRelativeRotation(currentRotation);
+	WingRightMesh->SetRelativeRotation(currentRotation);
 }
 
 MOVEMENTSTATE ABag::GetMovementState()
