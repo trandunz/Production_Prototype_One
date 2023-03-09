@@ -77,6 +77,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* ClosedMesh;
+	
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WingRightMesh;
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WingLeftMesh;
 
 	UPROPERTY(EditAnywhere)
 	bool IsBiengPulled{true};

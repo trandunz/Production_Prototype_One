@@ -70,7 +70,8 @@ void ASword::Interact()
 			Mesh->SetSimulatePhysics(false);
 			Mesh->SetCollisionProfileName("Trigger");
 			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
-			AttachToComponent(charatcer->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Sword_Socket"));
+			AttachToComponent(charatcer->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("SwordSocket"));
+			Mesh->SetRelativeLocation({});
 			charatcer->CurrentlyHeldActor = this;
 		}
 	}

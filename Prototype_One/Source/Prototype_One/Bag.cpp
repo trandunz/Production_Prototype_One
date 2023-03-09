@@ -18,6 +18,9 @@ ABag::ABag()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	RootComponent = Mesh;
 
+	WingRightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Right Wing"));
+	WingLeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Left Wing"));
+
 	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
 
 	//Constraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Rope Constraint"));
@@ -44,7 +47,7 @@ void ABag::BeginPlay()
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
 			Player = player;
-			CableComponent->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_l"));
+			CableComponent->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RopeSocket"));
 			CableComponent->SetAttachEndTo(this, FName(""));
 			CableComponent->EndLocation = {};
 			//Constraint->ConstraintActor1 = Player;
