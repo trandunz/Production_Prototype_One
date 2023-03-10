@@ -37,6 +37,7 @@ public:
 	void SpawnSmallItems(float DeltaTime);
 	void HandleBehaviorBasedOnWeight(float DeltaTime);
 	int GetWeight();
+	void FlapWings();
 	MOVEMENTSTATE GetMovementState();
 
 	UPROPERTY(EditAnywhere)
@@ -77,6 +78,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* ClosedMesh;
+	
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WingRightMesh;
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* WingLeftMesh;
 
 	UPROPERTY(EditAnywhere)
 	bool IsBiengPulled{true};

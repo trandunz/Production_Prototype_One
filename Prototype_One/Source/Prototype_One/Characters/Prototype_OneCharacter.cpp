@@ -344,6 +344,8 @@ void APrototype_OneCharacter::TryDash()
 						{
 							PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
 						}
+						if (DashAnimation)
+							GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
 
 						DashMovementCurrentTime = DashMovementMaxTime;
 

@@ -18,6 +18,12 @@ ABag::ABag()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	RootComponent = Mesh;
 
+	WingRightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Right Wing"));
+	WingRightMesh->SetupAttachment(RootComponent);
+	WingLeftMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Left Wing"));
+	WingLeftMesh->SetupAttachment(RootComponent);
+	WingLeftMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WingRightMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//CableComponent->SetAttachEndTo(this, FName(Mesh->GetName()));
 
 	//Constraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("Rope Constraint"));
@@ -44,7 +50,7 @@ void ABag::BeginPlay()
 		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 		{
 			Player = player;
-			CableComponent->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_l"));
+			CableComponent->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("RopeSocket"));
 			CableComponent->SetAttachEndTo(this, FName(""));
 			CableComponent->EndLocation = {};
 			//Constraint->ConstraintActor1 = Player;
@@ -60,6 +66,7 @@ void ABag::Tick(float DeltaTime)
 	SpawnEnemies(DeltaTime);
 	SpawnSmallItems(DeltaTime);
 	HandleBehaviorBasedOnWeight(DeltaTime);
+	FlapWings();
 
 	if (Rope)
 		Rope->SetActorScale3D({1.0f,1.0f,1.0f});
@@ -172,7 +179,8 @@ void ABag::SpawnEnemies(float DeltaTime)
 		if (IsOpen && OpenMesh && RabbitPrefab && MaskedPrefab && KingPrefab)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
+			
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			
 			if (SpawnTimer > 0)
 			{
@@ -223,10 +231,12 @@ void ABag::SpawnEnemies(float DeltaTime)
 		}
 		else if (ClosedMesh)
 		{
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
+
+
 }
 
 void ABag::SpawnSmallItems(float DeltaTime)
@@ -281,8 +291,8 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 				Mesh->SetAngularDamping(100.0f);
 				Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((GetWeight()), 0, 99999));
 				FVector targetLocation = GetActorLocation();
-				targetLocation.X = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).X;
-				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorRightVector() * 100.0f - Player->GetActorForwardVector() * 100.0f + 50.0f * GetWeight()).Y;
+				targetLocation.X = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).X;
+				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).Y;
 				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
 				break;
 			}
@@ -312,7 +322,23 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 
 int ABag::GetWeight()
 {
-	return Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+	return Player->PlayerInventory->GetWeight();
+}
+
+void ABag::FlapWings()
+{
+	WingLeftMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	WingRightMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	FRotator currentRotation = WingLeftMesh->GetRelativeRotation();
+
+	if ((float)GetWeight() < (float)WeightThreshold)
+		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * (20.0f + FMath::Clamp(FMath::Lerp(0.0f, 1.0f, (float)GetWeight() / (float)WeightThreshold) * 50.0f, 0.0f, 50.0f))) * 30.0f;
+
+	if ((float)GetWeight() >= (float)WeightThreshold)
+		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * 2.0f) * 30.0f;
+		
+	WingLeftMesh->SetRelativeRotation(currentRotation);
+	WingRightMesh->SetRelativeRotation(currentRotation);
 }
 
 MOVEMENTSTATE ABag::GetMovementState()
