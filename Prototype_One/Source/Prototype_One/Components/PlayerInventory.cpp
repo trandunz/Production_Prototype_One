@@ -39,6 +39,34 @@ void UPlayerInventory::Sell(const int32 SlotIndex)
 {
 	if (bIsShopping)
 	{
+		// Increase coins by value of one item in slot
+		Coins += Items[SlotIndex].Info.Value;
+
+		Items[SlotIndex].Amount -= 1;
+		if (Items[SlotIndex].Amount == 0)
+		{
+			// Remove Slot from Items
+			Items.RemoveAt(SlotIndex);
+
+			// Broadcast to widget to update UI
+			OnSlotModified.Broadcast(SlotIndex, 0);			
+		}
+		else
+		{
+			// Broadcast to widget to update UI
+			OnSlotModified.Broadcast(SlotIndex, Items[SlotIndex].Amount);		
+		}
+	
+		// Refresh weight and coins
+		CalculateWeight();
+		UpdateCoins();
+	}
+}
+
+void UPlayerInventory::SellSlot(const int32 SlotIndex)
+{
+	if (bIsShopping)
+	{
 		// Increase coins by value of item in slot * amount
 		Coins += Items[SlotIndex].Info.Value * Items[SlotIndex].Amount;
 
@@ -48,9 +76,8 @@ void UPlayerInventory::Sell(const int32 SlotIndex)
 		// Broadcast to widget to update UI
 		OnSlotModified.Broadcast(SlotIndex, 0);
 	
-		// Refresh weight
+		// Refresh weight and coins
 		CalculateWeight();
-
 		UpdateCoins();
 	}
 }
@@ -60,7 +87,7 @@ void UPlayerInventory::SellAll()
 	// Sell all the things
 	while(!Items.IsEmpty())
 	{
-		Sell(0);
+		SellSlot(0);
 	}
 }
 

@@ -18,6 +18,7 @@ enum class EItemType : uint8
 	Mask,
 	Crown,
 	Potion,
+	DEFAULT
 };
 
 
@@ -28,19 +29,19 @@ struct FItemDetails
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EItemType Type;
+	EItemType Type = EItemType::DEFAULT;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Value;
+	int32 Value = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaximumStackSize;
+	int32 MaximumStackSize = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Weight;
+	int32 Weight = 0;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	UTexture2D* IconTexture;
+	UTexture2D* IconTexture = nullptr;
 };
 
 UCLASS()
