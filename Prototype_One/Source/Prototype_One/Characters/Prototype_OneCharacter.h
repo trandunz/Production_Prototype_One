@@ -17,6 +17,13 @@ class APrototype_OneCharacter : public ACharacter
 	GENERATED_BODY()
 	
 private:
+	enum class FadeState
+	{
+		FadeIn,
+		FadeOut,
+		StopFade,
+	};
+	FadeState fadeState = FadeState::StopFade;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
