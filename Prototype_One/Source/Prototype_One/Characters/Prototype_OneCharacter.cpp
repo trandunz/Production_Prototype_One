@@ -350,8 +350,7 @@ void APrototype_OneCharacter::TryDash()
 						DashMovementCurrentTime = DashMovementMaxTime;
 
 						// For Audio
-						OnDash.Broadcast();
-						
+						OnDashEvent();						
 					}
 				}
 			}
@@ -382,7 +381,7 @@ void APrototype_OneCharacter::TryMelee()
 		}
 		
 		// broadcast OnAttack for audio		
-		OnAttack.Broadcast();
+		OnAttackEvent();
 	}
 }
 
@@ -697,6 +696,9 @@ void APrototype_OneCharacter::TryOpenBag()
 		if (auto* bag = Cast<ABag>(bagActor))
 		{
 			bag->IsOpen = !bag->IsOpen;
+
+			// Trigger event for audio
+			OnBagOpenOrClose();
 		}
 	}
 }
@@ -715,6 +717,9 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 		//Controller->SetIgnoreMoveInput(true);
 		//Controller->Possess(nullptr);
 	}
+
+	// Trigger event for audio
+	OnPlayerHitEvent();
 }
 
 void APrototype_OneCharacter::RecoverHealth(int _amount)
@@ -840,6 +845,9 @@ void APrototype_OneCharacter::Heal()
 	{
 		int recover = healthPotion->amountRestored;
 		RecoverHealth(recover);
+
+		// Trigger event for audio
+		OnDrinkPotionEvent();
 	}
 }
 

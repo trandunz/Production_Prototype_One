@@ -204,6 +204,18 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDashDelegate);
 	UPROPERTY(BlueprintAssignable)
 	FDashDelegate OnDash;
+
+	// Blueprint implementable events for audio triggering
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlayerHitEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAttackEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDashEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnBagOpenOrClose();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDrinkPotionEvent();
 	
 	// Prefabs
 protected:
