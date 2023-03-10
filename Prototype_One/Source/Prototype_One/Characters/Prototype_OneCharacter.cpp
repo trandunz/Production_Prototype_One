@@ -247,7 +247,7 @@ void APrototype_OneCharacter::Move(const FInputActionValue& Value)
 	{
 		if (auto* bag = Cast<ABag>(bagActor))
 		{
-			if (bag->IsBiengPulled == true && bag->GetWeight() >= bag->WeightThreshold)
+			if (bag->IsBiengPulled == true && bag->GetWeight() >= bag->PlayerWeightThreshold)
 			{
 				GetCharacterMovement()->MaxWalkSpeed = DesiredSpeed * FMath::Lerp(1.0f,0.0f,(float)bag->GetWeight() / (float)bag->StoppingThreshold);
 			}
