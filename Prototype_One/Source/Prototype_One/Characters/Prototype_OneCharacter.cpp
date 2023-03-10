@@ -802,8 +802,11 @@ void APrototype_OneCharacter::PlayerRespawn()
 		RespawnTimer -= Dt;
 		PauseMovementTimer -= Dt;
 
-		PlayerHud->BlackFade->SetVisibility(ESlateVisibility::Visible);
-		PlayerHud->FadeIn();
+		if (fadeState != FadeState::FadeIn)
+		{
+			fadeState = FadeState::FadeIn;
+			PlayerHud->FadeIn();
+		}
 
 		if (RespawnTimer <= 0)
 		{
@@ -827,7 +830,11 @@ void APrototype_OneCharacter::PlayerRespawn()
 		{
 			IsRespawning = false;
 
-			PlayerHud->BlackFade->SetVisibility(ESlateVisibility::Hidden);
+			if (fadeState != FadeState::FadeOut)
+			{
+				fadeState = FadeState::FadeOut;
+				PlayerHud->FadeOut();
+			}
 			
 			RespawnTimer = TimeBeforeRespawn;
 			PauseMovementTimer = TimeRespawnPauseMovement;

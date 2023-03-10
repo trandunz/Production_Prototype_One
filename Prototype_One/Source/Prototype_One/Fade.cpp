@@ -12,24 +12,39 @@ Fade::Fade(UImage* _imageToFade, float _fadeTime, float _fadeStartTime)
 
 void Fade::Tick(float deltaTime)
 {
-	if (fadeTimer != fadeTime)
-	{
-		fadeTimer += deltaTime;
-		if (fadeTimer > fadeTime)
-		{
-			fadeTimer = fadeTime;
-		}
-	}
-	
 	switch (fadeState)
 	{
 	case FadeState::FadeIn:
-		fadeValue = fadeTime / fadeTimer;
+		if (fadeTimer != fadeTime)
+		{
+			fadeTimer += deltaTime;
+			if (fadeTimer > fadeTime)
+			{
+				fadeTimer = fadeTime;
+			}
+		}
+		fadeValue = fadeTimer / fadeTime;
 		imageToFade->SetOpacity(fadeValue);
+		if (fadeValue == 1)
+		{
+			fadeState = FadeState::Halt;
+		}
 		break;
 	case FadeState::FadeOut:
-		fadeValue = fadeTime / fadeTimer;
+		if (fadeTimer != fadeTime)
+		{
+			fadeTimer += deltaTime;
+			if (fadeTimer > fadeTime)
+			{
+				fadeTimer = fadeTime;
+			}
+		}
+		fadeValue = fadeTimer / fadeTime;
 		imageToFade->SetOpacity(1 - fadeValue);
+		if (fadeValue == 1)
+		{
+			fadeState = FadeState::Halt;
+		}
 		break;
 	case FadeState::Halt:
 		break;
@@ -38,13 +53,13 @@ void Fade::Tick(float deltaTime)
 
 void Fade::FadeIn()
 {
-    fadeTimer = fadeValue * fadeTime;
+	fadeTimer = 0;
 	fadeState = FadeState::FadeIn;
 }
 
 void Fade::FadeOut()
 {
-	fadeTimer = 1 - (fadeValue * fadeTime);
+	fadeTimer = 0;
 	fadeState = FadeState::FadeOut;
 }
 

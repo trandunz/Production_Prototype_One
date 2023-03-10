@@ -1,5 +1,7 @@
 #include "PlayerHUD.h"
 
+#include <string>
+
 #include "DebugMenu.h"
 #include "GameplayTask.h"
 #include "InventoryWidget.h"
@@ -18,7 +20,7 @@ void UPlayerHUD::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
-	fade = new Fade(BlackFade, 2.0f, 0.0f);
+	fade = new Fade(BlackFade, 0.5f, 0.0f);
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -27,7 +29,7 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	if (fade)
 	{
-		fade->Tick(InDeltaTime);
+		fade->Tick(GetWorld()->GetDeltaSeconds());
 	}
 
 	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))
