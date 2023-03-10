@@ -322,7 +322,7 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 
 int ABag::GetWeight()
 {
-	return Player->PlayerInventory->GetWeight() - Player->EntityComponent->Properties.CarryWeightCurrentLevel;
+	return Player->PlayerInventory->GetWeight();
 }
 
 void ABag::FlapWings()
