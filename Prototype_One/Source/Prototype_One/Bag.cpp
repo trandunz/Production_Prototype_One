@@ -180,7 +180,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		{
 			Mesh->SetStaticMesh(OpenMesh);
 			
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			
 			if (SpawnTimer > 0)
 			{
@@ -231,7 +231,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 		}
 		else if (ClosedMesh)
 		{
-			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) + 1.0f, 1.0f, 2.0f));
+			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
