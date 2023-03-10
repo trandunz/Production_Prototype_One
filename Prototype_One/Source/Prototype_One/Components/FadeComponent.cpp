@@ -1,5 +1,6 @@
 #include "FadeComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Prototype_One/Tree.h"
 
 UFadeComponent::UFadeComponent()
 {
@@ -9,21 +10,6 @@ UFadeComponent::UFadeComponent()
 void UFadeComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TArray<UActorComponent*> meshes{};
-	meshes = GetOwner()->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-	for(auto& mesh : meshes)
-	{
-		if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
-		{
-			ParentMesh = staticMesh;
-			BaseMaterial = Cast<UMaterial>(ParentMesh->GetMaterial(0));
-			break;
-		}
-	}
-
-	
-	FadeMaterialI = UMaterialInstanceDynamic::Create(FadeMaterial, ParentMesh);
 }
 
 void UFadeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -41,31 +27,32 @@ void UFadeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		CurrentFade = FMath::Clamp(CurrentFade, 0.2f, 1);
 	}
 
-	FadeMaterialI->SetScalarParameterValue("Fade", FadeCurve->GetFloatValue(CurrentFade));
-	
-	if (CurrentFade == 1 && !Hidden)
+	if (auto* tree = Cast<ATree>(GetOwner()))
 	{
-		ParentMesh->SetMaterial(0, BaseMaterial);
+		for(auto* material : tree->Trunk->GetMaterials())
+		{
+			if (UMaterialInstanceDynamic* dynamicMaterial = UMaterialInstanceDynamic::Create(material, tree->Trunk))
+			{
+				FLinearColor color;
+				dynamicMaterial->GetVectorParameterValue(FName("Colour"), color);
+				color.A = FadeCurve->GetFloatValue(CurrentFade);
+				dynamicMaterial->SetVectorParameterValue("Colour", color);
+			}
+		}
+		for(auto* material : tree->Leaves->GetMaterials())
+		{
+			if (UMaterialInstanceDynamic* dynamicMaterial = UMaterialInstanceDynamic::Create(material, tree->Leaves))
+			{
+				FLinearColor color;
+				dynamicMaterial->GetVectorParameterValue(FName("Colour"), color);
+				color.A = FadeCurve->GetFloatValue(CurrentFade);
+				dynamicMaterial->SetVectorParameterValue("Colour", color);
+			}
+		}
 	}
 }
 
 void UFadeComponent::ToggleHideMesh(bool _hide)
 {
-	TArray<UActorComponent*> meshes{};
-	if (_hide != Hidden)
-	{
-		Hidden = _hide;
-		if (Hidden)
-		{
-			meshes = GetOwner()->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-			for(auto& mesh : meshes)
-			{
-				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
-				{
-					staticMesh->SetMaterial(0, FadeMaterialI);
-				}
-			}
-		}
-	}
 }
 

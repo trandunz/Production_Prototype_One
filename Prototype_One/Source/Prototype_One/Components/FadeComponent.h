@@ -19,15 +19,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void ToggleHideMesh(bool);
-	
-	UPROPERTY(EditAnywhere)
-	class UMaterial* FadeMaterial;
-
-	UPROPERTY(EditAnywhere)
-	class UMaterialInstanceDynamic* FadeMaterialI;
-
-	UPROPERTY(EditAnywhere)
-	class UMaterial* BaseMaterial;
 
 	UPROPERTY(EditAnywhere)
 	class UCurveFloat* FadeCurve;
