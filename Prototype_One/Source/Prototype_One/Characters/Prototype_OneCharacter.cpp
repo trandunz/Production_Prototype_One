@@ -747,6 +747,7 @@ void APrototype_OneCharacter::PlayerRespawn()
 		
 			if (!HasRespawnedOnce) // Bag remains in place, player has one chance to get
 			{
+				HasRespawnedOnce = true;
 				PlayerInventory->BagDropped();
 				for (auto* bagActor:actors)
 				{
@@ -761,6 +762,7 @@ void APrototype_OneCharacter::PlayerRespawn()
 			}
 			else // Player loses contents of bag, but get it back
 			{
+				HasRespawnedOnce = false;
 				PlayerInventory->BagLost();
 				for (auto* bagActor:actors)
 				{
