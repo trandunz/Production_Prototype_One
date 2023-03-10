@@ -31,9 +31,24 @@ public:
 	UFUNCTION()
 	void OnSeePawn(class APawn* _pawn);
 
+	UFUNCTION()
+	void OnHit(	UPrimitiveComponent* OverlappedComponent, 
+			AActor* OtherActor, 
+			UPrimitiveComponent* OtherComp, 
+			int32 OtherBodyIndex, 
+			bool bFromSweep, 
+			const FHitResult &SweepResult);
+
 	void Attack();
 
 	void Ragdoll();
+
+	void FlashRedAndThenWhite();
+
+	
+
+	UPROPERTY(VisibleAnywhere)
+	float FlashTimer{};
 	
 	UPROPERTY(EditAnywhere)
 	class UPawnSensingComponent* PawnSensingComponent;
