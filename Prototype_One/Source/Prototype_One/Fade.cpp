@@ -44,6 +44,7 @@ void Fade::Tick(float deltaTime)
 		if (fadeValue == 1)
 		{
 			fadeState = FadeState::Halt;
+			imageToFade->SetVisibility(ESlateVisibility::Hidden);
 		}
 		break;
 	case FadeState::Halt:
@@ -53,12 +54,14 @@ void Fade::Tick(float deltaTime)
 
 void Fade::FadeIn()
 {
+	imageToFade->SetVisibility(ESlateVisibility::Visible);
 	fadeTimer = 0;
 	fadeState = FadeState::FadeIn;
 }
 
 void Fade::FadeOut()
 {
+	imageToFade->SetVisibility(ESlateVisibility::Visible);
 	fadeTimer = 0;
 	fadeState = FadeState::FadeOut;
 }
