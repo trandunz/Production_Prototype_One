@@ -324,33 +324,37 @@ void APrototype_OneCharacter::EndSprint()
 
 void APrototype_OneCharacter::TryDash()
 {
-	TArray<AActor*> actors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
-	for(auto bagActor : actors)
+	if (EntityComponent->Properties.CurrentHealth > 0)
 	{
-		if (auto* bag = Cast<ABag>(bagActor))
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+		for(auto bagActor : actors)
 		{
-			if (bag->GetMovementState() == MOVEMENTSTATE::FLYING ||
-				bag->IsBiengPulled == false)
+			if (auto* bag = Cast<ABag>(bagActor))
 			{
-				if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
+				if (bag->GetMovementState() == MOVEMENTSTATE::FLYING ||
+					bag->IsBiengPulled == false)
 				{
-					if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
+					if (GetCharacterMovement()->GetLastUpdateVelocity().Length() != 0)
 					{
-						IsDashing = true;
-						HasStartedDash = true;
-						EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
-						if (PlayerHud)
+						if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
 						{
-							PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
+							IsDashing = true;
+							HasStartedDash = true;
+							EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
+							if (PlayerHud)
+							{
+								PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
+							}
+							if (DashAnimation)
+								GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
+
+							DashMovementCurrentTime = DashMovementMaxTime;
+
+							// For Audio
+							OnDash.Broadcast();
+						
 						}
-						if (DashAnimation)
-							GetMesh()->GetAnimInstance()->Montage_Play(DashAnimation, 1.5f);
-
-						DashMovementCurrentTime = DashMovementMaxTime;
-
-						// For Audio
-						OnDashEvent();						
 					}
 				}
 			}
@@ -360,7 +364,7 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack)
+	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack && EntityComponent->Properties.CurrentHealth > 0)
 	{
 		IsAttacking = true;
 		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
@@ -381,7 +385,7 @@ void APrototype_OneCharacter::TryMelee()
 		}
 		
 		// broadcast OnAttack for audio		
-		OnAttackEvent();
+		OnAttack.Broadcast();
 	}
 }
 
@@ -696,30 +700,27 @@ void APrototype_OneCharacter::TryOpenBag()
 		if (auto* bag = Cast<ABag>(bagActor))
 		{
 			bag->IsOpen = !bag->IsOpen;
-
-			// Trigger event for audio
-			OnBagOpenOrClose();
 		}
 	}
 }
 
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
-	EntityComponent->TakeDamage(_amount);
-	if (PlayerHud)
+	if (IsDashing != true)
 	{
-		PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
-	}
-	if (EntityComponent->Properties.CurrentHealth <= 0)
-	{
-		//Ragdoll();
+		EntityComponent->TakeDamage(_amount);
+		if (PlayerHud)
+		{
+			PlayerHud->UpdateHealth(EntityComponent->Properties.CurrentHealth, EntityComponent->Properties.MaxHealth);
+		}
+		if (EntityComponent->Properties.CurrentHealth <= 0)
+		{
+			//Ragdoll();
 		
-		//Controller->SetIgnoreMoveInput(true);
-		//Controller->Possess(nullptr);
+			//Controller->SetIgnoreMoveInput(true);
+			//Controller->Possess(nullptr);
+		}
 	}
-
-	// Trigger event for audio
-	OnPlayerHitEvent();
 }
 
 void APrototype_OneCharacter::RecoverHealth(int _amount)
@@ -845,9 +846,6 @@ void APrototype_OneCharacter::Heal()
 	{
 		int recover = healthPotion->amountRestored;
 		RecoverHealth(recover);
-
-		// Trigger event for audio
-		OnDrinkPotionEvent();
 	}
 }
 
