@@ -29,6 +29,7 @@
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 #include "Prototype_One/HealthPotion.h"
+#include "Prototype_One/Tree.h"
 
 APrototype_OneCharacter::APrototype_OneCharacter()
 {
@@ -601,18 +602,12 @@ void APrototype_OneCharacter::UpdateFadeActors()
 	FCollisionShape capsule = FCollisionShape::MakeCapsule(GetCapsuleComponent()->GetScaledCapsuleRadius() - 1.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 1.0f);
 	if (GetWorld()->SweepMultiByChannel(OutHits, FollowCamera->GetComponentLocation(), GetActorLocation(), FQuat::Identity, ECC_WorldStatic, capsule))
 	{
-		
 		for(auto& object : OutHits)
 		{
-			TArray<UActorComponent*> meshes{};
-			meshes = object.GetActor()->GetComponentsByClass(UStaticMeshComponent::StaticClass());
-			for(auto& mesh : meshes)
+			if (auto* tree = Cast<ATree>(object.GetActor()))
 			{
-				if (auto* staticMesh = Cast<UStaticMeshComponent>(mesh))
-				{
-					//UE_LOG(LogTemp, Warning, TEXT("Mesh in front of player!!" ));
-					CameraHitMeshes.AddUnique(staticMesh);
-				}
+				CameraHitMeshes.AddUnique(tree->Trunk);
+				CameraHitMeshes.AddUnique(tree->Leaves);
 			}
 		}
 	}
