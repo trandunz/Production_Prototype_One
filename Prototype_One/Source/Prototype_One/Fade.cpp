@@ -53,21 +53,13 @@ void Fade::Tick(float deltaTime)
 
 void Fade::FadeIn()
 {
-	if (fadeTimer == fadeTime)
-	{
-		fadeTimer = 0;
-	}
-	fadeTimer = fadeValue * fadeTime;
+	fadeTimer = 0;
 	fadeState = FadeState::FadeIn;
 }
 
 void Fade::FadeOut()
 {
-	if (fadeTimer == fadeTime)
-	{
-		fadeTimer = 0;
-	}
-	fadeTimer = 1 - fadeValue * fadeTime;
+	fadeTimer = 0;
 	fadeState = FadeState::FadeOut;
 }
 
