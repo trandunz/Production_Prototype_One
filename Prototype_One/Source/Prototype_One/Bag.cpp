@@ -182,14 +182,14 @@ void ABag::SpawnEnemies(float DeltaTime)
 			
 			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			
-			if (SpawnTimer > 0)
+			if (EnemySpawnTimer > 0)
 			{
-				SpawnTimer -= DeltaTime;
+				EnemySpawnTimer -= DeltaTime;
 			}
-			else if (SpawnTimer <= 0 && weight > 0)
+			else if (EnemySpawnTimer <= 0 && weight > 0)
 			{
 				UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
-				SpawnTimer = rand() % 3 + 1;
+				EnemySpawnTimer = EnemySpawnTimerLength;
 				FNavLocation location{};
 				auto origin = GetActorLocation();
 				auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
@@ -241,7 +241,7 @@ void ABag::SpawnEnemies(float DeltaTime)
 
 void ABag::SpawnSmallItems(float DeltaTime)
 {
-	if (CarrotPrefab)
+	if (CarrotPrefab && PebblePrefab && StickPrefab)
 	{
 		FNavLocation location{};
 		auto origin = GetActorLocation();
@@ -251,10 +251,37 @@ void ABag::SpawnSmallItems(float DeltaTime)
 		{
 			if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
 			{
-				auto* carrot = GetWorld()->SpawnActor(CarrotPrefab);
-				carrot->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+				// Pick a random object between carrot pebble and stick
+				int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
+				switch(RandomNumber)
+				{
+				case 0:
+					{
+						auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						break;
+					}
+				case 1:
+					{
+						auto* SmallSpawnableItem = GetWorld()->SpawnActor(PebblePrefab);
+						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						break;
+					}
+				case 2:
+					{
+						auto* SmallSpawnableItem = GetWorld()->SpawnActor(StickPrefab);
+						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						break;
+					}
+				default:
+					{
+						auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+					}
+				}
+				// Debug random number output
+				//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(RandomNumber));
 			}
-
 			SmallItemSpawnTimer = SmallItemSpawnInterval;
 		}
 		else
@@ -330,11 +357,11 @@ void ABag::FlapWings()
 	WingLeftMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WingRightMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	FRotator currentRotation = WingLeftMesh->GetRelativeRotation();
+	
+	if ((float)GetWeight() < (float)PlayerWeightThreshold)
+		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * (20.0f + FMath::Clamp(FMath::Lerp(0.0f, 1.0f, (float)GetWeight() / (float)PlayerWeightThreshold) * 50.0f, 0.0f, 50.0f))) * 30.0f;
 
-	if ((float)GetWeight() < (float)WeightThreshold)
-		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * (20.0f + FMath::Clamp(FMath::Lerp(0.0f, 1.0f, (float)GetWeight() / (float)WeightThreshold) * 50.0f, 0.0f, 50.0f))) * 30.0f;
-
-	if ((float)GetWeight() >= (float)WeightThreshold)
+	if ((float)GetWeight() >= (float)PlayerWeightThreshold)
 		currentRotation.Yaw = FMath::Sin(GetGameTimeSinceCreation() * 2.0f) * 30.0f;
 		
 	WingLeftMesh->SetRelativeRotation(currentRotation);
@@ -348,11 +375,11 @@ MOVEMENTSTATE ABag::GetMovementState()
 	{
 		return MOVEMENTSTATE::FROZEN_GROUND;
 	}
-	else if (weight >= WeightThreshold && IsBiengPulled)
+	else if (weight >= PlayerWeightThreshold && IsBiengPulled)
 	{
 		return MOVEMENTSTATE::DRAGGING;
 	}
-	else if (weight >= WeightThreshold && !IsBiengPulled)
+	else if (weight >= PlayerWeightThreshold && !IsBiengPulled)
 	{
 		return MOVEMENTSTATE::FROZEN_GROUND;
 	}

@@ -45,25 +45,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PickupRange = 40.0f;
-	//UPROPERTY(VisibleAnywhere)
-	//int CarrotCount{0};
-	//UPROPERTY(VisibleAnywhere)
-	//int MeatCount{0};
-	//UPROPERTY(VisibleAnywhere)
-	//int AntlerCount{0};
-	//UPROPERTY(VisibleAnywhere)
-	//int MaskCount{0};
-	//UPROPERTY(VisibleAnywhere)
-	//int CrownCount{0};
 	
 	UPROPERTY(EditAnywhere)
 	int SuctionRadius{200};
 	
 	UPROPERTY(EditAnywhere)
-	int WeightThreshold{5};
+	int PlayerWeightThreshold{80};
 
 	UPROPERTY(EditAnywhere)
-	int StoppingThreshold{10};
+	int StoppingThreshold{100};
 
 	UPROPERTY(EditAnywhere)
 	bool IsOpen{};
@@ -71,7 +61,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	float SmallItemSpawnTimer{};
 	UPROPERTY(EditAnywhere)
-	float SmallItemSpawnInterval{10};
+	float SmallItemSpawnInterval{5};
 
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* OpenMesh;
@@ -104,6 +94,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category= ItemPrefabs)
 	TSubclassOf<AActor> CarrotPrefab;
+
+	UPROPERTY(EditAnywhere, Category= ItemPrefabs)
+	TSubclassOf<AActor> PebblePrefab;
+
+	UPROPERTY(EditAnywhere, Category= ItemPrefabs)
+	TSubclassOf<AActor> StickPrefab;
 	
 	UPROPERTY(EditAnywhere, Category=Rope)
 	class ARope* Rope;
@@ -116,7 +112,8 @@ public:
 	UPROPERTY(EditAnywhere, Category=Rope)
 	class UCableComponent* CableComponent;
 protected:
-	float SpawnTimer{};
+	float EnemySpawnTimer{};
+	float EnemySpawnTimerLength = 10.0f;
 
 	APrototype_OneCharacter* Player;
 };
