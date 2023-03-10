@@ -209,12 +209,18 @@ void UPlayerInventory::BagReturned()
 	int32 SlotIdx = 0;
 	while(DroppedItems.IsValidIndex(SlotIdx))
 	{
-		Pickup(DroppedItems[SlotIdx].Info);
-		
-		// Broadcast to Inventory widget
-		OnSlotModified.Broadcast(SlotIdx, Items[SlotIdx].Amount);
+		for (int i = 0; i < DroppedItems[SlotIdx].Amount; i++)
+		{
+			Pickup(DroppedItems[SlotIdx].Info);
+		}
 
 		SlotIdx++;
+	}
+
+	for (int i = 0; i < Items.Num(); i++)
+	{
+		// Broadcast to Inventory widget
+		OnSlotModified.Broadcast(i, Items[i].Amount);
 	}
 	
 	DroppedItems.Empty();

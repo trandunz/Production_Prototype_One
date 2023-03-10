@@ -81,7 +81,12 @@ public:
 	float InteractionRange{200.0f};
 	UPROPERTY(EditAnywhere)
 	bool IsWithinInteractionRange{false};
-	
+
+	UPROPERTY(EditAnywhere)
+	float BagSpeed = 2.0f;
+
+	UPROPERTY(EditAnywhere)
+	float SpawnRadius = 1500.0f;
 
 	UPROPERTY(EditAnywhere, Category=EnemySpawning)
 	TSubclassOf<AActor> RabbitPrefab;

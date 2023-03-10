@@ -249,7 +249,7 @@ void ABag::SpawnSmallItems(float DeltaTime)
 
 		if (SmallItemSpawnTimer <= 0)
 		{
-			if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+			if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SpawnRadius, location))
 			{
 				// Pick a random object between carrot pebble and stick
 				int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
@@ -302,8 +302,8 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 				Mesh->SetCanEverAffectNavigation(false);
 				Mesh->SetSimulatePhysics(false);
 				Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 25.0f * GetWeight(), 25.0f, 99999.0f);
-				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z - Player->GetActorForwardVector() * 100.0f, DeltaTime));
+				float z = FMath::Clamp(FMath::Sin(GetWorld()->GetTimeSeconds()) * 100.0f  + 5.0f, 25.0f, 99999.0f);
+				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), Player->GetActorLocation() + Player->GetActorUpVector() * z - Player->GetActorForwardVector() * 100.0f, DeltaTime * 2.0f));
 				break;
 			}
 		case MOVEMENTSTATE::DRAGGING:
@@ -318,8 +318,8 @@ void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)
 				Mesh->SetAngularDamping(100.0f);
 				Mesh->GetBodyInstance()->SetMassScale(FMath::Clamp((GetWeight()), 0, 99999));
 				FVector targetLocation = GetActorLocation();
-				targetLocation.X = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).X;
-				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f * GetWeight()).Y;
+				targetLocation.X = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f).X;
+				targetLocation.Y = (Player->GetActorLocation()- Player->GetActorForwardVector() * 300.0f + 20.0f).Y;
 				SetActorLocation(UKismetMathLibrary::VLerp(GetActorLocation(), targetLocation, DeltaTime / 2));
 				break;
 			}
