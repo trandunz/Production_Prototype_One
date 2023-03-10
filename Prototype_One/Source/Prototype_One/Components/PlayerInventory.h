@@ -45,10 +45,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Pickup(FItemDetails PickedUpItemInfo);
 
-	/* Sells the slot passed in */
+	/* Sells one item from the slot index passed in */
 	UFUNCTION(BlueprintCallable)
 	void Sell(const int32 SlotIndex);
 
+	/* Sell the whole slot of the index passed in */
+	UFUNCTION(BlueprintCallable)
+	void SellSlot(const int32 SlotIndex);
+	
+	/* Sell entire inventory */
 	UFUNCTION(BlueprintCallable)
 	void SellAll();
 
