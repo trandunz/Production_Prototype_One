@@ -44,6 +44,37 @@ void UShopWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	
 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
+		if (player->PlayerInventory->GetIsShopping())
+		{
+			int32 UpgradeCost = player->EntityComponent->Properties.UpgradeCost;
+			int32 _HealthLevel = player->EntityComponent->Properties.HealthCurrentLevel;
+			int32 _StaminaLevel = player->EntityComponent->Properties.StaminaCurrentLevel;
+			int32 _CarryWeightLevel = player->EntityComponent->Properties.CarryWeightCurrentLevel;
+			int32 _AttackLevel = player->EntityComponent->Properties.AttackDamageLevel;
+			
+			FText HealthCostText = FText::AsCultureInvariant(FString::FromInt(_HealthLevel * UpgradeCost));
+			FText StaminaCostText = FText::AsCultureInvariant(FString::FromInt( _StaminaLevel * UpgradeCost));
+			FText CarryCostText = FText::AsCultureInvariant(FString::FromInt( _CarryWeightLevel * UpgradeCost));
+			FText AttackCostText = FText::AsCultureInvariant(FString::FromInt( _AttackLevel * UpgradeCost));
+
+			FText HealthLevelText = FText::AsCultureInvariant(FString::FromInt(_HealthLevel));
+			FText StaminaLevelText = FText::AsCultureInvariant(FString::FromInt( _StaminaLevel));
+			FText CarryLevelText = FText::AsCultureInvariant(FString::FromInt( _CarryWeightLevel));
+			FText AttackLevelText = FText::AsCultureInvariant(FString::FromInt( _AttackLevel));
+			
+			// Upgrade the text showing the cost of upgrades
+			HealthCost->SetText(HealthCostText);
+			StaminaCost->SetText(StaminaCostText);			
+			CarryWeightCost->SetText(CarryCostText);
+			AttackCost->SetText(AttackCostText);
+
+			// Upgrade the text showing the stat levels
+			HealthLevel->SetText(HealthLevelText);
+			StaminaLevel->SetText(StaminaLevelText);
+			CarryWeightLevel->SetText(CarryLevelText);
+			AttackLevel->SetText(AttackLevelText);
+			
+		}
 		if (player->ValuablesCount > 0)
 		{
 			Sell->SetIsEnabled(true);
@@ -168,24 +199,11 @@ void UShopWidget::OnUpgradeAttackDamage()
 		}
 	}
 }
-//
-// void UShopWidget::OnBuyStaminaPotion()
-// {
-// 	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-// 	{
-// 		// buy Stamina potion
-// 	}
-// }
+
 
 void UShopWidget::OnBuyHealthPotion()
 {
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		if (player->PlayerInventory->GetCoins() >= PotionCost)
-		{
-			player->PlayerInventory->SubtractCoins(50);
-		}
-	}
+
 }
 
 void UShopWidget::OnBuyGateTicket()
