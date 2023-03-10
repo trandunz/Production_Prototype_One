@@ -13,6 +13,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Math/UnitConversion.h"
 #include "Prototype_One/Item.h"
 
 
@@ -63,7 +64,8 @@ void APrototypeEnemy::BeginPlay()
 			item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		}
 	}
-	
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APrototypeEnemy::OnHit);
 }
 
 void APrototypeEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -100,6 +102,32 @@ void APrototypeEnemy::Tick(float DeltaTime)
 					widget->SetVisibility(ESlateVisibility::Hidden);
 				}
 			}
+		}
+	}
+
+	if (auto* material = GetMesh()->GetMaterial(0))
+	{
+		if (UMaterialInstanceDynamic* dynamicMaterial = UMaterialInstanceDynamic::Create(material, GetMesh()))
+		{
+			if (FlashTimer >= 0.5f)
+			{
+				FlashTimer -= DeltaTime;
+				dynamicMaterial->SetVectorParameterValue(FName("Color"), FLinearColor::Green);
+			}
+			else if (FlashTimer >= 0.1f)
+			{
+				FlashTimer -= DeltaTime;
+				dynamicMaterial->SetVectorParameterValue(FName("Color"), FLinearColor::Yellow);
+			}
+			else if (FlashTimer > 0.0f)
+			{
+				FlashTimer -= DeltaTime;
+				dynamicMaterial->SetVectorParameterValue(FName("Color"), FLinearColor::Red);
+			}
+			else
+			{
+				dynamicMaterial->SetVectorParameterValue(FName("Color"), FLinearColor::White);
+			}	
 		}
 	}
 }
@@ -143,21 +171,41 @@ void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 	
 }
 
+void APrototypeEnemy::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (auto* sword = Cast<ASword>(OtherActor))
+	{
+		
+	}
+	else if (auto* player = Cast<APrototype_OneCharacter>(OtherActor))
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		player->TakeDamage(25.0f);
+	}
+}
+
 void APrototypeEnemy::Attack()
 {
 	if (AttackMontage)
 	{
 		if (GetMesh()->GetAnimInstance())
 			GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
-
-		if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-		{
-			player->TakeDamage(34);
-		}
-
-		// Trigger for audio in blueprints
-		OnEnemyAttackEvent();
 	}
+
+	const FVector ForwardVector = GetActorForwardVector();
+
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterComp)
+	{
+		CharacterComp->Velocity = ForwardVector * 10000.0f;
+			
+	}
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	// Trigger for audio in blueprints
+	OnEnemyAttackEvent();
 }
 
 void APrototypeEnemy::Ragdoll()
@@ -222,5 +270,10 @@ void APrototypeEnemy::Ragdoll()
 	}
 
 	SetLifeSpan(10.0f);
+}
+
+void APrototypeEnemy::FlashRedAndThenWhite()
+{
+	FlashTimer = 1.0f;
 }
 
