@@ -135,6 +135,9 @@ void UDialogueWidget::ShowDialogueBox(bool _show)
 			playerController->SetInputMode(FInputModeUIOnly{});
 			playerController->SetIgnoreMoveInput(true);
 		}
+
+		// Trigger audio in blueprint
+		OnMoleAudioEvent();
 	}
 	else
 	{
@@ -191,6 +194,8 @@ void UDialogueWidget::OnNextDialogueLine()
 		}
 		DialogueText->SetText(FText::FromString(DialogueLines[CurrentDialogueIndex]));
 	}
+	// Trigger audio in blueprint
+	OnMoleAudioEvent();	
 }
 
 void UDialogueWidget::OnBye()
@@ -206,6 +211,8 @@ void UDialogueWidget::OnBye()
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnBye()");
 	}
+	// Trigger audio in blueprint
+	OnMoleAudioEvent();
 }
 
 
@@ -233,4 +240,7 @@ void UDialogueWidget::OnShopMenu()
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnShopMenu()");
 	}
+
+	// Trigger audio in blueprint
+	OnMoleAudioEvent();
 }

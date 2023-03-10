@@ -131,7 +131,10 @@ void APrototypeEnemy::TakeDamage(int _amount)
 				UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
 				Ragdoll();
 			}
+			// Trigger for audio in blueprints
+			OnEnemyHitEvent();
 		}
+
 	}
 }
 
@@ -151,6 +154,9 @@ void APrototypeEnemy::Attack()
 		{
 			player->TakeDamage(34);
 		}
+
+		// Trigger for audio in blueprints
+		OnEnemyAttackEvent();
 	}
 }
 

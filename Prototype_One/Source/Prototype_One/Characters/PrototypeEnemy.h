@@ -68,4 +68,10 @@ public:
 	TSubclassOf<AActor> ItemDropPrefab;
 	
 	AActor* ItemDrop;
+
+	// Events for audio trigger in blueprints
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnEnemyHitEvent();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnEnemyAttackEvent();
 };

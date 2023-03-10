@@ -78,4 +78,8 @@ public:
 	class UShopWidget* ShopWidget;
 
 	int CurrentDialogueIndex{};
+
+	// Event for triggering audio
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMoleAudioEvent();
 };
