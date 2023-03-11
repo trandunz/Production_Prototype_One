@@ -35,6 +35,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* HealthBar;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UProgressBar* EncumberanceMeter;
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UProgressBar* ManaBar;
@@ -54,6 +57,15 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UImage* BlackFade;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UImage* BagIcon;
+
+	UPROPERTY(EditAnywhere)
+	class UTexture2D* BagOpenImage;
+
+	UPROPERTY(EditAnywhere)
+	class UTexture2D* BagClosedImage;
+	
 	UPROPERTY(EditAnywhere)
 	class UTexture2D* SeenImage;
 	UPROPERTY(EditAnywhere)
