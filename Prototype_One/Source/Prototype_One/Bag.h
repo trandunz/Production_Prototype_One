@@ -37,6 +37,7 @@ public:
 	void SpawnEnemies(float DeltaTime);
 	void SpawnSmallItems(float DeltaTime);
 	void HandleBehaviorBasedOnWeight(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
 	int GetWeight();
 	void FlapWings();
 	MOVEMENTSTATE GetMovementState();
@@ -50,13 +51,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	int SuctionRadius{200};
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,	BlueprintReadOnly)
 	int PlayerWeightThreshold{80};
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,	BlueprintReadOnly)
 	int StoppingThreshold{100};
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,	BlueprintReadOnly)
 	bool IsOpen{};
 
 	UPROPERTY(VisibleAnywhere)
