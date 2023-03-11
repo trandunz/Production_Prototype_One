@@ -16,10 +16,7 @@ struct FEntityProperties
 	int MaxHealth{100};
 	UPROPERTY(VisibleAnywhere)
 	int HealthCurrentLevel{1};
-
-	// Carry weight (get from PlayerInventory)
-	//UPROPERTY(VisibleAnywhere)
-	//int CurrentCarryWeight{};
+	
 	UPROPERTY(EditAnywhere)
 	int MaxCarryWeight{100};
 	UPROPERTY(VisibleAnywhere)
@@ -31,7 +28,7 @@ struct FEntityProperties
 	UPROPERTY(VisibleAnywhere)
 	int CurrentStamina{};
 	UPROPERTY(EditAnywhere)
-	int MaxStamina{100};
+	int MaxStamina{50};
 	UPROPERTY(VisibleAnywhere)
 	int StaminaCurrentLevel{1};
 	UPROPERTY(EditAnywhere)
@@ -39,9 +36,9 @@ struct FEntityProperties
 	UPROPERTY(EditAnywhere)
 	int StaminaDrain{1};
 	UPROPERTY(EditAnywhere)
-	float MaxStaminaDrainTime{1};
+	float MaxStaminaDrainTime{0.05f};
 	UPROPERTY(EditAnywhere)
-	float MaxStaminaRegenTime{1};
+	float MaxStaminaRegenTime{0.01f};
 	UPROPERTY(EditAnywhere)
 	float MinimumStaminaToSprint{10.0f};
 	UPROPERTY(EditAnywhere)
@@ -52,10 +49,6 @@ struct FEntityProperties
 	float CurrentStaminaTime{};
 	UPROPERTY(VisibleAnywhere)
 	bool IsStaminaDraining{false};
-	
-	// Currency (get from PlayerInventory)
-	//UPROPERTY(EditAnywhere)
-	//int CurrentMoney{};
 
 	// Upgrading
 	UPROPERTY(EditAnywhere)
@@ -65,6 +58,9 @@ struct FEntityProperties
 
 	UPROPERTY(VisibleAnywhere)
 	int AttackDamage{50};
+
+	UPROPERTY(VisibleAnywhere)
+	float StaminaDelayTimer;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

@@ -329,6 +329,7 @@ void APrototype_OneCharacter::EndSprint()
 {
 	DesiredSpeed = JogSpeed;
 	EntityComponent->Properties.IsStaminaDraining = false;
+	EntityComponent->Properties.StaminaDelayTimer = 2.0f;
 }
 
 void APrototype_OneCharacter::TryDash()
@@ -351,6 +352,7 @@ void APrototype_OneCharacter::TryDash()
 							IsDashing = true;
 							HasStartedDash = true;
 							EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
+							EntityComponent->Properties.StaminaDelayTimer = 2.0f;
 							if (PlayerHud)
 							{
 								PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -372,10 +374,11 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack && EntityComponent->Properties.CurrentHealth > 0)
+	if (!IsAttacking && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack && EntityComponent->Properties.CurrentHealth > 0)
 	{
 		IsAttacking = true;
 		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
+		EntityComponent->Properties.StaminaDelayTimer = 2.0f;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -720,8 +723,8 @@ void APrototype_OneCharacter::TryOpenBag()
 
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
-	//if (IsDashing != true && IsAttacking != true)
-	//{
+	if (IsDashing != true && IsAttacking != true)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Damaged by enemy"));
 		EntityComponent->TakeDamage(_amount);
 		if (PlayerHud)
@@ -735,9 +738,9 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 			//Controller->SetIgnoreMoveInput(true);
 			//Controller->Possess(nullptr);
 		}
-	//}
-	// Call event for audio
-	OnPlayerHitEvent();
+		OnPlayerHitEvent();
+	}
+	
 }
 
 void APrototype_OneCharacter::RecoverHealth(int _amount)
