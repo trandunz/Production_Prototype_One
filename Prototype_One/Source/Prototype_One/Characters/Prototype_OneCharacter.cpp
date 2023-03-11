@@ -715,16 +715,19 @@ void APrototype_OneCharacter::LookAtCursor()
 
 void APrototype_OneCharacter::TryOpenBag()
 {
-	TArray<AActor*> actors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
-	for(auto bagActor : actors)
+	if (HasRespawnedOnce == false)
 	{
-		if (auto* bag = Cast<ABag>(bagActor))
+		TArray<AActor*> actors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+		for(auto bagActor : actors)
 		{
-			bag->IsOpen = !bag->IsOpen;
+			if (auto* bag = Cast<ABag>(bagActor))
+			{
+				bag->IsOpen = !bag->IsOpen;
 
-			// Call event for audio
-			OnBagOpenOrClose();
+				// Call event for audio
+				OnBagOpenOrClose();
+			}
 		}
 	}
 }

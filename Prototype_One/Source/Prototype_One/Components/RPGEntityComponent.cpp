@@ -82,7 +82,7 @@ void URPGEntityComponent::UpgradeStamina()
 	Properties.UpgradeAmount += 20.0;
 	Properties.StaminaCurrentLevel++;
 	
-	Properties.StaminaRegen ++; // Increase stamina regen
+	//Properties.StaminaRegen ++; // Increase stamina regen
 }
 
 void URPGEntityComponent::UpgradeCarryWeight()
