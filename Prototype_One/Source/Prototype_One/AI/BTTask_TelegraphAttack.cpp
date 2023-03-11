@@ -8,6 +8,7 @@
 #include "Prototype_One/Controllers/EnemyController.h"
 #include "Prototype_One/Controllers/PrototypePlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UBTTask_TelegraphAttack::UBTTask_TelegraphAttack()
 {
@@ -21,9 +22,11 @@ EBTNodeResult::Type UBTTask_TelegraphAttack::ExecuteTask(UBehaviorTreeComponent&
 	
 	auto* aiController = OwnerComp.GetAIOwner();
 	auto* aiPawn = aiController->GetPawn();
+	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (auto* enemy  = Cast<APrototypeEnemy>(aiPawn))
 	{
 		enemy->FlashRedAndThenWhite();
+		enemy->SetActorRotation(FRotator{enemy->GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(enemy->GetActorLocation(), player->GetActorLocation()).Yaw, enemy->GetActorRotation().Roll});
 	}
 	
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
