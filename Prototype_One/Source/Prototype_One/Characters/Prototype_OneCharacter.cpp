@@ -66,12 +66,16 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	AttackStencilCollider->SetCollisionProfileName("Trigger");
 
 	healthPotion = new HealthPotion();
-	
+
+	ShopCameraLerpPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShopCameraLerpPoint"));
 }
 
 void APrototype_OneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	
+	
 	InitGUI();
 	CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 	if (PlayerHud)
@@ -123,6 +127,33 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	Dt = DeltaSeconds;
 	InteractRaycast();
 
+	if (IsShopping)
+	{
+		if (CameraShopLerpRatio < 1)
+		{
+			CameraShopLerpRatio += DeltaSeconds;
+			if (FollowCamera && ShopCameraLerpPoint)
+			{
+				FollowCamera->SetRelativeLocation(FMath::Lerp(FollowCamera->GetRelativeLocation(), ShopCameraLerpPoint->GetRelativeLocation(), CameraShopLerpRatio));
+				FollowCamera->SetRelativeRotation(FMath::Lerp(FollowCamera->GetRelativeRotation(), ShopCameraLerpPoint->GetRelativeRotation(), CameraShopLerpRatio));
+			}
+				
+		}
+	}
+	else
+	{
+		if (CameraShopLerpRatio > 0)
+		{
+			CameraShopLerpRatio -= DeltaSeconds;
+			if (FollowCamera)
+			{
+				FollowCamera->SetRelativeLocation(FMath::Lerp({},FollowCamera->GetRelativeLocation(), CameraShopLerpRatio));
+				FollowCamera->SetRelativeRotation(FMath::Lerp({},FollowCamera->GetRelativeRotation(), CameraShopLerpRatio));
+			}
+				
+		}
+	}
+	
 	// Timer for dodging
 	if (DashMovementCurrentTime > 0)
 		DashMovementCurrentTime -= DeltaSeconds;

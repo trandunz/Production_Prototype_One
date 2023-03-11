@@ -173,6 +173,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float AttackMovementAmount{2000.0f};
 
+	bool IsShopping{};
+	float CameraShopLerpRatio{};
+
 	// Player Death/Respawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	bool IsRespawning{false};
@@ -255,6 +258,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DashAnimation;
 
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* ShopCameraLerpPoint{};
 private:
 	bool bHasResetStaminaDelay;
 };

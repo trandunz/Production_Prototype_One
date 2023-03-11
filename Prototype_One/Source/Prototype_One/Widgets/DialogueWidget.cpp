@@ -167,6 +167,10 @@ void UDialogueWidget::OnNextDialogueLine()
 		if (DialogueBackground->GetVisibility() == ESlateVisibility::Visible)
 		{
 			ShowDialogueBox(false);
+			if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+			{
+				charatcer->IsShopping = false;
+			}
 		}
 			
 	}
