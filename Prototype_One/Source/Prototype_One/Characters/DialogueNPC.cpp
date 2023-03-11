@@ -19,7 +19,7 @@ void ADialogueNPC::BeginPlay()
 	Super::BeginPlay();
 	GetMesh()->SetRenderCustomDepth(true);
 	
-
+	startPos = ExclamationMark->GetRelativeLocation();
 }
 
 void ADialogueNPC::UpdateInteractionOutline()
@@ -45,7 +45,7 @@ void ADialogueNPC::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UpdateInteractionOutline();
 
-
+	ExclamationMark->SetRelativeLocation(startPos + FVector::UpVector * FMath::Sin(GetGameTimeSinceCreation() * 10.0f) * 20.0f);
 }
 
 void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

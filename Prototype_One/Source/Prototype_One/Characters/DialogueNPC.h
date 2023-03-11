@@ -33,4 +33,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ExclamationMark;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector startPos{};
 };
