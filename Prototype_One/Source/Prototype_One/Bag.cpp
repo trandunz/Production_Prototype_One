@@ -3,6 +3,7 @@
 #include "Item.h"
 #include "NavigationSystem.h"
 #include "Characters/Prototype_OneCharacter.h"
+#include "Characters/DialogueNPC.h"
 #include "Components/RPGEntityComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Rope.h"
@@ -56,6 +57,9 @@ void ABag::BeginPlay()
 			//Constraint->ConstraintActor1 = Player;
 		}
 	}
+
+	SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)GetWeight() / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
+	Mesh->SetStaticMesh(ClosedMesh);
 	
 }
 
@@ -183,48 +187,59 @@ void ABag::SpawnEnemies(float DeltaTime)
 			
 			SetActorScale3D(FVector{1,1,1} * FMath::Clamp((((float)weight / (float)StoppingThreshold)) * 2 + 1.0f, 1.0f, 5.0f));
 			
-			if (EnemySpawnTimer > 0)
+			TArray<AActor*> actors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADialogueNPC::StaticClass(), actors);
+			for(auto npcActor : actors)
 			{
-				EnemySpawnTimer -= DeltaTime;
-			}
-			else if (EnemySpawnTimer <= 0 && weight > 0)
-			{
-				UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
-				EnemySpawnTimer = EnemySpawnTimerLength;
-				FNavLocation location{};
-				auto origin = GetActorLocation();
-				auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+				if (auto* npc = Cast<ADialogueNPC>(npcActor))
+				{
+					if ((npc->GetActorLocation() - GetActorLocation()).Length() >= DistanceFromNPC)
+					{
+						if (EnemySpawnTimer > 0)
+						{
+							EnemySpawnTimer -= DeltaTime;
+						}
+						else if (EnemySpawnTimer <= 0 && weight > 0)
+						{
+							UE_LOG(LogTemp, Log, TEXT("Enemy Spawned"));
+							EnemySpawnTimer = EnemySpawnTimerLength;
+							FNavLocation location{};
+							auto origin = GetActorLocation();
+							auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 				
-				if (Player->PlayerInventory->GetRabbitSpawnCount() > 0)
-				{
-					for (int i = 0; i < Player->PlayerInventory->GetRabbitSpawnCount(); i++)
-					{
-						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
-						{
-							auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
-							rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
-						}
-					}
-				}
-				if (Player->PlayerInventory->GetMaskedSpawnCount() > 0)
-				{
-					for (int i = 0; i < Player->PlayerInventory->GetMaskedSpawnCount(); i++)
-					{
-						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
-						{
-							auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
-							masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
-						}
-					}
-				}
-				if (Player->PlayerInventory->GetKingSpawnCount() > 0)
-				{
-					for (int i = 0; i < Player->PlayerInventory->GetKingSpawnCount(); i++)
-					{
-						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
-						{
-							auto* king = GetWorld()->SpawnActor(KingPrefab);
-							king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+							if (Player->PlayerInventory->GetRabbitSpawnCount() > 0)
+							{
+								for (int i = 0; i < Player->PlayerInventory->GetRabbitSpawnCount(); i++)
+								{
+									if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+									{
+										auto* rabbit = GetWorld()->SpawnActor(RabbitPrefab);
+										rabbit->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									}
+								}
+							}
+							if (Player->PlayerInventory->GetMaskedSpawnCount() > 0)
+							{
+								for (int i = 0; i < Player->PlayerInventory->GetMaskedSpawnCount(); i++)
+								{
+									if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+									{
+										auto* masked = GetWorld()->SpawnActor(MaskedPrefab);
+										masked->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									}
+								}
+							}
+							if (Player->PlayerInventory->GetKingSpawnCount() > 0)
+							{
+								for (int i = 0; i < Player->PlayerInventory->GetKingSpawnCount(); i++)
+								{
+									if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
+									{
+										auto* king = GetWorld()->SpawnActor(KingPrefab);
+										king->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									}
+								}
+							}
 						}
 					}
 				}
@@ -236,60 +251,126 @@ void ABag::SpawnEnemies(float DeltaTime)
 			Mesh->SetStaticMesh(ClosedMesh);
 		}
 	}
-
-
 }
-
+		
 void ABag::SpawnSmallItems(float DeltaTime)
 {
-	if (CarrotPrefab && PebblePrefab && StickPrefab)
-	{
-		FNavLocation location{};
-		auto origin = GetActorLocation();
-		auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADialogueNPC::StaticClass(), actors);
 
-		if (SmallItemSpawnTimer <= 0)
+	for(auto npcActor : actors)
+	{
+		if (auto* npc = Cast<ADialogueNPC>(npcActor))
 		{
-			if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SpawnRadius, location))
+			if ((npc->GetActorLocation() - GetActorLocation()).Length() >= DistanceFromNPC)
 			{
-				// Pick a random object between carrot pebble and stick
-				int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
-				switch(RandomNumber)
+				if (CarrotPrefab && PebblePrefab && StickPrefab)
 				{
-				case 0:
+					FNavLocation location{};
+					auto origin = GetActorLocation();
+					auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+
+					if (SmallItemSpawnTimer <= 0)
 					{
-						auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
-						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
-						break;
+						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SpawnRadius, location))
+						{
+							UE_LOG(LogTemp, Warning, TEXT("Spawned small item"));
+							
+							// Pick a random object between carrot pebble and stick
+							int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
+							switch(RandomNumber)
+							{
+							case 0:
+								{
+									auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									break;
+								}
+							case 1:
+								{
+									auto* SmallSpawnableItem = GetWorld()->SpawnActor(PebblePrefab);
+									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									break;
+								}
+							case 2:
+								{
+									auto* SmallSpawnableItem = GetWorld()->SpawnActor(StickPrefab);
+									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									break;
+								}
+							default:
+								{
+									auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+								}
+							}
+							// Debug random number output
+							//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(RandomNumber));
+						}
+						SmallItemSpawnTimer = SmallItemSpawnInterval;
 					}
-				case 1:
+					else
 					{
-						auto* SmallSpawnableItem = GetWorld()->SpawnActor(PebblePrefab);
-						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
-						break;
-					}
-				case 2:
-					{
-						auto* SmallSpawnableItem = GetWorld()->SpawnActor(StickPrefab);
-						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
-						break;
-					}
-				default:
-					{
-						auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
-						SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+						SmallItemSpawnTimer -= DeltaTime;
 					}
 				}
-				// Debug random number output
-				//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(RandomNumber));
 			}
-			SmallItemSpawnTimer = SmallItemSpawnInterval;
-		}
-		else
-		{
-			SmallItemSpawnTimer -= DeltaTime;
+			else
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("Distance between bag & mole %f"), (npc->GetActorLocation() - GetActorLocation()).Length());
+				
+			}
 		}
 	}
+	
+	//if (CarrotPrefab && PebblePrefab && StickPrefab)
+	//{
+	//	FNavLocation location{};
+	//	auto origin = GetActorLocation();
+	//	auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+//
+	//	if (SmallItemSpawnTimer <= 0)
+	//	{
+	//		if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SpawnRadius, location))
+	//		{
+	//			// Pick a random object between carrot pebble and stick
+	//			int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
+	//			switch(RandomNumber)
+	//			{
+	//			case 0:
+	//				{
+	//					auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+	//					SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+	//					break;
+	//				}
+	//			case 1:
+	//				{
+	//					auto* SmallSpawnableItem = GetWorld()->SpawnActor(PebblePrefab);
+	//					SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+	//					break;
+	//				}
+	//			case 2:
+	//				{
+	//					auto* SmallSpawnableItem = GetWorld()->SpawnActor(StickPrefab);
+	//					SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+	//					break;
+	//				}
+	//			default:
+	//				{
+	//					auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
+	//					SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+	//				}
+	//			}
+	//			// Debug random number output
+	//			//UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(RandomNumber));
+	//		}
+	//		SmallItemSpawnTimer = SmallItemSpawnInterval;
+	//	}
+	//	else
+	//	{
+	//		SmallItemSpawnTimer -= DeltaTime;
+	//	}
+	//}
 }
 
 void ABag::HandleBehaviorBasedOnWeight(float DeltaTime)

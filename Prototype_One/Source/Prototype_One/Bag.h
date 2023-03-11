@@ -16,6 +16,7 @@ enum class MOVEMENTSTATE
 
 
 class APrototype_OneCharacter;
+
 UCLASS()
 class PROTOTYPE_ONE_API ABag : public AActor, public IInteractInterface
 {
@@ -62,6 +63,9 @@ public:
 	float SmallItemSpawnTimer{};
 	UPROPERTY(EditAnywhere)
 	float SmallItemSpawnInterval{5};
+
+	UPROPERTY(EditAnywhere)
+	float DistanceFromNPC{1000};
 
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* OpenMesh;
