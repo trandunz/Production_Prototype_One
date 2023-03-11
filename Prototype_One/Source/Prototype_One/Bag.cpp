@@ -271,10 +271,10 @@ void ABag::SpawnSmallItems(float DeltaTime)
 					FNavLocation location{};
 					auto origin = GetActorLocation();
 					auto* navSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-
+					auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 					if (SmallItemSpawnTimer <= 0)
 					{
-						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, SpawnRadius, location))
+						if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin + player->GetActorForwardVector() * 2000.0f, SpawnRadius, location))
 						{
 							UE_LOG(LogTemp, Warning, TEXT("Spawned small item"));
 							
