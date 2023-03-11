@@ -102,12 +102,11 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			if (character->IsAttacking == true)
 			{
 				enemy->TakeDamage(character->EntityComponent->Properties.AttackDamage);
-				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-				//UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
-				//if (CharacterComp)
-				//{
-				//	CharacterComp->Velocity = (enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal() * 2000.0f;
-				//}
+				UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
+				if (CharacterComp)
+				{
+					CharacterComp->Velocity = (enemy->GetActorLocation() - character->GetActorLocation()).GetSafeNormal() * 3000.0f;
+				}
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
 		}
