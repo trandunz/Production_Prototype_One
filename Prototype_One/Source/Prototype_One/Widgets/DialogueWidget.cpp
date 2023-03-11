@@ -207,10 +207,19 @@ void UDialogueWidget::OnBye()
 	CurrentDialogueIndex = -1;
 	DialogueLines.Add("Thank you, come again.");
 	OnNextDialogueLine();
-
 	
 	// Trigger audio in blueprint
 	OnMoleAudioEvent();
+
+	// Set the PlayerInventory to shopping so player can sell while at shop only
+    if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+    {
+    	player->PlayerInventory->SetIsShopping(false);
+    }
+    else
+    {
+    	UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnShopMenu()");
+    }
 }
 
 
