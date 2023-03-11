@@ -12,18 +12,25 @@ class PROTOTYPE_ONE_API ADialogueNPC : public ACharacter, public IInteractInterf
 
 public:
 	ADialogueNPC();
+	
 
 protected:
 	virtual void BeginPlay() override;
 	
 	void UpdateInteractionOutline();
+
+	
 public:	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	virtual void Interact() override;
+
 public:
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* ExclamationMark;
 };
