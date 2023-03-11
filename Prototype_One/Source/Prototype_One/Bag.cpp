@@ -277,7 +277,7 @@ void ABag::SpawnSmallItems(float DeltaTime)
 							UE_LOG(LogTemp, Warning, TEXT("Spawned small item"));
 							
 							// Pick a random object between carrot pebble and stick
-							int32 RandomNumber = UKismetMathLibrary::RandomInteger(3);
+							int32 RandomNumber = UKismetMathLibrary::RandomInteger(4);
 							switch(RandomNumber)
 							{
 							case 0:
@@ -295,6 +295,12 @@ void ABag::SpawnSmallItems(float DeltaTime)
 							case 2:
 								{
 									auto* SmallSpawnableItem = GetWorld()->SpawnActor(StickPrefab);
+									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
+									break;
+								}
+							case 3:
+								{
+									auto* SmallSpawnableItem = GetWorld()->SpawnActor(CarrotPrefab);
 									SmallSpawnableItem->SetActorLocation({location.Location.X, location.Location.Y, location.Location.Z + 100});
 									break;
 								}
