@@ -75,6 +75,14 @@ void ABush::TakeDamage(int _amount)
 					newStick->SetActorLocation(GetActorLocation() + randomDeviance);
 				}
 			}
+
+			// Call Audio
+			BushDestroyedEvent();
+		}
+		else
+		{
+			// Call Audio
+			BushHitEvent();
 		}
 	}
 }

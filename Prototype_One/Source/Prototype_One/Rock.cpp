@@ -54,6 +54,14 @@ void ARock::TakeDamage(int _amount)
 					newCarrot->SetActorLocation(GetActorLocation() + randomDeviance);
 				}
 			}
+
+			// Audio event
+			RockDestroyedEvent();
+		}
+		else
+		{
+			// Audio event
+			RockHitEvent();
 		}
 	}
 }

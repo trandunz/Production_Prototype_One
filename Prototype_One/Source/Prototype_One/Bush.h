@@ -49,4 +49,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float RespawnTime{10.0f};
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BushHitEvent();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BushDestroyedEvent();
 };

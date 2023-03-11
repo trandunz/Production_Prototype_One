@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Item.h"
 #include "Rock.generated.h"
 
 UCLASS()
@@ -36,4 +37,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float RespawnTime{10.0f};
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RockHitEvent();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void RockDestroyedEvent();
 };
