@@ -245,5 +245,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DashAnimation;
+
+private:
+	bool bHasResetStaminaTimerAfterSprint;
 };
 

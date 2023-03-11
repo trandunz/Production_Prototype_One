@@ -321,6 +321,8 @@ void APrototype_OneCharacter::StartSprint()
 		{
 			DesiredSpeed = SprintSpeed;
 			EntityComponent->Properties.IsStaminaDraining = true;
+
+			bHasResetStaminaTimerAfterSprint = false;
 		}
 	}
 }
@@ -329,7 +331,11 @@ void APrototype_OneCharacter::EndSprint()
 {
 	DesiredSpeed = JogSpeed;
 	EntityComponent->Properties.IsStaminaDraining = false;
-	EntityComponent->Properties.StaminaDelayTimer = 2.0f;
+	if (!bHasResetStaminaTimerAfterSprint)
+	{
+		bHasResetStaminaTimerAfterSprint = true;
+		EntityComponent->Properties.StaminaDelayTimer = EntityComponent->Properties.RegenDelayLength;
+	}
 }
 
 void APrototype_OneCharacter::TryDash()
@@ -352,7 +358,7 @@ void APrototype_OneCharacter::TryDash()
 							IsDashing = true;
 							HasStartedDash = true;
 							EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;
-							EntityComponent->Properties.StaminaDelayTimer = 2.0f;
+							EntityComponent->Properties.StaminaDelayTimer = EntityComponent->Properties.RegenDelayLength;
 							if (PlayerHud)
 							{
 								PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
@@ -378,7 +384,7 @@ void APrototype_OneCharacter::TryMelee()
 	{
 		IsAttacking = true;
 		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
-		EntityComponent->Properties.StaminaDelayTimer = 2.0f;
+		EntityComponent->Properties.StaminaDelayTimer = EntityComponent->Properties.RegenDelayLength;
 		if (PlayerHud)
 		{
 			PlayerHud->UpdateStamina(EntityComponent->Properties.CurrentStamina, EntityComponent->Properties.MaxStamina);
