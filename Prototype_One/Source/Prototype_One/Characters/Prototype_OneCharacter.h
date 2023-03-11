@@ -163,7 +163,7 @@ public:
 	
 	// Combat related variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	float combatMovementMaxTime{1.0f};
+	float combatMovementMaxTime{2.0f};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	float combatMovementCurrentTime{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))

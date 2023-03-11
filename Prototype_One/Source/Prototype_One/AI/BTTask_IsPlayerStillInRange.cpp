@@ -20,7 +20,7 @@ EBTNodeResult::Type UBTTask_IsPlayerStillInRange::ExecuteTask(UBehaviorTreeCompo
 	auto* aiController = OwnerComp.GetAIOwner();
 	if (auto* enemy = Cast<APrototypeEnemy>(aiController->GetCharacter()))
 	{
-		enemy->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		enemy->AttackTimer = 0.0f;
 	}
 	
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
