@@ -372,7 +372,7 @@ void APrototype_OneCharacter::TryDash()
 
 void APrototype_OneCharacter::TryMelee()
 {
-	if (combatMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack && EntityComponent->Properties.CurrentHealth > 0)
+	if (!IsAttacking && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageAttack && EntityComponent->Properties.CurrentHealth > 0)
 	{
 		IsAttacking = true;
 		EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageAttack;
@@ -720,8 +720,8 @@ void APrototype_OneCharacter::TryOpenBag()
 
 void APrototype_OneCharacter::TakeDamage(int _amount)
 {
-	//if (IsDashing != true && IsAttacking != true)
-	//{
+	if (IsDashing != true && IsAttacking != true)
+	{
 		UE_LOG(LogTemp, Warning, TEXT("Damaged by enemy"));
 		EntityComponent->TakeDamage(_amount);
 		if (PlayerHud)
@@ -735,9 +735,9 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 			//Controller->SetIgnoreMoveInput(true);
 			//Controller->Possess(nullptr);
 		}
-	//}
-	// Call event for audio
-	OnPlayerHitEvent();
+		OnPlayerHitEvent();
+	}
+	
 }
 
 void APrototype_OneCharacter::RecoverHealth(int _amount)
