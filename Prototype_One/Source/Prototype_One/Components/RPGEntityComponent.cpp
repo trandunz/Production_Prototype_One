@@ -8,7 +8,7 @@
 URPGEntityComponent::URPGEntityComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
+	Properties.StaminaDelayTimer = 0.0f;
 }
 
 void URPGEntityComponent::BeginPlay()
@@ -36,6 +36,9 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (Properties.StaminaDelayTimer > 0)
+		Properties.StaminaDelayTimer -= DeltaTime;
+	
 	StaminaRegenDrain(DeltaTime);
 }
 
@@ -126,7 +129,7 @@ void URPGEntityComponent::StaminaRegenDrain(float dt)
 			{
 				Properties.CurrentStaminaTime -= dt;
 			}
-			else
+			else if (Properties.StaminaDelayTimer <= 0)
 			{
 				Properties.CurrentStaminaTime = Properties.MaxStaminaRegenTime; // Reset stamina timer
 				Properties.CurrentStamina += Properties.StaminaRegen;
