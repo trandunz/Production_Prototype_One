@@ -19,6 +19,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (auto* enemy = Cast<APrototypeEnemy>(aiController->GetCharacter()))
 	{
 		enemy->Attack();
+		enemy->AttackTimer = 1.0f;
 	}
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	return EBTNodeResult::Succeeded;

@@ -84,6 +84,8 @@ public:
 	
 	AActor* ItemDrop;
 
+	float AttackTimer{};
+	
 	// Events for audio trigger in blueprints
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnEnemyHitEvent();

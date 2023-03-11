@@ -3,6 +3,7 @@
 #include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
 #include "Components/RPGEntityComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ASword::ASword()
@@ -102,6 +103,11 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			{
 				enemy->TakeDamage(character->EntityComponent->Properties.AttackDamage);
 				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+				//UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
+				//if (CharacterComp)
+				//{
+				//	CharacterComp->Velocity = (enemy->GetActorLocation() - GetActorLocation()).GetSafeNormal() * 2000.0f;
+				//}
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
 		}
