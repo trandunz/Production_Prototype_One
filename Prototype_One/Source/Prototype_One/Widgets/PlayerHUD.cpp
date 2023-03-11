@@ -44,7 +44,7 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		{
 			if (auto* bag = Cast<ABag>(bags[0]))
 			{
-				EncumberanceMeter->SetPercent((float)bag->GetWeight() / (float)bag->StoppingThreshold);
+				EncumberanceMeter->SetPercent((float)bag->GetWeight() / (float)bag->PlayerWeightThreshold);
 				if (bag->IsOpen && BagOpenImage)
 				{
 					BagIcon->SetBrushFromTexture(BagOpenImage);
