@@ -215,6 +215,9 @@ void APrototype_OneCharacter::InitGUI()
 		PauseMenu = CreateWidget<UPauseMenuWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PauseMenuPrefab);
 		PauseMenu->AddToViewport();
 	}
+
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetInputMode(FInputModeGameAndUI{});
+	UGameplayStatics::GetPlayerController(GetWorld(), 0)->bShowMouseCursor = true;
 }
 
 void APrototype_OneCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
