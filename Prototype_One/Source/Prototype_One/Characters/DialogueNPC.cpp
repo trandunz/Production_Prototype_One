@@ -51,7 +51,6 @@ void ADialogueNPC::Tick(float DeltaTime)
 void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ADialogueNPC::Interact()
@@ -63,6 +62,7 @@ void ADialogueNPC::Interact()
 		charatcer->GetCharacterMovement()->Velocity = {};
 		charatcer->GetCharacterMovement()->StopMovementImmediately();
 		charatcer->GetCharacterMovement()->StopActiveMovement();
+		ExclamationMark->SetVisibility(false);
 		charatcer->IsShopping = true;
 	}
 }
