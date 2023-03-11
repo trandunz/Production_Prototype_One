@@ -42,4 +42,5 @@ public:
 				const FHitResult &SweepResult);
 
 	bool IsEquiped{};
+
 };
