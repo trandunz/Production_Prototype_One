@@ -81,6 +81,7 @@ protected:
 	void InitGUI();
 
 	void Ragdoll();
+	void UnRagdoll();
 
 	void UpdateFadeActors();
 	void SetShowMeshes();

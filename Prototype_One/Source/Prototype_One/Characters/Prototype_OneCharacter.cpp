@@ -614,8 +614,33 @@ void APrototype_OneCharacter::Ragdoll()
 		CharacterComp->DisableMovement();
 		CharacterComp->SetComponentTickEnabled(false);
 	}
+}
 
-	SetLifeSpan(10.0f);
+void APrototype_OneCharacter::UnRagdoll()
+{
+	SetReplicateMovement(true);
+
+	//DetachFromControllerPendingDestroy();
+	
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	GetMesh()->SetCollisionProfileName(TEXT("Pawn"));
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	SetActorEnableCollision(false);
+	
+	GetMesh()->SetAllBodiesSimulatePhysics(false);
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->WakeAllRigidBodies();
+	GetMesh()->bBlendPhysics = true;
+
+	UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (CharacterComp)
+	{
+		CharacterComp->SetComponentTickEnabled(true);
+	}
 }
 
 void APrototype_OneCharacter::UpdateFadeActors()
