@@ -556,23 +556,23 @@ void APrototype_OneCharacter::PauseGame()
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
 		if (PauseMenu)
 		{
-			PauseMenu->SetVisibility(ESlateVisibility::Visible);
-		}
-		if (PlayerHud)
-		{
-			PlayerHud->SetVisibility(ESlateVisibility::Hidden);
-		}
-	}
-	else
-	{
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		if (PauseMenu)
-		{
 			PauseMenu->SetVisibility(ESlateVisibility::Hidden);
 		}
 		if (PlayerHud)
 		{
 			PlayerHud->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+	else
+	{
+		//UGameplayStatics::SetGamePaused(GetWorld(), true);
+		if (PauseMenu)
+		{
+			PauseMenu->SetVisibility(ESlateVisibility::Visible);
+		}
+		if (PlayerHud)
+		{
+			PlayerHud->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
