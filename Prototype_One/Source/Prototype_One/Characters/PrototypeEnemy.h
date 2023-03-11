@@ -80,7 +80,13 @@ public:
 	TSubclassOf<AActor> MonsterMeatPrefab;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> ItemDropPrefab;
+	TSubclassOf<AActor> SmallAntlerPrefab;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> CrownPrefab;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> MaskPrefab;
 	
 	AActor* ItemDrop;
 

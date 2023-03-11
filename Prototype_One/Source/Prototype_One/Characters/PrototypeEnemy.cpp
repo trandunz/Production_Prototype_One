@@ -51,18 +51,41 @@ void APrototypeEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ItemDropPrefab)
+	if (CrownPrefab)
 	{
-		ItemDrop = GetWorld()->SpawnActor(ItemDropPrefab);
-		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale);
-		if (auto* item = Cast<AItem>(ItemDrop))
-		{
-			item->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			item->Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
-			item->Mesh->SetSimulatePhysics(false);
-			item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-			item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		}
+		ItemDrop = GetWorld()->SpawnActor(CrownPrefab);
+		
+		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Rabbit_Head"));
+		ItemDrop->SetActorRelativeScale3D({0.5f,0.5f,0.5f});
+		ItemDrop->SetActorRelativeLocation({-3.88f, 4.78f, 17.89f});
+		ItemDrop->SetActorRelativeRotation({0.0, 00.0f, 10.0f});
+	}
+	else if (MaskPrefab)
+	{
+		ItemDrop = GetWorld()->SpawnActor(MaskPrefab);
+		
+		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Rabbit_Head"));
+		ItemDrop->SetActorRelativeScale3D({0.2f,0.2f,0.2f});
+		ItemDrop->SetActorRelativeLocation({-4.6, -9.6, 0.0f});
+		ItemDrop->SetActorRelativeRotation({90.0f, 26.5f, 106.5f});
+	}
+	else  if (SmallAntlerPrefab)
+	{
+		ItemDrop = GetWorld()->SpawnActor(SmallAntlerPrefab);
+		
+		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Rabbit_Head"));
+		ItemDrop->SetActorRelativeScale3D({0.2f,0.2f,0.2f});
+		ItemDrop->SetActorRelativeLocation({-6, -9, 0.0f});
+		ItemDrop->SetActorRelativeRotation({90.0f, 145.0f, 234.0f});
+	}
+
+	if (auto* item = Cast<AItem>(ItemDrop))
+	{
+		item->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		item->Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
+		item->Mesh->SetSimulatePhysics(false);
+		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+		item->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	}
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APrototypeEnemy::OnHit);
