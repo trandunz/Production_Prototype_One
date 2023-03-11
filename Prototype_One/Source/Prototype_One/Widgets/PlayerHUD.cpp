@@ -53,6 +53,15 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 				{
 					BagIcon->SetBrushFromTexture(BagClosedImage);
 				}
+
+				if (bag->IsBiengPulled)
+				{
+					InventoryWidget->SetVisibility(ESlateVisibility::Visible);
+				}
+				else
+				{
+					InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+				}
 			}
 		}
 	}
