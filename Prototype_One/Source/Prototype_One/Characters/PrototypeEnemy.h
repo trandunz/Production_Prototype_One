@@ -89,4 +89,6 @@ public:
 	void OnEnemyHitEvent();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnEnemyAttackEvent();
+
+	float DamageTimer{};
 };

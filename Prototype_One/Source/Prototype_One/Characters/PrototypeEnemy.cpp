@@ -85,6 +85,8 @@ void APrototypeEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (DamageTimer > 0)
+		DamageTimer -= DeltaTime;
 	if (HealthBarWidget)
 	{
 		if (auto* widget = Cast<UHealthBarWidget>(HealthBarWidget->GetWidget()))
@@ -140,30 +142,35 @@ void APrototypeEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void APrototypeEnemy::TakeDamage(int _amount)
 {
-	if (EntityComponent)
+	if (DamageTimer <= 0)
 	{
-		if (auto* constoller = Cast<AEnemyController>(Controller))
+		DamageTimer = 0.3f;
+		if (EntityComponent)
 		{
-			constoller->CanSeePlayer = true;
-			constoller->BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), true);
-		}
-
-		if (EntityComponent->Properties.CurrentHealth > 0)
-		{
-			EntityComponent->TakeDamage(_amount);
-			UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
-			UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
-			if (EntityComponent->Properties.CurrentHealth <= 0)
+			if (auto* constoller = Cast<AEnemyController>(Controller))
 			{
-			
-				UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
-				Ragdoll();
+				constoller->CanSeePlayer = true;
+				constoller->BlackboardComponent->SetValueAsBool(FName("CanSeePlayer"), true);
 			}
-			// Trigger for audio in blueprints
-			OnEnemyHitEvent();
-		}
 
+			if (EntityComponent->Properties.CurrentHealth > 0)
+			{
+				EntityComponent->TakeDamage(_amount);
+				UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
+				UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
+				if (EntityComponent->Properties.CurrentHealth <= 0)
+				{
+			
+					UE_LOG(LogTemp, Log, TEXT("Kill Enemy"));
+					Ragdoll();
+				}
+				// Trigger for audio in blueprints
+				OnEnemyHitEvent();
+			}
+
+		}
 	}
+	
 }
 
 void APrototypeEnemy::OnSeePawn(APawn* _pawn)
