@@ -101,6 +101,9 @@ void APrototype_OneCharacter::BeginPlay()
 	// Combat
 	AttackStencilCollider->OnComponentBeginOverlap.AddDynamic(this, &APrototype_OneCharacter::OnBeginOverlap);
 	AttackStencilCollider->OnComponentEndOverlap.AddDynamic(this, &APrototype_OneCharacter::OnOverlapEnd);
+
+	// Health regen
+	HealthRegenTimer = MaxTimeUntilHealthRegen;
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -146,7 +149,7 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	UpdateFadeActors();
 	SetShowMeshes();
 	SetHiddenMeshes();
-	
+	RegenHealth();
 	
 
 	if (PlayerHud)
@@ -870,6 +873,35 @@ void APrototype_OneCharacter::PlayerRespawn()
 			if (CharacterComp)
 			{
 				CharacterComp->Activate();
+			}
+		}
+	}
+}
+
+void APrototype_OneCharacter::RegenHealth()
+{
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADialogueNPC::StaticClass(), actors);
+	for(auto npcActor : actors)
+	{
+		if (auto* npc = Cast<ADialogueNPC>(npcActor))
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Distance between player & mole %f"), (npc->GetActorLocation() - GetActorLocation()).Length()); // Output distance between player & mole npc
+			
+			if ((npc->GetActorLocation() - GetActorLocation()).Length() <= DistanceToMole)
+			{
+				if (EntityComponent->Properties.CurrentHealth < EntityComponent->Properties.MaxHealth)
+				{
+					if (HealthRegenTimer >= 0)
+					{
+						HealthRegenTimer -= Dt;
+					}
+					if (HealthRegenTimer < 0)
+					{
+						EntityComponent->Properties.CurrentHealth += 1;
+						HealthRegenTimer = MaxTimeUntilHealthRegen;
+					}
+				}
 			}
 		}
 	}
