@@ -2,6 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
+#include "Prototype_One/Bag.h"
 #include "Prototype_One/SavedPlayerData.h"
 
 URPGEntityComponent::URPGEntityComponent()
@@ -81,8 +82,19 @@ void URPGEntityComponent::UpgradeStamina()
 
 void URPGEntityComponent::UpgradeCarryWeight()
 {
-	Properties.MaxCarryWeight += Properties.UpgradeAmount;
-	Properties.CarryWeightCurrentLevel++;	
+	//Properties.MaxCarryWeight += Properties.UpgradeAmount;
+	Properties.CarryWeightCurrentLevel++;
+
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+	for(auto bagActor : actors)
+	{
+		if (auto* bag = Cast<ABag>(bagActor))
+		{
+			bag->PlayerWeightThreshold += 10;
+			bag->StoppingThreshold += 10;
+		}
+	}
 }
 
 void URPGEntityComponent::UpgradeAttackDamage()

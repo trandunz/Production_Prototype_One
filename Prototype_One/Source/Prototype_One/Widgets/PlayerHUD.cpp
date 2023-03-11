@@ -11,6 +11,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Bag.h"
 #include "Prototype_One/Characters/Prototype_OneCharacter.h"
 #include "Prototype_One/Components/RPGEntityComponent.h"
 #include "Prototype_One/Fade.h"
@@ -36,6 +37,24 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateStamina(player->EntityComponent->Properties.CurrentStamina, player->EntityComponent->Properties.MaxStamina);
 		UpdateHealth(player->EntityComponent->Properties.CurrentHealth, player->EntityComponent->Properties.MaxHealth);
+
+		TArray<AActor*> bags;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(),bags);
+		if (bags.Num() > 0)
+		{
+			if (auto* bag = Cast<ABag>(bags[0]))
+			{
+				EncumberanceMeter->SetPercent((float)bag->GetWeight() / (float)bag->StoppingThreshold);
+				if (bag->IsOpen && BagOpenImage)
+				{
+					BagIcon->SetBrushFromTexture(BagOpenImage);
+				}
+				else if (BagClosedImage)
+				{
+					BagIcon->SetBrushFromTexture(BagClosedImage);
+				}
+			}
+		}
 	}
 }
 

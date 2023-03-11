@@ -56,6 +56,7 @@ void ABag::BeginPlay()
 			//Constraint->ConstraintActor1 = Player;
 		}
 	}
+	
 }
 
 void ABag::Tick(float DeltaTime)
