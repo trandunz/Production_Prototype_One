@@ -221,4 +221,8 @@ void UShopWidget::OnBuyGateTicket()
 void UShopWidget::OnEndGame()
 {
 	// End the game
+	if (auto* player = Cast<APrototypePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+	{
+		player->SwitchLevel("Level_WinScreen");
+	}
 }

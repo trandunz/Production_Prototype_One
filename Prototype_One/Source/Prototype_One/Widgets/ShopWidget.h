@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ShopWidget.generated.h"
 
+class UWidget_WinMenu;
 UCLASS()
 class PROTOTYPE_ONE_API UShopWidget : public UUserWidget
 {
