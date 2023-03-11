@@ -57,7 +57,6 @@ void ADialogueNPC::Interact()
 		charatcer->GetCharacterMovement()->Velocity = {};
 		charatcer->GetCharacterMovement()->StopMovementImmediately();
 		charatcer->GetCharacterMovement()->StopActiveMovement();
-		charatcer->IsShopping = true;
 	}
 }
 
