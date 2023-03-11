@@ -93,6 +93,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FEntityProperties Properties{};
+
 private:
 
 	void StaminaRegenDrain(float dt);

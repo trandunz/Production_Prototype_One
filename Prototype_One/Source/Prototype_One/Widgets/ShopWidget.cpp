@@ -156,7 +156,7 @@ void UShopWidget::OnUpgradeHealth()
 		if (player->PlayerInventory->GetCoins() >= CostOfUpgrade)
 		{
 			player->PlayerInventory->SubtractCoins(CostOfUpgrade);
-			player->EntityComponent->UpgradeHealth();
+			player->EntityComponent->UpgradeHealth();			
 		}
 	}
 }
