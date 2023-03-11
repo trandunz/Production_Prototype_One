@@ -9,12 +9,17 @@
 ADialogueNPC::ADialogueNPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	ExclamationMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Exclamation Mark Mesh"));
+	ExclamationMark->SetupAttachment(GetMesh());
+
 }
 
 void ADialogueNPC::BeginPlay()
 {
 	Super::BeginPlay();
 	GetMesh()->SetRenderCustomDepth(true);
+	
+	startPos = ExclamationMark->GetRelativeLocation();
 }
 
 void ADialogueNPC::UpdateInteractionOutline()
@@ -33,19 +38,19 @@ void ADialogueNPC::UpdateInteractionOutline()
 			GetMesh()->CustomDepthStencilValue = 1;
 		}
 	}
-	
 }
 
 void ADialogueNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateInteractionOutline();
+
+	ExclamationMark->SetRelativeLocation(startPos + FVector::UpVector * FMath::Sin(GetGameTimeSinceCreation() * 10.0f) * 20.0f);
 }
 
 void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ADialogueNPC::Interact()
@@ -57,7 +62,9 @@ void ADialogueNPC::Interact()
 		charatcer->GetCharacterMovement()->Velocity = {};
 		charatcer->GetCharacterMovement()->StopMovementImmediately();
 		charatcer->GetCharacterMovement()->StopActiveMovement();
+		ExclamationMark->SetVisibility(false);
 		charatcer->IsShopping = true;
 	}
 }
+
 
