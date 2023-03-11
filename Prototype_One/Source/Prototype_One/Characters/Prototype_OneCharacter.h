@@ -95,6 +95,7 @@ public:
 	void RecoverMana(int _amount);
 	void UseMana(int _amount);
 	void PlayerRespawn();
+	void RegenHealth();
 
 	UFUNCTION(BlueprintCallable)
 	void Heal();
@@ -192,8 +193,15 @@ public:
 	UPlayerInventory* PlayerInventory;
 	
 	// Stats 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
     class URPGEntityComponent* EntityComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
+	float DistanceToMole{1000.0f};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
+	float MaxTimeUntilHealthRegen{0.05};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stats, meta = (AllowPrivateAccess = "true"))
+	float HealthRegenTimer{};
+	
 	
 	// Related to disappearing objects
 	UPROPERTY(VisibleAnywhere)
