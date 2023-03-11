@@ -9,12 +9,17 @@
 ADialogueNPC::ADialogueNPC()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	ExclamationMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Exclamation Mark Mesh"));
+	ExclamationMark->SetupAttachment(GetMesh());
+
 }
 
 void ADialogueNPC::BeginPlay()
 {
 	Super::BeginPlay();
 	GetMesh()->SetRenderCustomDepth(true);
+	
+
 }
 
 void ADialogueNPC::UpdateInteractionOutline()
@@ -33,13 +38,14 @@ void ADialogueNPC::UpdateInteractionOutline()
 			GetMesh()->CustomDepthStencilValue = 1;
 		}
 	}
-	
 }
 
 void ADialogueNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UpdateInteractionOutline();
+
+
 }
 
 void ADialogueNPC::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -59,4 +65,5 @@ void ADialogueNPC::Interact()
 		charatcer->GetCharacterMovement()->StopActiveMovement();
 	}
 }
+
 
