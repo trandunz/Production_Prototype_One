@@ -119,6 +119,9 @@ void UDialogueWidget::ShowDialogueBox(bool _show)
 {
 	if (_show)
 	{
+		DialogueLines = {};
+		DialogueLines.Add("Hi there!");
+		DialogueLines.Add("Can I help you with anything?");
 		ShopWidget->SetVisibility(ESlateVisibility::Hidden);
 		DialogueText->SetText(FText::FromString(RandomHelloMessage));
 		Dialogue_NextLine->SetIsEnabled(true);
@@ -200,17 +203,12 @@ void UDialogueWidget::OnNextDialogueLine()
 
 void UDialogueWidget::OnBye()
 {
+	DialogueLines = {};
+	CurrentDialogueIndex = -1;
+	DialogueLines.Add("Thank you, come again.");
 	OnNextDialogueLine();
 
-	// Set the PlayerInventory to not shopping so player can't sell when not at shop
-	if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
-	{
-		player->PlayerInventory->SetIsShopping(false);
-	}
-	else
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(),"Cast to Prototype_OneCharacter failed in UDialogueWidget::OnBye()");
-	}
+	
 	// Trigger audio in blueprint
 	OnMoleAudioEvent();
 }
@@ -220,8 +218,13 @@ void UDialogueWidget::OnQuestMenu()
 {
 	if (DialogueLines.Num() <= 2)
 	{
-		DialogueLines.Add("There was once an old tale.");
-		DialogueLines.Add("some say bandits roam too the south...");
+		DialogueLines.Add("If you are looking to enter Mole Metropolis,");
+		DialogueLines.Add("you will need to purchase an expensive ticket.");
+		DialogueLines.Add("Search the woods for items that I will buy from you.");
+		DialogueLines.Add("But beware, carrots will attract the Ruthless Rabbits,");
+		DialogueLines.Add("but they in turn will provide you with high valuable items.");
+		DialogueLines.Add("Also, keep an eye out for the Ruler Rabbit.");
+		DialogueLines.Add("I will buy his crown from you for a large sum.");
 	}
 	
 	OnNextDialogueLine();
