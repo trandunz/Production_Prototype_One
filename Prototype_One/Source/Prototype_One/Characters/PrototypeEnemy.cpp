@@ -181,15 +181,27 @@ void APrototypeEnemy::OnSeePawn(APawn* _pawn)
 void APrototypeEnemy::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (auto* sword = Cast<ASword>(OtherActor))
+	if (AttackTimer > 0)
 	{
 		
+		if (auto* sword = Cast<ASword>(OtherComp))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Enemy Hit Sword"));
+		}
+		else if (auto* player = Cast<APrototype_OneCharacter>(OtherActor))
+		{
+			AttackTimer = 0;
+			UE_LOG(LogTemp, Log, TEXT("Enemy Hit player"));
+			player->TakeDamage(25.0f);
+			
+			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(player->GetMovementComponent());
+			if (CharacterComp)
+			{
+				CharacterComp->Velocity = (player->GetActorLocation() - GetActorLocation()).GetSafeNormal() * 2000.0f;
+			}
+		}
 	}
-	else if (auto* player = Cast<APrototype_OneCharacter>(OtherActor))
-	{
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		player->TakeDamage(25.0f);
-	}
+	
 }
 
 void APrototypeEnemy::Attack()
