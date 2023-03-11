@@ -37,7 +37,10 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (Properties.StaminaDelayTimer > 0)
+	{
 		Properties.StaminaDelayTimer -= DeltaTime;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::SanitizeFloat(Properties.StaminaDelayTimer));
+	}
 	
 	StaminaRegenDrain(DeltaTime);
 }
@@ -108,12 +111,15 @@ void URPGEntityComponent::UpgradeAttackDamage()
 
 void URPGEntityComponent::StaminaRegenDrain(float dt)
 {
-	if (Properties.IsStaminaDraining == true && Properties.CurrentStamina > 0) // Stamina drain
+	if (Properties.IsStaminaDraining)  // Draining
 	{
-		
-		if (Properties.CurrentStaminaTime > 0)
+		if (Properties.CurrentStaminaTime > 0)// Stamina drain
 		{
 			Properties.CurrentStaminaTime -= dt;
+			if (Properties.CurrentStaminaTime < 0.0f)
+			{
+				Properties.CurrentStaminaTime = 0.0f;
+			}
 		}
 		else
 		{
@@ -121,7 +127,7 @@ void URPGEntityComponent::StaminaRegenDrain(float dt)
 			Properties.CurrentStamina -= Properties.StaminaDrain;
 		}
 	}
-	else
+	else // Regen
 	{
 		if (Properties.CurrentStamina < Properties.MaxStamina)
 		{

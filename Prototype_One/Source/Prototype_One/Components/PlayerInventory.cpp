@@ -219,7 +219,14 @@ int32 UPlayerInventory::GetKingSpawnCount()
 			}
 		}
 	}
-	return KingToSpawn;
+	if (KingToSpawn > 0)
+	{
+		return 1; //KingToSpawn;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void UPlayerInventory::BagDropped()
