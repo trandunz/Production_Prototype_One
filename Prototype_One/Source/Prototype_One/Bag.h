@@ -5,6 +5,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Bag.generated.h"
 
+class ADecalActor;
 UENUM()
 enum class MOVEMENTSTATE
 {
@@ -124,6 +125,8 @@ public:
 protected:
 	float EnemySpawnTimer{};
 	float EnemySpawnTimerLength = 10.0f;
+
+	FVector prevPos{};
 
 	APrototype_OneCharacter* Player;
 };

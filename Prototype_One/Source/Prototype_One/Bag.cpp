@@ -167,13 +167,14 @@ void ABag::AttractItems(float DeltaTime)
 					{
 						ItemCast->Mesh->SetSimulatePhysics(false);
 						ItemCast->Mesh->SetCollisionProfileName("Trigger");
-						ItemCast->SetActorLocation(FMath::Lerp<FVector>(ItemCast->GetActorLocation(), GetActorLocation(), DeltaTime * 10.0f));
+						ItemCast->SetActorLocation(FMath::Lerp<FVector>(ItemCast->GetActorLocation(), GetActorLocation() + (GetActorLocation()- prevPos) , (DeltaTime * 2.0f) + (DeltaTime * (GetActorLocation()- prevPos).Length() * 3.0f)));
+						
 					}
 				}
 			}
 		}
 	}
-	
+	prevPos = GetActorLocation();
 }
 
 void ABag::SpawnEnemies(float DeltaTime)
