@@ -1,5 +1,10 @@
 #include "Sword.h"
 
+<<<<<<< HEAD
+=======
+#include "Bush.h"
+#include "Rock.h"
+>>>>>>> Wills
 #include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
 #include "Components/RPGEntityComponent.h"
@@ -111,5 +116,22 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	if (auto* bush = Cast<ABush>(OtherActor))
+	{
+		if (auto* character = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			bush->TakeDamage(character->EntityComponent->Properties.AttackDamage);
+		}
+	}
+	if (auto* rock = Cast<ARock>(OtherActor))
+	{
+		if (auto* character = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			rock->TakeDamage(character->EntityComponent->Properties.AttackDamage);
+		}
+	}
+>>>>>>> Wills
 	//UE_LOG(LogTemp, Warning, TEXT("Sword Hit!"));
 }
