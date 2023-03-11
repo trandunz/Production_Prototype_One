@@ -188,6 +188,12 @@ public:
 	float RespawnTimer{};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Respawn, meta = (AllowPrivateAccess = "true"))
 	FVector StartLocation{};
+
+	bool IsShopping{};
+	float CameraShopLerpRatio{};
+	float PreviousArmLength = 600.0f;
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* ShopCameraLerpPoint{};
 	
 	// Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (AllowPrivateAccess = "true"))

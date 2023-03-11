@@ -66,6 +66,8 @@ APrototype_OneCharacter::APrototype_OneCharacter()
 	AttackStencilCollider->SetCollisionProfileName("Trigger");
 
 	healthPotion = new HealthPotion();
+
+	ShopCameraLerpPoint = CreateDefaultSubobject<USceneComponent>(TEXT("ShopCameraLerpPoint"));
 	
 }
 
@@ -104,6 +106,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	// Health regen
 	HealthRegenTimer = MaxTimeUntilHealthRegen;
+	PreviousArmLength = CameraBoom->TargetArmLength;
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -191,6 +194,36 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 		else if (!seen && !anyCanSeePlayer)
 		{
 			PlayerHud->UpdateSneakStatus(2);
+		}
+	}
+
+	if (IsShopping)
+	{
+		if (CameraShopLerpRatio < 1)
+		{
+			CameraShopLerpRatio += DeltaSeconds;
+			if (FollowCamera && ShopCameraLerpPoint)
+			{
+				FollowCamera->SetRelativeLocation(FMath::Lerp(FollowCamera->GetRelativeLocation(), ShopCameraLerpPoint->GetRelativeLocation(), CameraShopLerpRatio));
+				FollowCamera->SetRelativeRotation(FMath::Lerp(FollowCamera->GetRelativeRotation(), ShopCameraLerpPoint->GetRelativeRotation(), CameraShopLerpRatio));
+				CameraBoom->TargetArmLength = FMath::Lerp(CameraBoom->TargetArmLength, 200.0f, CameraShopLerpRatio);
+			}
+				
+		}
+	}
+	else
+	{
+		if (CameraShopLerpRatio > 0)
+		{
+			CameraShopLerpRatio -= DeltaSeconds;
+			if (FollowCamera)
+			{
+				FollowCamera->SetRelativeLocation(FMath::Lerp({},FollowCamera->GetRelativeLocation(), CameraShopLerpRatio));
+				FollowCamera->SetRelativeRotation(FMath::Lerp({},FollowCamera->GetRelativeRotation(), CameraShopLerpRatio));
+				
+				CameraBoom->TargetArmLength = FMath::Lerp(PreviousArmLength, CameraBoom->TargetArmLength, CameraShopLerpRatio);
+			}
+				
 		}
 	}
 }
@@ -443,13 +476,14 @@ void APrototype_OneCharacter::ScrollZoom(const FInputActionValue& Value)
 	auto MovementVector = Value.Get<float>();
 
 	UE_LOG(LogTemp, Warning, TEXT("Scrolled! (%s)" ), *FString::FromInt(MovementVector) );
-	if (Controller != nullptr)
+	if (Controller != nullptr && !IsShopping)
 	{
 		ZoomRatio += MovementVector * Dt * 10;
 		ZoomRatio = FMath::Clamp(ZoomRatio, 0, 1);
 		UE_LOG(LogTemp, Warning, TEXT("ZoomRatio (%f)" ), ZoomRatio );
 		CameraBoom->TargetArmLength = FMath::Lerp(LargestZoomDistance, 300,ZoomRatio );
 		CameraBoom->SetRelativeRotation({FMath::Lerp(-50.0f, 0.0f,ZoomRatio / 2.0f),0.0f,0});
+		PreviousArmLength = CameraBoom->TargetArmLength;
 	}
 }
 

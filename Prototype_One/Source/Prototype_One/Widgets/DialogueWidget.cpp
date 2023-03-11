@@ -215,6 +215,10 @@ void UDialogueWidget::OnBye()
     if (auto* player = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
     {
     	player->PlayerInventory->SetIsShopping(false);
+    	if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+    	{
+    		charatcer->IsShopping = false;
+    	}
     }
     else
     {
