@@ -383,6 +383,15 @@ void APrototype_OneCharacter::TryMelee()
 
 		const FVector ForwardVector = GetActorForwardVector();
 
+		if (CurrentlyHeldActor)
+		{
+			if (auto* sword = Cast<ASword>(CurrentlyHeldActor))
+			{
+				sword->Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+			}
+		}
+		
+		
 		UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(GetMovementComponent());
 		if (CharacterComp)
 		{

@@ -28,6 +28,7 @@ void ASword::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	UpdateInteractionOutline();
 
+
 	if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
 		if (charatcer->IsAttacking)
@@ -100,6 +101,7 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			if (character->IsAttacking == true)
 			{
 				enemy->TakeDamage(character->EntityComponent->Properties.AttackDamage);
+				Mesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
 		}
