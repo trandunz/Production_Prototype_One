@@ -58,7 +58,7 @@ struct FEntityProperties
 	UPROPERTY(VisibleAnywhere)
 	float UpgradeAmount{20.0f};
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	int AttackDamage{50};
 
 	UPROPERTY(VisibleAnywhere)

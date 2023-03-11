@@ -79,8 +79,8 @@ void URPGEntityComponent::UpgradeHealth()
 void URPGEntityComponent::UpgradeStamina()
 {
 	Properties.MaxStamina += Properties.UpgradeAmount;
-	Properties.UpgradeAmount += 20.0;
 	Properties.StaminaCurrentLevel++;
+
 	
 	//Properties.StaminaRegen ++; // Increase stamina regen
 }
@@ -104,7 +104,7 @@ void URPGEntityComponent::UpgradeCarryWeight()
 
 void URPGEntityComponent::UpgradeAttackDamage()
 {
-	Properties.MaxCarryWeight += Properties.UpgradeAmount;
+	Properties.AttackDamage += Properties.UpgradeAmount;
 	Properties.AttackDamageLevel++;	
 }
 

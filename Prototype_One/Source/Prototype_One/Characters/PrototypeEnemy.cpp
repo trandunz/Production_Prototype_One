@@ -57,8 +57,8 @@ void APrototypeEnemy::BeginPlay()
 		
 		ItemDrop->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Rabbit_Head"));
 		ItemDrop->SetActorRelativeScale3D({0.5f,0.5f,0.5f});
-		ItemDrop->SetActorRelativeLocation({-3.88f, 4.78f, 17.89f});
-		ItemDrop->SetActorRelativeRotation({0.0, 00.0f, 10.0f});
+		ItemDrop->SetActorRelativeLocation({-0.213160f,3.987725f,4.336831f});
+		ItemDrop->SetActorRelativeRotation({14.652504f,28.750578f,86.797552f});
 	}
 	else if (MaskPrefab)
 	{
@@ -215,7 +215,7 @@ void APrototypeEnemy::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		{
 			AttackTimer = 0;
 			UE_LOG(LogTemp, Log, TEXT("Enemy Hit player"));
-			player->TakeDamage(25.0f);
+			player->TakeDamage(EntityComponent->Properties.AttackDamage);
 			
 			UCharacterMovementComponent* CharacterComp = Cast<UCharacterMovementComponent>(player->GetMovementComponent());
 			if (CharacterComp)
