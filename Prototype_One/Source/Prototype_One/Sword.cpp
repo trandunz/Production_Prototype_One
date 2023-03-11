@@ -1,5 +1,6 @@
 #include "Sword.h"
 
+#include "Bush.h"
 #include "Characters/PrototypeEnemy.h"
 #include "Characters/Prototype_OneCharacter.h"
 #include "Components/RPGEntityComponent.h"
@@ -109,6 +110,13 @@ void ASword::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 				}
 				UE_LOG(LogTemp, Warning, TEXT("Enemy Hit!"));
 			}
+		}
+	}
+	if (auto* bush = Cast<ABush>(OtherActor))
+	{
+		if (auto* character = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
+		{
+			bush->TakeDamage(character->EntityComponent->Properties.AttackDamage);
 		}
 	}
 	//UE_LOG(LogTemp, Warning, TEXT("Sword Hit!"));
