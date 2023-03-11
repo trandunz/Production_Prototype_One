@@ -5,6 +5,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Bag.generated.h"
 
+class ADecalActor;
 UENUM()
 enum class MOVEMENTSTATE
 {
