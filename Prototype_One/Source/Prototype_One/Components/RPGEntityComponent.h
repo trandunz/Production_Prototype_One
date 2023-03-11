@@ -49,6 +49,8 @@ struct FEntityProperties
 	float CurrentStaminaTime{};
 	UPROPERTY(VisibleAnywhere)
 	bool IsStaminaDraining{false};
+	UPROPERTY(VisibleAnywhere)
+	float StaminaRegenDelay = 1.0f;
 
 	// Upgrading
 	UPROPERTY(EditAnywhere)

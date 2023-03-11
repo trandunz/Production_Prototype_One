@@ -39,7 +39,6 @@ void URPGEntityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	if (Properties.StaminaDelayTimer > 0)
 	{
 		Properties.StaminaDelayTimer -= DeltaTime;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::SanitizeFloat(Properties.StaminaDelayTimer));
 	}
 	
 	StaminaRegenDrain(DeltaTime);
