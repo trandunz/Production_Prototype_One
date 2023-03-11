@@ -710,7 +710,7 @@ void APrototype_OneCharacter::TakeDamage(int _amount)
 {
 	//if (IsDashing != true && IsAttacking != true)
 	//{
-		//UE_LOG(LogTemp, Warning, TEXT("Damaged by enemy"));
+		UE_LOG(LogTemp, Warning, TEXT("Damaged by enemy"));
 		EntityComponent->TakeDamage(_amount);
 		if (PlayerHud)
 		{
