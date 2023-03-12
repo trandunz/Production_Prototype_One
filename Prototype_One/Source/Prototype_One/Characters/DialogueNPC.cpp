@@ -11,7 +11,8 @@ ADialogueNPC::ADialogueNPC()
 	PrimaryActorTick.bCanEverTick = true;
 	ExclamationMark = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Exclamation Mark Mesh"));
 	ExclamationMark->SetupAttachment(GetMesh());
-
+	MoleWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Mole Widget"));
+	MoleWidget->SetupAttachment(RootComponent);
 }
 
 void ADialogueNPC::BeginPlay()
@@ -58,6 +59,7 @@ void ADialogueNPC::Interact()
 	UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetInputMode(FInputModeUIOnly{});
 	if (auto* charatcer = Cast<APrototype_OneCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)))
 	{
+		MoleWidget->SetVisibility(false);
 		charatcer->PlayerHud->DialogueWidget->ShowDialogueBox(true);
 		charatcer->GetCharacterMovement()->Velocity = {};
 		charatcer->GetCharacterMovement()->StopMovementImmediately();

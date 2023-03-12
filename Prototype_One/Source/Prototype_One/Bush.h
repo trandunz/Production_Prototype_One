@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Bush.generated.h"
 
 class AItem;
@@ -26,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Explosion")
 	UNiagaraSystem* Explosion;
 
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* HealthBarWidget;
+	
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComp;
 	

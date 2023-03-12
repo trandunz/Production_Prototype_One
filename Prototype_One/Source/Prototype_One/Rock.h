@@ -7,6 +7,7 @@
 #include "Item.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Rock.generated.h"
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AItem> RockPrefab;
+
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* HealthBarWidget;
 
 	UPROPERTY(VisibleAnywhere)
 	int CurrentHealth{200};
