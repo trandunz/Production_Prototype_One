@@ -110,7 +110,7 @@ void APrototype_OneCharacter::BeginPlay()
 
 	if (Trail) {
 		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
-		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Trail, GetMesh(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Trail, GetMesh(), FName("Base-HumanTail8"), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
 		NiagaraComp->SetPaused(false);
 		NiagaraComp->SetVisibility(false);
 	}
