@@ -1,6 +1,8 @@
 #include "Rock.h"
 
 #include "Components/SlateWrapperTypes.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
 #include "Prototype_One/Item.h"
 ARock::ARock()
 {
@@ -23,12 +25,12 @@ void ARock::BeginPlay()
 void ARock::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (RespawnTimer > 0 && CurrentHealth <= 0)
 	{
 		RespawnTimer -= DeltaTime;
 	}
-	else if (RespawnTimer <= 0 && CurrentHealth <= 0)
+	else if (RespawnTimer <= 0 && CurrentHealth <= 0&& (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
 	{
 		Mesh->SetVisibility(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
