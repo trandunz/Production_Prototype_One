@@ -1,6 +1,8 @@
 #include "Bush.h"
 
 #include "Components/SlateWrapperTypes.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "Prototype_One/Item.h"
 ABush::ABush()
 {
@@ -26,24 +28,28 @@ void ABush::BeginPlay()
 		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
 		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Explosion, Mesh, FName("Base-HumanTail8"), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
 		NiagaraComp->SetPaused(true);
+		
 	}
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ABush::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	
 	if (RespawnTimer > 0 && CurrentHealth <= 0)
 	{
 		RespawnTimer -= DeltaTime;
 	}
-	else if (RespawnTimer <= 0 && CurrentHealth <= 0)
+	else if (RespawnTimer <= 0 && CurrentHealth <= 0 && (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
 	{
 		Mesh->SetVisibility(true);
 		Carrot1->SetVisibility(true);
 		Carrot2->SetVisibility(true);
 		Carrot3->SetVisibility(true);
 		Carrot4->SetVisibility(true);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		CurrentHealth = 100.0f;
 	}
 }
@@ -63,6 +69,7 @@ void ABush::TakeDamage(int _amount)
 			Carrot2->SetVisibility(false);
 			Carrot3->SetVisibility(false);
 			Carrot4->SetVisibility(false);
+			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (NiagaraComp)
 				NiagaraComp->SetPaused(false);
 			if (CarrotPrefab && StickPrefab)
