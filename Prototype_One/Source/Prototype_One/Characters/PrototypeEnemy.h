@@ -90,6 +90,12 @@ public:
 	
 	AActor* ItemDrop;
 
+	UPROPERTY(EditAnywhere, Category = "Trail")
+	UNiagaraSystem* Trail;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
+
 	float AttackTimer{};
 	
 	// Events for audio trigger in blueprints
