@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/InteractInterface.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Sword.generated.h"
 
 UCLASS()
@@ -33,6 +35,12 @@ public:
 	UPROPERTY(EditAnywhere, Category=Mesh)
 	class UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	UNiagaraSystem* Trail;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
+	
 	UFUNCTION()
 	void OnHit(	UPrimitiveComponent* OverlappedComponent, 
 				AActor* OtherActor, 

@@ -107,6 +107,13 @@ void APrototype_OneCharacter::BeginPlay()
 	// Health regen
 	HealthRegenTimer = MaxTimeUntilHealthRegen;
 	PreviousArmLength = CameraBoom->TargetArmLength;
+
+	if (Trail) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Trail, GetMesh(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp->SetPaused(false);
+		NiagaraComp->SetVisibility(false);
+	}
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -130,7 +137,12 @@ void APrototype_OneCharacter::Tick(float DeltaSeconds)
 	if (DashMovementCurrentTime > 0)
 		DashMovementCurrentTime -= DeltaSeconds;
 	if (DashMovementCurrentTime <= 0)
+	{
 		IsDashing = false;
+		if (NiagaraComp)
+			NiagaraComp->SetVisibility(false);
+	}
+		
 	// Dodging
 	if (IsDashing == true)
 	{
@@ -390,6 +402,8 @@ void APrototype_OneCharacter::TryDash()
 					{
 						if (DashMovementCurrentTime <= 0 && EntityComponent->Properties.CurrentStamina > EntityComponent->Properties.StaminaDamageDodge)
 						{
+							if (NiagaraComp)
+								NiagaraComp->SetVisibility(true);
 							IsDashing = true;
 							HasStartedDash = true;
 							EntityComponent->Properties.CurrentStamina -= EntityComponent->Properties.StaminaDamageDodge;

@@ -89,6 +89,13 @@ void APrototypeEnemy::BeginPlay()
 	}
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APrototypeEnemy::OnHit);
+
+	if (Trail) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Trail, GetMesh(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp->SetPaused(false);
+		NiagaraComp->SetVisibility(false);
+	}
 }
 
 void APrototypeEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -241,6 +248,8 @@ void APrototypeEnemy::Attack()
 	if (CharacterComp)
 	{
 		CharacterComp->Velocity = ForwardVector * 10000.0f;
+		if (NiagaraComp)
+			NiagaraComp->SetVisibility(true);
 			
 	}
 
