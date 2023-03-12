@@ -2,14 +2,13 @@
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prototype_One/Controllers/PrototypePlayerController.h"
 
 void UPauseMenuWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	SetVisibility(ESlateVisibility::Hidden);
 	ResumeButton->OnPressed.AddDynamic(this, &UPauseMenuWidget::ResumeButtonPress);
-	SaveButton->OnPressed.AddDynamic(this, &UPauseMenuWidget::SaveButtonPress);
-	LoadButton->OnPressed.AddDynamic(this, &UPauseMenuWidget::LoadButtonPress);
 	QuitButton->OnPressed.AddDynamic(this, &UPauseMenuWidget::QuitButtonPress);
 }
 
@@ -22,14 +21,11 @@ void UPauseMenuWidget::ResumeButtonPress()
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UPauseMenuWidget::SaveButtonPress()
-{
-}
-
-void UPauseMenuWidget::LoadButtonPress()
-{
+	auto* playercontroller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if(auto* PlayerController = Cast<APrototypePlayerController>(playercontroller))
+	{
+		PlayerController->SetInputMode(FInputModeGameAndUI{});
+	}
 }
 
 void UPauseMenuWidget::QuitButtonPress()

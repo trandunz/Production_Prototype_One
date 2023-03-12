@@ -21,6 +21,7 @@ void UPlayerHUD::NativeOnInitialized()
 	Super::NativeOnInitialized();
 	
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
+	PauseMenu->SetVisibility(ESlateVisibility::Hidden);
 	fade = new Fade(BlackFade, 0.5f, 0.0f);
 }
 

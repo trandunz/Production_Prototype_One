@@ -613,25 +613,25 @@ void APrototype_OneCharacter::PauseGame()
 	if (UGameplayStatics::IsGamePaused(GetWorld()))
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
-		if (PauseMenu)
-		{
-			PauseMenu->SetVisibility(ESlateVisibility::Visible);
-		}
 		if (PlayerHud)
 		{
-			PlayerHud->SetVisibility(ESlateVisibility::Hidden);
+			PlayerHud->PauseMenu->SetVisibility(ESlateVisibility::Hidden);
+			if(auto* PlayerController = Cast<APrototypePlayerController>(Controller))
+			{
+				PlayerController->SetInputMode(FInputModeGameAndUI{});
+			}
 		}
 	}
 	else
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		if (PauseMenu)
-		{
-			PauseMenu->SetVisibility(ESlateVisibility::Hidden);
-		}
 		if (PlayerHud)
 		{
-			PlayerHud->SetVisibility(ESlateVisibility::Visible);
+			PlayerHud->PauseMenu->SetVisibility(ESlateVisibility::Visible);
+			if(auto* PlayerController = Cast<APrototypePlayerController>(Controller))
+			{
+				PlayerController->SetInputMode(FInputModeUIOnly{});
+			}
 		}
 	}
 }

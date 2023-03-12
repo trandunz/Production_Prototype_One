@@ -13,10 +13,6 @@ class PROTOTYPE_ONE_API UPauseMenuWidget : public UUserWidget
 	UFUNCTION()
 	void ResumeButtonPress();
 	UFUNCTION()
-	void SaveButtonPress();
-	UFUNCTION()
-	void LoadButtonPress();
-	UFUNCTION()
 	void QuitButtonPress();
 
 public:
@@ -27,10 +23,6 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* ResumeButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* SaveButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UButton* LoadButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* QuitButton;
 };
