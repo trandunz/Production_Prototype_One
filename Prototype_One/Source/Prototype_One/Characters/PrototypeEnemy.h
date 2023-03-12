@@ -98,6 +98,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComp;
 
+	UPROPERTY(EditAnywhere, Category = "Trail")
+	UNiagaraSystem* Blood;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraBloodComp;
+
 	float AttackTimer{};
 	
 	// Events for audio trigger in blueprints

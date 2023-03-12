@@ -96,6 +96,11 @@ void APrototypeEnemy::BeginPlay()
 		NiagaraComp->SetPaused(false);
 		NiagaraComp->SetVisibility(false);
 	}
+	if (Blood) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraBloodComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Blood, GetMesh(), FName(), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraBloodComp->SetPaused(true);
+	}
 }
 
 void APrototypeEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -185,6 +190,7 @@ void APrototypeEnemy::TakeDamage(int _amount)
 
 			if (EntityComponent->Properties.CurrentHealth > 0)
 			{
+
 				EntityComponent->TakeDamage(_amount);
 				UE_LOG(LogTemp, Log, TEXT("Hit Enemy"));
 				UE_LOG(LogTemp, Log, TEXT("Enemy Health: %s"), *FString::FromInt(EntityComponent->Properties.CurrentHealth));
@@ -283,6 +289,11 @@ void APrototypeEnemy::Ragdoll()
 		}
 	}
 
+	if (NiagaraBloodComp)
+	{
+		NiagaraBloodComp->SetPaused(false);
+	}
+	
 	if (auto* item = Cast<AItem>(ItemDrop))
 	{
 		item->Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);

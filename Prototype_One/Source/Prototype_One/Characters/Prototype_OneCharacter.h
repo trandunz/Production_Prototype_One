@@ -136,6 +136,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComp;
+
+	UPROPERTY(EditAnywhere, Category = "Trail")
+	UNiagaraSystem* HealPuff;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraHealComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	int LargestZoomDistance{800};
