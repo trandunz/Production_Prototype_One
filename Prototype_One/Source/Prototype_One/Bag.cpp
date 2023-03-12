@@ -66,12 +66,17 @@ void ABag::BeginPlay()
 void ABag::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	auto velocity = GetActorLocation() - prevPos;
+	SetActorRotation(FRotator{GetActorRotation().Pitch, UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetActorLocation() + velocity * 10.0f).Yaw - 90.0f, GetActorRotation().Roll});
+	
 	UpdateInteractionOutline();
 	AttractItems(DeltaTime);
 	SpawnEnemies(DeltaTime);
 	SpawnSmallItems(DeltaTime);
 	HandleBehaviorBasedOnWeight(DeltaTime);
 	FlapWings();
+
+	
 
 	if (Rope)
 		Rope->SetActorScale3D({1.0f,1.0f,1.0f});
