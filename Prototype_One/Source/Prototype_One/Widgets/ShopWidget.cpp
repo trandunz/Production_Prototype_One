@@ -201,7 +201,7 @@ void UShopWidget::OnUpgradeAttackDamage()
 
 void UShopWidget::OnBuyHealthPotion()
 {
-
+ //in blueprints
 }
 
 void UShopWidget::OnBuyGateTicket()
@@ -212,6 +212,18 @@ void UShopWidget::OnBuyGateTicket()
 		{
 			player->PlayerInventory->SubtractCoins(GateTicketPrice);
 			player->CanWinGame = true;
+
+			TArray<AActor*> actors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
+			for(auto bagActor : actors)
+			{
+				if (auto* bag = Cast<ABag>(bagActor))
+				{
+					//bag->IsBiengPulled = false;
+					bag->Interact();
+				}
+			}
+			
 		}
 	}
 }
