@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Bush.generated.h"
 
 class AItem;
@@ -21,6 +23,12 @@ public:
 
 	void TakeDamage(int _amount);
 
+	UPROPERTY(EditAnywhere, Category = "Explosion")
+	UNiagaraSystem* Explosion;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
+	
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 

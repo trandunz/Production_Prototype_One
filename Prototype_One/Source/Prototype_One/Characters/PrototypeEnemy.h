@@ -6,6 +6,8 @@
 #include "Prototype_One/EnemyDrop.h"
 #include "Prototype_One/Widgets/HealthBarWidget.h"
 #include "Components/WidgetComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "PrototypeEnemy.generated.h"
 
 UCLASS()

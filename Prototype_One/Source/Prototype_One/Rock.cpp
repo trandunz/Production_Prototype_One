@@ -13,7 +13,11 @@ ARock::ARock()
 void ARock::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (Explosion) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Explosion, Mesh, FName("Base-HumanTail8"), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp->SetPaused(true);
+	}
 }
 
 void ARock::Tick(float DeltaTime)
@@ -44,7 +48,9 @@ void ARock::TakeDamage(int _amount)
 			RespawnTimer = RespawnTime;
 			Mesh->SetVisibility(false);
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+			if (NiagaraComp)
+				NiagaraComp->SetPaused(false);
+			
 			if (RockPrefab)
 			{
 				for(int i = 0; i < (rand() % 4) + 4; i++)
