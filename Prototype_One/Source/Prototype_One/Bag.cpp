@@ -241,8 +241,8 @@ void ABag::SpawnEnemies(float DeltaTime)
 								{
 									if (navSystem && navSystem->GetRandomPointInNavigableRadius(origin, 2000.0f, location))
 									{
-										FVector pos = {location.Location.X, location.Location.Y, location.Location.Z + 500};
-										FRotator rot = {};
+										FVector pos = {location.Location.X, location.Location.Y, location.Location.Z + 700};
+										FRotator rot = {0,0,0};
 										FActorSpawnParameters spawnParams{};
 										auto* king = GetWorld()->SpawnActor(KingPrefab, &pos, &rot);
 									}
