@@ -6,6 +6,8 @@
 #include "Prototype_One/Sword.h"
 #include "Prototype_One/Widgets/PauseMenuWidget.h"
 #include "Components/SphereComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Prototype_OneCharacter.generated.h"
 
 class UPlayerInventory;

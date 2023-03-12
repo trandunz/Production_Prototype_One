@@ -22,7 +22,11 @@ ABush::ABush()
 void ABush::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (Explosion) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Explosion, Mesh, FName("Base-HumanTail8"), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp->SetPaused(true);
+	}
 }
 
 void ABush::Tick(float DeltaTime)
@@ -59,7 +63,8 @@ void ABush::TakeDamage(int _amount)
 			Carrot2->SetVisibility(false);
 			Carrot3->SetVisibility(false);
 			Carrot4->SetVisibility(false);
-
+			if (NiagaraComp)
+				NiagaraComp->SetPaused(false);
 			if (CarrotPrefab && StickPrefab)
 			{
 				for(int i = 0; i < (rand() % 4) + 4; i++)
