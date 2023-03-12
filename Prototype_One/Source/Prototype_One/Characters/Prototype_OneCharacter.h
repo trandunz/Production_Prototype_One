@@ -240,7 +240,7 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDashDelegate);
 	UPROPERTY(BlueprintAssignable)
 	FDashDelegate OnDash;
-
+	bool CanWinGame{};
 	// Blueprint implementable events for audio triggering
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPlayerHitEvent();
@@ -252,7 +252,7 @@ public:
 	void OnBagOpenOrClose();
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDrinkPotionEvent();
-	
+
 	// Prefabs
 protected:
 	//TSubclassOf<AActor> SomePrefab;
@@ -277,5 +277,6 @@ protected:
 
 private:
 	bool bHasResetStaminaDelay;
+
 };
 

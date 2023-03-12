@@ -530,7 +530,7 @@ void APrototype_OneCharacter::TryInteract()
 	}
 	if (auto* nearestNPC = UGameplayStatics::FindNearestActor(GetActorLocation(), interactables, nearestActor))
 	{
-		if (nearestActor <= 200)
+		if (nearestActor <= 300)
 		{
 			if (auto* interactable = Cast<IInteractInterface>(nearestNPC))
 			{

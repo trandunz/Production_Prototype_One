@@ -26,9 +26,7 @@ void UShopWidget::NativeOnInitialized()
 	BuyHealthPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyHealthPotion);
 	//BuyStaminaPotion->OnPressed.AddDynamic(this, &UShopWidget::OnBuyStaminaPotion);
 	BuyGateTicket->OnPressed.AddDynamic(this, &UShopWidget::OnBuyGateTicket);
-
-	EndGame->OnPressed.AddDynamic(this, &UShopWidget::OnEndGame);
-	EndGame->SetVisibility(ESlateVisibility::Hidden);
+	
 
 	TArray<AActor*> actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABag::StaticClass(), actors);
@@ -213,16 +211,8 @@ void UShopWidget::OnBuyGateTicket()
 		if (player->PlayerInventory->GetCoins() >= GateTicketPrice)
 		{
 			player->PlayerInventory->SubtractCoins(GateTicketPrice);
-			EndGame->SetVisibility(ESlateVisibility::Visible);
+			player->CanWinGame = true;
 		}
 	}
 }
 
-void UShopWidget::OnEndGame()
-{
-	// End the game
-	if (auto* player = Cast<APrototypePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
-	{
-		player->SwitchLevel("Level_WinScreen");
-	}
-}
