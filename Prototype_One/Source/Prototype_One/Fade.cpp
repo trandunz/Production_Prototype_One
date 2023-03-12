@@ -92,3 +92,8 @@ void Fade::ImmediateFadeIn()
 Fade::~Fade()
 {
 }
+
+void Fade::SetFadeTime(float _fadeTime)
+{
+	fadeTime = _fadeTime;
+}

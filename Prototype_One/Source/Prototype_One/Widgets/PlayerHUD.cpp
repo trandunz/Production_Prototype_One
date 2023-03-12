@@ -38,6 +38,10 @@ void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (fade && fadeDelay < 0)
 	{
 		fade->Tick(GetWorld()->GetDeltaSeconds());
+		if(fade->GetFadeValue() >= 1.0f)
+		{
+			fade->SetFadeTime(0.5f);
+		}
 	}
 
 	if (auto* player = Cast<APrototype_OneCharacter>(GetOwningPlayer()->GetCharacter()))

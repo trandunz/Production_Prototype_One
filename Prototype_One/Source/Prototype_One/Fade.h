@@ -32,4 +32,5 @@ public:
 	~Fade();
 	float GetFadeValue() {return fadeValue;};
 	void ChangeFadeTime(float _fadeTime) {fadeTime = _fadeTime;};
+	void SetFadeTime(float _fadeTime);
 };
