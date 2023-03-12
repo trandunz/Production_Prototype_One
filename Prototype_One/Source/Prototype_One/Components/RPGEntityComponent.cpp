@@ -4,6 +4,7 @@
 #include "Prototype_One/Gamemodes/Prototype_OneGameMode.h"
 #include "Prototype_One/Bag.h"
 #include "Prototype_One/SavedPlayerData.h"
+#include "Prototype_One/Characters/Prototype_OneCharacter.h"
 
 URPGEntityComponent::URPGEntityComponent()
 {
@@ -59,6 +60,7 @@ void URPGEntityComponent::TakeDamage(int _amount)
 
 void URPGEntityComponent::Heal(int _amount)
 {
+	
 	if (Properties.CurrentHealth > 0)
 	{
 		Properties.CurrentHealth += _amount;
@@ -82,7 +84,7 @@ void URPGEntityComponent::UpgradeStamina()
 	Properties.StaminaCurrentLevel++;
 
 	
-	//Properties.StaminaRegen ++; // Increase stamina regen
+	Properties.StaminaRegen ++; // Increase stamina regen
 }
 
 void URPGEntityComponent::UpgradeCarryWeight()
