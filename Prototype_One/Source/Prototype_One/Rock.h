@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Item.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Rock.generated.h"
 
 UCLASS()
@@ -37,6 +39,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float RespawnTime{10.0f};
+
+	UPROPERTY(EditAnywhere, Category = "Explosion")
+	UNiagaraSystem* Explosion;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void RockHitEvent();
