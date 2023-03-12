@@ -3,7 +3,11 @@
 #include "Components/SlateWrapperTypes.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
+
 #include "Prototype_One/Item.h"
+#include "Widgets/HealthBarWidget.h"
+
 ABush::ABush()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,6 +23,8 @@ ABush::ABush()
 	Carrot3->SetupAttachment(RootComponent);
 	Carrot4 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Carrot4"));
 	Carrot4->SetupAttachment(RootComponent);
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Info"));
+	HealthBarWidget->SetupAttachment(RootComponent);
 }
 
 void ABush::BeginPlay()
@@ -37,7 +43,7 @@ void ABush::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	
+	Cast<UHealthBarWidget>(HealthBarWidget->GetWidget())->SetHealthPercent(CurrentHealth, 100);
 	if (RespawnTimer > 0 && CurrentHealth <= 0)
 	{
 		RespawnTimer -= DeltaTime;
@@ -45,6 +51,8 @@ void ABush::Tick(float DeltaTime)
 	else if (RespawnTimer <= 0 && CurrentHealth <= 0 && (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
 	{
 		Mesh->SetVisibility(true);
+		HealthBarWidget->SetVisibility(false);
+		
 		Carrot1->SetVisibility(true);
 		Carrot2->SetVisibility(true);
 		Carrot3->SetVisibility(true);
@@ -68,6 +76,7 @@ void ABush::TakeDamage(int _amount)
 			Carrot1->SetVisibility(false);
 			Carrot2->SetVisibility(false);
 			Carrot3->SetVisibility(false);
+			HealthBarWidget->SetVisibility(false);
 			Carrot4->SetVisibility(false);
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (NiagaraComp)

@@ -3,13 +3,19 @@
 #include "Components/SlateWrapperTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Blueprint/UserWidget.h"
+
 #include "Prototype_One/Item.h"
+#include "Widgets/HealthBarWidget.h"
+
 ARock::ARock()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Info"));
+	HealthBarWidget->SetupAttachment(RootComponent);
 }
 
 void ARock::BeginPlay()
@@ -25,6 +31,7 @@ void ARock::BeginPlay()
 void ARock::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	Cast<UHealthBarWidget>(HealthBarWidget->GetWidget())->SetHealthPercent(CurrentHealth, 200);
 	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (RespawnTimer > 0 && CurrentHealth <= 0)
 	{
@@ -33,6 +40,7 @@ void ARock::Tick(float DeltaTime)
 	else if (RespawnTimer <= 0 && CurrentHealth <= 0&& (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
 	{
 		Mesh->SetVisibility(true);
+		HealthBarWidget->SetVisibility(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		CurrentHealth = 200.0f;
 	}
@@ -49,6 +57,7 @@ void ARock::TakeDamage(int _amount)
 			CurrentHealth = 0;
 			RespawnTimer = RespawnTime;
 			Mesh->SetVisibility(false);
+			HealthBarWidget->SetVisibility(false);
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (NiagaraComp)
 				NiagaraComp->SetPaused(false);
