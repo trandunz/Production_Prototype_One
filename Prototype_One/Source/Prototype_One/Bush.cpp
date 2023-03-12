@@ -61,7 +61,7 @@ void ABush::Tick(float DeltaTime)
 		CurrentHealth = 100.0f;
 	}
 
-	if (CurrentHealth < 100.0f && RespawnTimer <= 0)
+	if (CurrentHealth < 100.0f && RespawnTimer <= 0 && Mesh->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics)
 	{
 		HealthBarWidget->SetVisibility(true);
 	}
