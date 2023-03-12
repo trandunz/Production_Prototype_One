@@ -1,6 +1,7 @@
 #include "Item.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AItem::AItem()
 {
@@ -31,5 +32,10 @@ void AItem::Tick(float DeltaTime)
 		{
 			NiagaraComp->SetVisibility(false);
 		}
+	}
+	if (AActor::GetActorLocation().Z < -100.0f)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), "Item Destroyed from falling");
+		Destroy();
 	}
 }
