@@ -46,7 +46,7 @@ void ARock::Tick(float DeltaTime)
 		CurrentHealth = 200.0f;
 	}
 
-	if (CurrentHealth < 200.0f && RespawnTimer <= 0)
+	if (CurrentHealth < 200.0f && RespawnTimer <= 0 && Mesh->GetCollisionEnabled() == ECollisionEnabled::QueryAndPhysics)
 	{
 		HealthBarWidget->SetVisibility(true);
 	}
