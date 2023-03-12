@@ -114,6 +114,12 @@ void APrototype_OneCharacter::BeginPlay()
 		NiagaraComp->SetPaused(false);
 		NiagaraComp->SetVisibility(false);
 	}
+	if (HealPuff) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraHealComp = UNiagaraFunctionLibrary::SpawnSystemAttached(HealPuff, GetMesh(), FName("Base-HumanTail8"), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraHealComp->SetPaused(false);
+		NiagaraHealComp->SetVisibility(false);
+	}
 }
 
 void APrototype_OneCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -967,6 +973,10 @@ void APrototype_OneCharacter::RegenHealth()
 			{
 				if (EntityComponent->Properties.CurrentHealth < EntityComponent->Properties.MaxHealth)
 				{
+					if (NiagaraHealComp)
+					{
+						NiagaraHealComp->SetVisibility(true);
+					}
 					if (HealthRegenTimer >= 0)
 					{
 						HealthRegenTimer -= Dt;
@@ -977,6 +987,10 @@ void APrototype_OneCharacter::RegenHealth()
 						HealthRegenTimer = MaxTimeUntilHealthRegen;
 					}
 				}
+			}
+			else
+			{
+				NiagaraHealComp->SetVisibility(false);
 			}
 		}
 	}
