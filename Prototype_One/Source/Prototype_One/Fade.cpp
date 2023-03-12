@@ -73,6 +73,7 @@ void Fade::StopFade()
 
 void Fade::ImmediateFadeOut()
 {
+	imageToFade->SetVisibility(ESlateVisibility::Visible);
 	fadeState = FadeState::Halt;
 	fadeTimer = fadeTime;
 	fadeValue = 0;
@@ -81,6 +82,7 @@ void Fade::ImmediateFadeOut()
 
 void Fade::ImmediateFadeIn()
 {
+	imageToFade->SetVisibility(ESlateVisibility::Visible);
 	fadeState = FadeState::Halt;
 	fadeTimer = fadeTime;
 	fadeValue = 1;

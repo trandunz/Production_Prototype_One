@@ -9,7 +9,8 @@ UCLASS()
 class PROTOTYPE_ONE_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
-	Fade* fade = nullptr;;
+	Fade* fade = nullptr;
+	float fadeDelay = 0.6f;
 public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
