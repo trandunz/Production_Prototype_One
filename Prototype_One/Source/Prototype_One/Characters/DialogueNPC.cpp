@@ -1,5 +1,6 @@
 #include "DialogueNPC.h"
 
+#include "PrototypeEnemy.h"
 #include "Prototype_OneCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -66,6 +67,13 @@ void ADialogueNPC::Interact()
 		charatcer->GetCharacterMovement()->StopActiveMovement();
 		ExclamationMark->SetVisibility(false);
 		charatcer->IsShopping = true;
+
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APrototypeEnemy::StaticClass(), FoundActors);
+		for(auto* enemy : FoundActors)
+		{
+			enemy->Destroy();
+		}
 	}
 }
 
