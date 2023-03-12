@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Prototype_One/Interfaces/InteractInterface.h"
+#include "Components/WidgetComponent.h"
 #include "DialogueNPC.generated.h"
 
 UCLASS()
@@ -28,12 +29,15 @@ public:
 	virtual void Interact() override;
 
 public:
+	UPROPERTY(EditAnywhere)
+	UWidgetComponent* MoleWidget;
+	
 	UPROPERTY(EditAnywhere, Category=Interaction)
 	float InteractionRange{200.0f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* ExclamationMark;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	FVector startPos{};
 };

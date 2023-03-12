@@ -514,6 +514,7 @@ void APrototype_OneCharacter::TryInteract()
 	TArray<AActor*> interactables;
 	float nearestActor{};
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(),nearbyActors);
+	
 	for(auto* actor : nearbyActors)
 	{
 		if (actor)
@@ -559,6 +560,7 @@ void APrototype_OneCharacter::TryInteract()
 				}
 				else
 				{
+					
 					interactable->Interact();
 					return;
 				}
@@ -602,14 +604,7 @@ void APrototype_OneCharacter::InteractRaycast()
 		PlayerHud->UpdateInteractionText();
 		if (controller->GetHitResultUnderCursorByChannel(TraceTypeQuery1, true, LastHitResult))
 		{
-			if (auto* hitActor = LastHitResult.GetActor())
-			{
-				if (auto* npc = Cast<ADialogueNPC>(hitActor))
-				{
-					// Render GUI
-					//PlayerHud->UpdateInteractionText("LMouse", "To Talk With NPC");
-				}
-			}
+			
 		}
 	}
 }
