@@ -32,17 +32,27 @@ void ARock::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Cast<UHealthBarWidget>(HealthBarWidget->GetWidget())->SetHealthPercent(CurrentHealth, 200);
+	
 	auto* player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (RespawnTimer > 0 && CurrentHealth <= 0)
 	{
 		RespawnTimer -= DeltaTime;
 	}
-	else if (RespawnTimer <= 0 && CurrentHealth <= 0&& (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
+	else if (RespawnTimer <= 0 && CurrentHealth <= 0 && (player->GetActorLocation() - GetActorLocation()).Length() >= 2000)
 	{
 		Mesh->SetVisibility(true);
 		HealthBarWidget->SetVisibility(true);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		CurrentHealth = 200.0f;
+	}
+
+	if (CurrentHealth < 200.0f && RespawnTimer <= 0)
+	{
+		HealthBarWidget->SetVisibility(true);
+	}
+	else
+	{
+		HealthBarWidget->SetVisibility(false);
 	}
 }
 
