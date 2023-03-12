@@ -238,6 +238,7 @@ void UDialogueWidget::OnQuestMenu()
 		DialogueLines.Add("but they in turn will provide you with high valuable items.");
 		DialogueLines.Add("Also, keep an eye out for the Ruler Rabbit.");
 		DialogueLines.Add("I will buy his crown from you for a large sum.");
+		DialogueLines.Add("Was there anything else I can help you with?");
 	}
 	
 	OnNextDialogueLine();
