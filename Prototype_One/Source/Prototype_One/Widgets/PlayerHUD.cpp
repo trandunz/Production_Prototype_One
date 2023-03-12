@@ -23,13 +23,19 @@ void UPlayerHUD::NativeOnInitialized()
 	DebugMenu->SetVisibility(ESlateVisibility::Hidden);
 	PauseMenu->SetVisibility(ESlateVisibility::Hidden);
 	fade = new Fade(BlackFade, 0.5f, 0.0f);
+	fade->ImmediateFadeIn();
+	fade->FadeOut();
 }
 
 void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (fadeDelay > 0)
+	{
+		fadeDelay -= GetWorld()->GetDeltaSeconds();
+	}
 
-	if (fade)
+	if (fade && fadeDelay < 0)
 	{
 		fade->Tick(GetWorld()->GetDeltaSeconds());
 	}
