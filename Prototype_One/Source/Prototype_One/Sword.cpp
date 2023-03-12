@@ -25,6 +25,11 @@ void ASword::BeginPlay()
 
 	Mesh->SetCollisionProfileName("Trigger");
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &ASword::OnHit);
+	if (Trail) {
+		// This spawns the chosen effect on the owning WeaponMuzzle SceneComponent
+		NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Trail, Mesh, FName(), FVector(0.f), FRotator(0.f), EAttachLocation::SnapToTarget, true);
+		NiagaraComp->SetPaused(false);
+	}
 }
 
 void ASword::Tick(float DeltaTime)
@@ -38,10 +43,12 @@ void ASword::Tick(float DeltaTime)
 		if (charatcer->IsAttacking)
 		{
 			Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			NiagaraComp->SetVisibility(true);
 		}
 		else
 		{
 			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			NiagaraComp->SetVisibility(false);
 		}
 	}
 }

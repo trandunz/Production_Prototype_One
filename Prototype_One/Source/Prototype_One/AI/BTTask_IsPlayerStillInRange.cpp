@@ -20,6 +20,8 @@ EBTNodeResult::Type UBTTask_IsPlayerStillInRange::ExecuteTask(UBehaviorTreeCompo
 	auto* aiController = OwnerComp.GetAIOwner();
 	if (auto* enemy = Cast<APrototypeEnemy>(aiController->GetCharacter()))
 	{
+		if (enemy->NiagaraComp)
+			enemy->NiagaraComp->SetVisibility(false);
 		enemy->AttackTimer = 0.0f;
 	}
 	

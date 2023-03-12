@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Item.generated.h"
 
 /* Enum for all items type */
@@ -70,4 +72,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	bool IsPickupable{};
+
+	UPROPERTY(EditAnywhere, Category = "Trail")
+	UNiagaraSystem* Trail;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
 };

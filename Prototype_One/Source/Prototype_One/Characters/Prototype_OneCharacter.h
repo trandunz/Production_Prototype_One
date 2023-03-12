@@ -129,6 +129,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* AttackStencilCollider;
 	
+	UPROPERTY(EditAnywhere, Category = "Trail")
+	UNiagaraSystem* Trail;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComp;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	int LargestZoomDistance{800};
 	float ZoomRatio = 0.0f;
